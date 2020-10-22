@@ -25,21 +25,25 @@ class CreateCompanyController extends BaseController
      */
     public function createCompanyAction(Request $request)
     {
-        $command = new CreateCompanyCommand();
-        $form = $this->createForm(CreateCompanyType::class, $command);
-        $this->processForm($request, $form);
+        try {
+            $command = new CreateCompanyCommand();
+            $form = $this->createForm(CreateCompanyType::class, $command);
+            $this->processForm($request, $form);
 
-        if ($form->isValid() === false) {
-            return $this->createApiResponse(
-                ['errors' => $this->getValidationErrors($form)],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
+            if ($form->isValid() === false) {
+                return $this->createApiResponse(
+                    ['errors' => $this->getValidationErrors($form)],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
 
-        $companyId = $this->commandBus->handle($command);
+            $companyId = $this->commandBus->handle($command);
 
-        if (empty($companyId)) {
-            return $this->createApiResponse(['errors' => 'No created'], Response::HTTP_FORBIDDEN);
+            if (empty($companyId)) {
+                return $this->createApiResponse(['errors' => 'No created'], Response::HTTP_FORBIDDEN);
+            }
+        } catch (\Exception $e) {
+            $this->logger->critical($e->getMessage(), [__METHOD__]);
         }
 
         return $this->createApiResponse(['company_id' => $companyId], Response::HTTP_CREATED);

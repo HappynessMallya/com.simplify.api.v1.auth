@@ -24,10 +24,14 @@ class GetCompaniesController extends BaseController
      */
     public function getCompaniesAction(Request $request)
     {
-        $command = new GetCompaniesQuery();
-        $command->setPage((int) $request->get('page') ?? 0);
-        $command->setPageSize((int) $request->get('page_size') ?? 10);
-        $companies =  $this->commandBus->handle($command);
+        try {
+            $command = new GetCompaniesQuery();
+            $command->setPage((int)$request->get('page') ?? 0);
+            $command->setPageSize((int)$request->get('page_size') ?? 10);
+            $companies = $this->commandBus->handle($command);
+        } catch (\Exception $e) {
+            $this->logger->critical($e->getMessage(), [__METHOD__]);
+        }
 
         return $this->createApiResponse($companies, Response::HTTP_OK);
     }
