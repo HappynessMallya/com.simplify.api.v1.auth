@@ -10,3 +10,8 @@ user:
     resource: ../../src/Infrastructure/Symfony/Api/User/Controller/
     prefix: /api/v1/user
     type: annotation
+
+company:
+    resource: ../../src/Infrastructure/Symfony/Api/Company/Controller/
+    prefix: /api/v1/company
+    type: annotation
