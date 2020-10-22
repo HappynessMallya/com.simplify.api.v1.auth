@@ -17,6 +17,11 @@ final class RegisterUserCommand
     /**
      * @var string
      */
+    private $companyId;
+
+    /**
+     * @var string
+     */
     private $email;
 
     /**
@@ -41,6 +46,11 @@ final class RegisterUserCommand
     private $status;
 
     /**
+     * @var string
+     */
+    private $role;
+
+    /**
      * @return string|null
      */
     public function getUsername(): ?string
@@ -54,6 +64,22 @@ final class RegisterUserCommand
     public function setUsername(string $username): void
     {
         $this->username = $username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompanyId(): string
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * @param string $companyId
+     */
+    public function setCompanyId(string $companyId): void
+    {
+        $this->companyId = $companyId;
     }
 
     /**
@@ -134,5 +160,21 @@ final class RegisterUserCommand
     public function setStatus(string $status): void
     {
         $this->status = $status;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRole(): ?string
+    {
+        return $this->role;
+    }
+
+    /**
+     * @param string $role
+     */
+    public function setRole(string $role): void
+    {
+        $this->role = $role;
     }
 }
