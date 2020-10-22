@@ -44,11 +44,7 @@ final class PasswordEncoderV1 implements PasswordEncoder
      */
     public function hashPassword(User $user): ?string
     {
-        if (empty($plainPassword)) {
-            return null;
-        }
-
-        $user = new UserEntity (
+        $user = new UserEntity(
             $user->userId(),
             $user->companyId(),
             $user->email(),

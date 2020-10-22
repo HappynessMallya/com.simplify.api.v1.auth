@@ -40,9 +40,10 @@ class AddUserDataToPayloadWhenLoginIsSuccess
 
         if ($user instanceof UserEntity || $user instanceof User) {
             $this->userRepository->login($user->userId());
+        } else {
+            $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
         }
 
-        $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
         $company = $this->companyRepository->get($user->companyId());
 
         $data['data'] = [

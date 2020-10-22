@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\EventListener;
 
+use App\Domain\Model\User\User;
 use App\Domain\Repository\UserRepository;
+use App\Infrastructure\Symfony\Security\UserEntity;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -39,7 +41,10 @@ class JWTCreatedListener
             return;
         }
 
-        $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
+        if (!$user instanceof UserEntity && !$user instanceof User) {
+            $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
+        }
+
         $payload['companyId'] = $user->getCompanyId();
 
         $event->setData($payload);
