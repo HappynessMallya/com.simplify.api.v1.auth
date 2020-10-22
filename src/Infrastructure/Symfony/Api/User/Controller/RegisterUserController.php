@@ -25,7 +25,6 @@ class RegisterUserController extends BaseController
      */
     public function RegisterUserAction(Request $request)
     {
-        $invoiceId = null;
         $registerUserCommand = new RegisterUserCommand();
         $form = $this->createForm(RegisterUserType::class, $registerUserCommand);
         $this->processForm($request, $form);

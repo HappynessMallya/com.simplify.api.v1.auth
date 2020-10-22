@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Domain\Services\User;
 
+use App\Domain\Model\User\User;
 use App\Domain\Services\User\PasswordEncoder;
 use App\Infrastructure\Symfony\Security\UserEntity;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -38,18 +39,26 @@ final class PasswordEncoderV1 implements PasswordEncoder
     }
 
     /**
-     * @param string $plainPassword
+     * @param User $user
      * @return string|null
      */
-    public function hashPassword(string $plainPassword): ?string
+    public function hashPassword(User $user): ?string
     {
         if (empty($plainPassword)) {
             return null;
         }
 
-        $user = new UserEntity();
-        $user->setPassword($plainPassword);
+        $user = new UserEntity (
+            $user->userId(),
+            $user->companyId(),
+            $user->email(),
+            $user->username(),
+            $user->password(),
+            $user->salt(),
+            $user->status(),
+            $user->roles()
+        );
 
-        return $this->encoder->encodePassword($user, $plainPassword);
+        return $this->encoder->encodePassword($user, $user->getPassword());
     }
 }

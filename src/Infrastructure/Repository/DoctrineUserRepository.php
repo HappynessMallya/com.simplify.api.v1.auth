@@ -11,11 +11,10 @@ use App\Infrastructure\Symfony\Security\UserEntity;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ObjectRepository;
-use Psr\Log\LoggerInterface;
+use Exception;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -74,9 +73,9 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
 
     /**
      * @param array $criteria
-     * @return User|object|null
+     * @return UserEntity|null
      */
-    public function findOneBy(array $criteria)
+    public function findOneBy(array $criteria): ?UserEntity
     {
         $criteria['status'] = UserStatus::ACTIVE();
         $criteria['enabled'] = true;
@@ -88,15 +87,15 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
             return null;
         }
 
-        return new UserEntity(
-            $user->userId()->toString(),
+        return new UserEntity (
+            $user->userId(),
+            $user->companyId(),
+            $user->email(),
             $user->username(),
             $user->password(),
             $user->salt(),
-            $user->email(),
-            $user->roles(),
-            $user->isEnabled(),
-            $user->status()
+            $user->status(),
+            $user->roles()
         );
     }
 
@@ -167,21 +166,33 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
                 return null;
             }
 
-            return new UserEntity(
-                $user->userId()->toString(),
+            return UserEntity::create (
+                $user->userId(),
+                $user->companyId(),
+                $user->email(),
                 $user->username(),
                 $user->password(),
                 $user->salt(),
-                $user->email(),
-                $user->roles(),
-                $user->isEnabled(),
-                $user->status()
+                $user->status(),
+                $user->roles()
             );
         } catch (NonUniqueResultException $e) {
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return null;
         }
     }
+
+    /**
+     * @param UserId $userId
+     */
+    public function login(UserId $userId): void
+    {
+        $user = $this->find($userId);
+
+        $user->login();
+        $this->save($user);
+    }
+
 
 }

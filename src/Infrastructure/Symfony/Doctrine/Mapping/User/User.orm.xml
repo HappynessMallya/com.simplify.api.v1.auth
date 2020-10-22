@@ -5,6 +5,7 @@
     https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
     <entity name="App\Domain\Model\User\User" table="user">
         <id name="userId" type="UserId" column="user_id" />
+        <field name="companyId" type="CompanyId" column="company_id" />
         <field name="username" type="string" length="180" unique="true" nullable="true" />
         <field name="email" type="string" length="180" unique="true" />
         <field name="enabled" type="boolean" nullable="true" />

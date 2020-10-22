@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Security;
 
+use App\Domain\Model\Company\CompanyId;
+use App\Domain\Model\User\User;
+use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserRole;
 use App\Domain\Model\User\UserStatus;
 use App\Infrastructure\Repository\DoctrineUserRepository;
@@ -16,69 +19,27 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass=DoctrineUserRepository::class)
  */
-class UserEntity implements UserInterface
+class UserEntity extends User implements UserInterface
 {
-    /**
-     * @ORM\Column(type="string")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
-     */
-    private $userId;
-
-    /**
-     * @ORM\Column(type="string", unique=true)
-     */
-    private $username;
-
-    /**
-     * @ORM\Column(type="string", unique=true)
-     */
-    private $email;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $password;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $salt;
-
-    /**
-     * @ORM\Column(type="array")
-     */
-    private $roles;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $enabled;
-
-    /**
-     * @ORM\Column(type="UserStatus")
-     *
-     */
-    private $status;
-
-    public function __construct(
-        string $userId,
+    public function __construct (
+        UserId $userId,
+        CompanyId $companyId,
+        string $email,
         ?string $username,
         string $password,
         ?string $salt,
-        string $email,
-        array $roles,
-        bool $enabled,
-        UserStatus $status
+        UserStatus $userStatus,
+        array $roles
     ) {
         $this->userId = $userId;
+        $this->companyId = $companyId;
+        $this->email = $email;
+        $this->enabled = true;
         $this->username = $username;
         $this->password = $password;
         $this->salt = $salt;
-        $this->email = $email;
         $this->roles = $roles;
-        $this->enabled = $enabled;
-        $this->status = $status;
+        $this->status = UserStatus::ACTIVE();
     }
 
     /**
@@ -86,7 +47,7 @@ class UserEntity implements UserInterface
      */
     public function getUserId(): string
     {
-        return $this->userId;
+        return $this->userId->toString();
     }
 
     /**
@@ -94,7 +55,7 @@ class UserEntity implements UserInterface
      */
     public function setUserId(string $userId): void
     {
-        $this->userId = $userId;
+        $this->userId = UserId::fromString($userId);
     }
 
     /**
@@ -132,7 +93,7 @@ class UserEntity implements UserInterface
     /**
      * @return string
      */
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -169,7 +130,7 @@ class UserEntity implements UserInterface
         $roles = [];
 
         foreach (array_unique($this->roles) as $value) {
-            $roles[] = UserRole::byName($value);
+            $roles[] = UserRole::byName($value)->getValue();
         }
 
         return $roles;
@@ -224,5 +185,85 @@ class UserEntity implements UserInterface
     public function __toString(): string
     {
         return (string) $this->getEmail();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastLogin()
+    {
+        return $this->lastLogin;
+    }
+
+    /**
+     * @param mixed $lastLogin
+     */
+    public function setLastLogin($lastLogin): void
+    {
+        $this->lastLogin = $lastLogin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConfirmationToken()
+    {
+        return $this->confirmationToken;
+    }
+
+    /**
+     * @param mixed $confirmationToken
+     */
+    public function setConfirmationToken($confirmationToken): void
+    {
+        $this->confirmationToken = $confirmationToken;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPasswordRequestedAt()
+    {
+        return $this->passwordRequestedAt;
+    }
+
+    /**
+     * @param mixed $passwordRequestedAt
+     */
+    public function setPasswordRequestedAt($passwordRequestedAt): void
+    {
+        $this->passwordRequestedAt = $passwordRequestedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param mixed $createdAt
+     */
+    public function setCreatedAt($createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompanyId(): string
+    {
+        return $this->companyId->toString();
+    }
+
+    /**
+     * @param string $companyId
+     */
+    public function setCompanyId(string $companyId): void
+    {
+        $this->companyId = $companyId;
     }
 }
