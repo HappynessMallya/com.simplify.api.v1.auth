@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\User;
 
+use App\Domain\Model\Company\CompanyId;
 use DateTime;
 
 /**
- * Class ApiUser
- * @package App\Domain\Model\ApiUser
+ * Class User
+ * @package App\Domain\Model\User
  */
 class User
 {
@@ -16,6 +17,11 @@ class User
      * @var UserId
      */
     protected $userId;
+
+    /**
+     * @var CompanyId
+     */
+    protected $companyId;
 
     /**
      * @var string|null
@@ -33,7 +39,7 @@ class User
     protected $enabled;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $salt;
 
@@ -83,21 +89,23 @@ class User
 
     public static function create (
         UserId $userId,
+        CompanyId $companyId,
         string $email,
         ?string $username,
         string $password,
         ?string $salt,
         UserStatus $userStatus,
-        UserRole $userRole
-    ): User {
+        UserRole $rol
+    ): self {
         $self = new self();
         $self->userId = $userId;
+        $self->companyId = $companyId;
         $self->email = $email;
         $self->enabled = true;
         $self->username = $username;
         $self->password = $password;
         $self->salt = $salt;
-        $self->roles[] = $userRole->toString();
+        $self->roles[] = $rol->toString();
         $self->status = $userStatus;
         $self->createdAt = new Datetime();
         $self->lastLogin = null;
@@ -113,11 +121,11 @@ class User
     }
 
     /**
-     * @param string $pasword
+     * @param string $password
      */
-    public function setPassword(string $pasword): void
+    public function setPassword(string $password): void
     {
-        $this->password = $pasword;
+        $this->password = $password;
     }
 
     public function resetPasswordRequest(string $token): void
@@ -182,13 +190,13 @@ class User
 
     public function roles(): array
     {
-        $result = [];
+        $roles = [];
 
-        foreach (array_unique($this->roles) as $value) {
-            $result[] = UserRole::byName($value);
+        foreach (array_unique($this->roles) as $rol) {
+                $roles[] = UserRole::byName($rol)->getName();
         }
 
-        return $result;
+        return $roles;
     }
 
     public function createdAt(): DateTime
@@ -199,6 +207,11 @@ class User
     public function __toString(): string
     {
         return (string) $this->email();
+    }
+
+    public function companyId(): CompanyId
+    {
+        return $this->companyId;
     }
 
     public function username(): ?string
@@ -216,17 +229,13 @@ class User
         return $this->email;
     }
 
-    public function password(): ?string
+    public function password(): string
     {
         return $this->password;
     }
 
     public function lastLogin(): ?DateTime
     {
-        if (empty($this->lastLogin)) {
-            return $this->lastLogin;
-        }
-
         return $this->lastLogin;
     }
 
@@ -247,6 +256,11 @@ class User
     public function isEnabled(): bool
     {
         return $this->enabled;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(UserRole::ADMIN());
     }
 
     public function isSuperAdmin(): bool
