@@ -7,7 +7,6 @@ use App\Application\Company\Query\GetCompanyByIdQuery;
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Repository\CompanyRepository;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class GetCompanyByIdHandler
@@ -20,25 +19,13 @@ class GetCompanyByIdHandler
      */
     private $companyRepository;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(CompanyRepository $companyRepository, LoggerInterface $logger)
+    public function __construct(CompanyRepository $companyRepository)
     {
         $this->companyRepository = $companyRepository;
-        $this->logger = $logger;
     }
 
     public function handle(GetCompanyByIdQuery $command): ?Company
     {
-        try {
-            return $this->companyRepository->find(CompanyId::fromString($command->companyId()));
-        } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage(), [__METHOD__]);
-        }
-
-        return null;
+        return $this->companyRepository->get(CompanyId::fromString($command->companyId()));
     }
 }

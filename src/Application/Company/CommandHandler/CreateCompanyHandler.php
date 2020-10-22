@@ -7,7 +7,6 @@ use App\Application\Company\Command\CreateCompanyCommand;
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Repository\CompanyRepository;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class CreateCompanyHandler
@@ -20,15 +19,9 @@ class CreateCompanyHandler
      */
     private $companyRepository;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    public function __construct(CompanyRepository $companyRepository, LoggerInterface $logger)
+    public function __construct(CompanyRepository $companyRepository)
     {
         $this->companyRepository = $companyRepository;
-        $this->logger = $logger;
     }
 
     public function handle(CreateCompanyCommand $command): ?string
