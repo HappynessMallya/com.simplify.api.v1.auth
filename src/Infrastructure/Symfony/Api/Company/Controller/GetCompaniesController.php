@@ -22,7 +22,7 @@ class GetCompaniesController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function GetCompaniesAction(Request $request)
+    public function getCompaniesAction(Request $request)
     {
         $command = new GetCompaniesQuery();
         $command->setPage((int) $request->get('page') ?? 0);

@@ -24,7 +24,7 @@ class UpdateCompanyController extends BaseController
      * @param string $companyId
      * @return JsonResponse
      */
-    public function UpdateCompanyAction(Request $request, string $companyId)
+    public function updateCompanyAction(Request $request, string $companyId)
     {
         $updated = false;
         $command = new UpdateCompanyCommand();

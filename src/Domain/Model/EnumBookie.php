@@ -440,6 +440,6 @@ abstract class EnumBookie
 
     final private static function isPersonalizedEnum(): bool
     {
-        return method_exists(get_called_class(),'personalized');
+        return method_exists(get_called_class(), 'personalized');
     }
 }

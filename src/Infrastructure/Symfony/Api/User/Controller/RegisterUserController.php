@@ -23,7 +23,7 @@ class RegisterUserController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function RegisterUserAction(Request $request)
+    public function registerUserAction(Request $request)
     {
         $registerUserCommand = new RegisterUserCommand();
         $form = $this->createForm(RegisterUserType::class, $registerUserCommand);

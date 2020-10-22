@@ -21,7 +21,7 @@ class GetCompanyByIdController extends BaseController
      * @param string $companyId
      * @return JsonResponse
      */
-    public function GetCompaniesAction(string $companyId)
+    public function getCompaniesAction(string $companyId)
     {
         $command = new GetCompanyByIdQuery($companyId);
         $company =  $this->commandBus->handle($command);

@@ -21,7 +21,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserEntity extends User implements UserInterface
 {
-    public function __construct (
+    public function __construct(
         UserId $userId,
         CompanyId $companyId,
         string $email,
@@ -177,7 +177,9 @@ class UserEntity extends User implements UserInterface
     }
 
     public function eraseCredentials()
-    {}
+    {
+        //
+    }
 
     /**
      * @return string

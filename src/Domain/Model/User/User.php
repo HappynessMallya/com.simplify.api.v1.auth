@@ -87,7 +87,7 @@ class User
         $this->roles = [];
     }
 
-    public static function create (
+    public static function create(
         UserId $userId,
         CompanyId $companyId,
         string $email,
@@ -281,4 +281,3 @@ class User
         return $this->passwordRequestedAt;
     }
 }
-

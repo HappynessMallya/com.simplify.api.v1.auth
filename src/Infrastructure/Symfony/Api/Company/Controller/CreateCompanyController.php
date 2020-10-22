@@ -23,7 +23,7 @@ class CreateCompanyController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function CreateCompanyAction(Request $request)
+    public function createCompanyAction(Request $request)
     {
         $command = new CreateCompanyCommand();
         $form = $this->createForm(CreateCompanyType::class, $command);

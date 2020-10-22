@@ -45,7 +45,7 @@ final class Company
      * @param DateTime $createdAt
      * @return Company
      */
-    public static function create (
+    public static function create(
         CompanyId $companyId,
         string $name,
         ?string $address,
@@ -118,4 +118,3 @@ final class Company
         }
     }
 }
-

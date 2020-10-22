@@ -49,7 +49,7 @@ class RegisterUserHandler
         $userRole = !empty($command->getRole()) ? UserRole::byName($command->getRole()) : UserRole::USER();
 
         try {
-            $user = User::create (
+            $user = User::create(
                 UserId::generate(),
                 CompanyId::fromString($command->getCompanyId()),
                 $command->getEmail(),

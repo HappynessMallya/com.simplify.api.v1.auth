@@ -87,7 +87,7 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
             return null;
         }
 
-        return new UserEntity (
+        return new UserEntity(
             $user->userId(),
             $user->companyId(),
             $user->email(),
@@ -166,7 +166,7 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
                 return null;
             }
 
-            return UserEntity::create (
+            return UserEntity::create(
                 $user->userId(),
                 $user->companyId(),
                 $user->email(),
@@ -193,6 +193,4 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
         $user->login();
         $this->save($user);
     }
-
-
 }
