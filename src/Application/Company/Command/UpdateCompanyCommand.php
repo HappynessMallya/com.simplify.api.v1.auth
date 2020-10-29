@@ -20,6 +20,11 @@ final class UpdateCompanyCommand
     protected $name;
 
     /**
+     * @var string
+     */
+    protected $tin;
+
+    /**
      * @var string|null
      */
     protected $address;
@@ -28,6 +33,11 @@ final class UpdateCompanyCommand
      * @var string|null
      */
     protected $email;
+
+    /**
+     * @var array|null
+     */
+    protected $traRegistration;
 
     /**
      * @return string
@@ -62,6 +72,22 @@ final class UpdateCompanyCommand
     }
 
     /**
+     * @return string
+     */
+    public function getTin(): ?string
+    {
+        return $this->tin;
+    }
+
+    /**
+     * @param string $tin
+     */
+    public function setTin(string $tin): void
+    {
+        $this->tin = $tin;
+    }
+
+    /**
      * @return string|null
      */
     public function getAddress(): ?string
@@ -91,5 +117,21 @@ final class UpdateCompanyCommand
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getTraRegistration(): ?array
+    {
+        return $this->traRegistration;
+    }
+
+    /**
+     * @param string|null $traRegistration
+     */
+    public function setTraRegistration(?string $traRegistration): void
+    {
+        $this->traRegistration = json_decode($traRegistration, true);
     }
 }

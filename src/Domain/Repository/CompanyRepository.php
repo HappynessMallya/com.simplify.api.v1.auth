@@ -14,4 +14,6 @@ interface CompanyRepository
     public function save(Company $company): bool;
 
     public function getAll(int $page, int $pageSize, ?string $orderBy): array;
+
+    public function findOneBy(array $criteria): ?Company;
 }

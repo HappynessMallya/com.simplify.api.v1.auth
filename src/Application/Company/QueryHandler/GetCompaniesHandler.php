@@ -37,8 +37,10 @@ class GetCompaniesHandler
             $companiesData[] = [
                 'companyId' => $company['companyId']->toString(),
                 'name' => $company['name'],
+                'tin' => $company['tin'],
                 'address' => $company['address'],
                 'email' => $company['email'],
+                'traRegistration' => $company['traRegistration'],
             ];
         }
 

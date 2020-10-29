@@ -24,6 +24,8 @@ class GetCompaniesController extends BaseController
      */
     public function getCompaniesAction(Request $request)
     {
+        $companies = null;
+
         try {
             $command = new GetCompaniesQuery();
             $command->setPage((int)$request->get('page') ?? 0);

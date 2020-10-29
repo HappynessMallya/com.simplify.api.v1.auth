@@ -23,6 +23,11 @@ final class Company
     private $name;
 
     /**
+     * @var int
+     */
+    private $tin;
+
+    /**
      * @var string
      */
     private $address;
@@ -33,6 +38,11 @@ final class Company
     private $email;
 
     /**
+     * @var array
+     */
+    private $traRegistration;
+
+    /**
      * @var DateTime
      */
     private $createdAt;
@@ -40,6 +50,7 @@ final class Company
     /**
      * @param CompanyId $companyId
      * @param string $name
+     * @param int $tin
      * @param string|null $address
      * @param string|null $email
      * @param DateTime $createdAt
@@ -48,6 +59,7 @@ final class Company
     public static function create(
         CompanyId $companyId,
         string $name,
+        int $tin,
         ?string $address,
         ?string $email,
         DateTime $createdAt
@@ -55,6 +67,7 @@ final class Company
         $self = new self();
         $self->companyId = $companyId;
         $self->name = $name;
+        $self->tin = $tin;
         $self->address = $address;
         $self->email = $email;
         $self->createdAt = $createdAt;
@@ -76,6 +89,14 @@ final class Company
     public function name(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return int
+     */
+    public function tin(): int
+    {
+        return (int) $this->tin;
     }
 
     /**
@@ -103,13 +124,35 @@ final class Company
     }
 
     /**
+     * @param array $data
+     */
+    public function updateTraRegistration(array $data)
+    {
+        $this->traRegistration = $data;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function traRegistration(): ?array
+    {
+        return $this->traRegistration;
+    }
+
+    /**
      * @param array $toUpdate
      */
     public function update(array $toUpdate): void
     {
+        $notNull = ['companyId', 'name', 'tin'];
+
         foreach ($toUpdate as $attribute => $newValue) {
             if (property_exists(self::class, $attribute)) {
                 if (empty($newValue)) {
+                    if (in_array($attribute, $notNull)) {
+                        continue;
+                    }
+
                     $this->{$attribute} = null;
                 } else {
                     $this->{$attribute} = $newValue;

@@ -5,7 +5,10 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
+use App\Domain\Model\User\User;
+use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\CompanyRepository;
+use App\Infrastructure\Symfony\Security\UserEntity;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -71,5 +74,14 @@ class DoctrineCompanyRepository implements CompanyRepository
             'pages' => $pagesCount,
             'result' => $companies,
         ];
+    }
+
+    public function findOneBy(array $criteria): ?Company
+    {
+        if (empty($criteria)) {
+            return null;
+        }
+
+        return $this->repository->findOneBy($criteria);
     }
 }

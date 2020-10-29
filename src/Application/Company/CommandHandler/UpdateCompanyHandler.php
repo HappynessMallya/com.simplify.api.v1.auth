@@ -36,7 +36,9 @@ class UpdateCompanyHandler
         $company->update([
             'name' => $command->getName(),
             'email' => $command->getEmail(),
+            'tin' => $command->getTin(),
             'address' => $command->getAddress(),
+            'traRegistration' => $command->getTraRegistration(),
         ]);
 
         return $this->companyRepository->save($company);
