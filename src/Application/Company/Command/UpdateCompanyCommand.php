@@ -35,6 +35,16 @@ final class UpdateCompanyCommand
     protected $email;
 
     /**
+     * @var string|null
+     */
+    protected $phone;
+
+    /**
+     * @var bool|null
+     */
+    protected $enable;
+
+    /**
      * @var array|null
      */
     protected $traRegistration;
@@ -120,11 +130,43 @@ final class UpdateCompanyCommand
     }
 
     /**
+     * @return string|null
+     */
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param string|null $phone
+     */
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
+    }
+
+    /**
      * @return array|null
      */
     public function getTraRegistration(): ?array
     {
         return $this->traRegistration;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getEnable(): ?bool
+    {
+        return $this->enable ?? false;
+    }
+
+    /**
+     * @param bool|null $enable
+     */
+    public function setEnable(?bool $enable): void
+    {
+        $this->enable = $enable ?? false;
     }
 
     /**

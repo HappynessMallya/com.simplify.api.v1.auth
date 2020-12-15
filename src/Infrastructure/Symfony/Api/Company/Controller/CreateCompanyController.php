@@ -39,13 +39,13 @@ class CreateCompanyController extends BaseController
 
             $companyId = $this->commandBus->handle($command);
 
-            if (empty($companyId)) {
-                return $this->createApiResponse(['errors' => 'No created'], Response::HTTP_FORBIDDEN);
+            if (!empty($companyId)) {
+                return $this->createApiResponse(['company_id' => $companyId], Response::HTTP_CREATED);
             }
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage(), [__METHOD__]);
         }
 
-        return $this->createApiResponse(['company_id' => $companyId], Response::HTTP_CREATED);
+        return $this->createApiResponse(['errors' => 'No created'], Response::HTTP_FORBIDDEN);
     }
 }

@@ -29,8 +29,10 @@ class CreateCompanyHandler
         $company = Company::create(
             CompanyId::generate(),
             $command->getName(),
+            (int) $command->getTin(),
             $command->getAddress(),
             $command->getEmail(),
+            $command->getPhone(),
             new \DateTime()
         );
 

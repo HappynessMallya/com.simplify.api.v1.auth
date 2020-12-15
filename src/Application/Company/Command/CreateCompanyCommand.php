@@ -15,6 +15,11 @@ final class CreateCompanyCommand
     protected $name;
 
     /**
+     * @var string
+     */
+    protected $tin;
+
+    /**
      * @var string|null
      */
     protected $address;
@@ -23,6 +28,11 @@ final class CreateCompanyCommand
      * @var string|null
      */
     protected $email;
+
+    /**
+     * @var string|null
+     */
+    protected $phone;
 
     /**
      * @return string
@@ -38,6 +48,22 @@ final class CreateCompanyCommand
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTin(): string
+    {
+        return $this->tin;
+    }
+
+    /**
+     * @param string $tin
+     */
+    public function setTin(string $tin): void
+    {
+        $this->tin = $tin;
     }
 
     /**
@@ -70,5 +96,21 @@ final class CreateCompanyCommand
     public function setEmail(string $email): void
     {
         $this->email = $email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param string|null $phone
+     */
+    public function setPhone(?string $phone): void
+    {
+        $this->phone = $phone;
     }
 }

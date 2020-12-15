@@ -38,9 +38,19 @@ final class Company
     private $email;
 
     /**
+     * @var string
+     */
+    private $phone;
+
+    /**
      * @var array
      */
     private $traRegistration;
+
+    /**
+     * @var bool
+     */
+    private $enable;
 
     /**
      * @var DateTime
@@ -53,6 +63,7 @@ final class Company
      * @param int $tin
      * @param string|null $address
      * @param string|null $email
+     * @param string|null $phone
      * @param DateTime $createdAt
      * @return Company
      */
@@ -62,6 +73,7 @@ final class Company
         int $tin,
         ?string $address,
         ?string $email,
+        ?string $phone,
         DateTime $createdAt
     ): Company {
         $self = new self();
@@ -70,6 +82,8 @@ final class Company
         $self->tin = $tin;
         $self->address = $address;
         $self->email = $email;
+        $self->phone = $phone;
+        $self->enable = true;
         $self->createdAt = $createdAt;
 
         return $self;
@@ -116,6 +130,14 @@ final class Company
     }
 
     /**
+     * @return string
+     */
+    public function phone(): ?string
+    {
+        return $this->phone;
+    }
+
+    /**
      * @return DateTime
      */
     public function createdAt(): DateTime
@@ -137,6 +159,19 @@ final class Company
     public function traRegistration(): ?array
     {
         return $this->traRegistration;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnable(): bool
+    {
+        return $this->enable ?? false;
+    }
+
+    public function disable(): void
+    {
+        $this->enable = false;
     }
 
     /**

@@ -22,6 +22,7 @@ final class CreateCompanyType extends AbstractType
             ->add('name', TextType::class, ['constraints' => new NotBlank()])
             ->add('tin', TextType::class, ['constraints' => new NotBlank()])
             ->add('email', TextType::class, ['constraints' => new Email()])
+            ->add('phone', TextType::class)
             ->add('address', TextType::class);
     }
 

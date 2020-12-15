@@ -45,6 +45,7 @@ class AddUserDataToPayloadWhenLoginIsSuccess
         }
 
         $company = $this->companyRepository->get($user->companyId());
+        $companyRegistration = $company->traRegistration();
 
         $data['data'] = [
             'roles' => $user->roles(),
@@ -53,6 +54,7 @@ class AddUserDataToPayloadWhenLoginIsSuccess
             'company' => [
                 'id' => $company->companyId()->toString(),
                 'name' => $company->name(),
+                'vrn' => $companyRegistration['VRN'] !== 'NOT REGISTERED',
             ],
         ];
 

@@ -34,13 +34,19 @@ class GetCompaniesHandler
 
         /** @var Company $company */
         foreach ($companies['result'] as $company) {
+            $traRegistration = $company['traRegistration'];
+            unset($traRegistration['TAXCODES']);
+            unset($traRegistration['USERNAME']);
+            unset($traRegistration['PASSWORD']);
+
             $companiesData[] = [
                 'companyId' => $company['companyId']->toString(),
                 'name' => $company['name'],
                 'tin' => $company['tin'],
                 'address' => $company['address'],
+                'phone' => $company['phone'],
                 'email' => $company['email'],
-                'traRegistration' => $company['traRegistration'],
+                'traRegistration' => $traRegistration,
             ];
         }
 

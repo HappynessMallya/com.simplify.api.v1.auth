@@ -33,11 +33,18 @@ class UpdateCompanyHandler
             throw new Exception('No Company found by Id ' . $companyId, 404);
         }
 
+        if ($command->getEnable() === false) {
+            $company->disable();
+
+            return $this->companyRepository->save($company);
+        }
+
         $company->update([
             'name' => $command->getName(),
             'email' => $command->getEmail(),
             'tin' => $command->getTin(),
             'address' => $command->getAddress(),
+            'phone' => $command->getPhone(),
             'traRegistration' => $command->getTraRegistration(),
         ]);
 
