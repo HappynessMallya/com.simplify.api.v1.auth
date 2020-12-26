@@ -158,7 +158,7 @@ final class UpdateCompanyCommand
      */
     public function getEnable(): ?bool
     {
-        return $this->enable ?? false;
+        return $this->enable ?? true;
     }
 
     /**
@@ -166,7 +166,7 @@ final class UpdateCompanyCommand
      */
     public function setEnable(?bool $enable): void
     {
-        $this->enable = $enable ?? false;
+        $this->enable = $enable ?? true;
     }
 
     /**
