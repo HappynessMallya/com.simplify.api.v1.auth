@@ -10,7 +10,7 @@ use DateTime;
  * Class Company
  * @package App\Domain\Model\Company
  */
-final class Company
+class Company
 {
     /**
      * @var CompanyId
