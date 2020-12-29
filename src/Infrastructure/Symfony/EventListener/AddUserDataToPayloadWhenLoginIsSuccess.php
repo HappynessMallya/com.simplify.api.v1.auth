@@ -44,8 +44,12 @@ class AddUserDataToPayloadWhenLoginIsSuccess
             $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
         }
 
+        $companyRegistration['VRN'] = 'NOT REGISTERED';
         $company = $this->companyRepository->get($user->companyId());
-        $companyRegistration = $company->traRegistration();
+
+        if (!empty($company) && !empty($company->traRegistration())) {
+            $companyRegistration = $company->traRegistration();
+        }
 
         $data['data'] = [
             'roles' => $user->roles(),
