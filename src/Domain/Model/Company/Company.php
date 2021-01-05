@@ -179,7 +179,7 @@ class Company
      */
     public function update(array $toUpdate): void
     {
-        $notNull = ['companyId', 'name', 'tin'];
+        $notNull = ['companyId', 'name', 'tin', 'traRegistration'];
 
         foreach ($toUpdate as $attribute => $newValue) {
             if (property_exists(self::class, $attribute)) {
