@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Symfony\EventListener;
 
 use App\Domain\Model\User\User;
+use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use App\Infrastructure\Symfony\Security\UserEntity;
@@ -61,6 +62,10 @@ class AddUserDataToPayloadWhenLoginIsSuccess
                 'vrn' => $companyRegistration['VRN'] !== 'NOT REGISTERED',
             ],
         ];
+
+        if ($user->getStatus()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
+            $data['data']['change_password'] = 1;
+        }
 
         $event->setData($data);
     }
