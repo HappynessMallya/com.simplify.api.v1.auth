@@ -77,7 +77,7 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
      */
     public function findOneBy(array $criteria): ?UserEntity
     {
-        $criteria['status'] = UserStatus::ACTIVE();
+        $criteria['status'] = [UserStatus::ACTIVE(), UserStatus::CHANGE_PASSWORD()];
         $criteria['enabled'] = true;
 
         /** @var User $user */
@@ -158,10 +158,11 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
             $user = $this->em->createQuery("
                     SELECT u FROM App\Model\User\User u
                     WHERE (u.email = :uname OR u.username = :uname)
-                    AND u.status = 'ACTIVE' AND u.enabled = 1
+                    AND (u.status = 'ACTIVE' OR u.status = 'CHANGE_PASSWORD') AND u.enabled = 1
                 ")
                 ->setParameter('uname', $username)
                 ->getOneOrNullResult();
+
             if (empty($user)) {
                 return null;
             }

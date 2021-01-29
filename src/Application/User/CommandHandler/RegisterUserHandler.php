@@ -56,7 +56,7 @@ class RegisterUserHandler
                 $command->getUsername(),
                 $command->getPassword(),
                 null,
-                UserStatus::ACTIVE(),
+                UserStatus::CHANGE_PASSWORD(),
                 $userRole
             );
 

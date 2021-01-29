@@ -39,7 +39,7 @@ class UserEntity extends User implements UserInterface
         $this->password = $password;
         $this->salt = $salt;
         $this->roles = $roles;
-        $this->status = UserStatus::ACTIVE();
+        $this->status = $userStatus ?? UserStatus::ACTIVE();
     }
 
     /**

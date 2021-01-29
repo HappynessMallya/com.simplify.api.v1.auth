@@ -6,6 +6,7 @@ namespace App\Domain\Repository;
 
 use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserId;
+use App\Infrastructure\Symfony\Security\UserEntity;
 
 interface UserRepository
 {
@@ -16,4 +17,6 @@ interface UserRepository
     public function remove(User $user): bool;
 
     public function login(UserId $userId): void;
+
+    public function findOneBy(array $criteria): ?UserEntity;
 }
