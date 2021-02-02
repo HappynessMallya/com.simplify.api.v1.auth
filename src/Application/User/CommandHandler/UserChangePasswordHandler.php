@@ -42,7 +42,7 @@ class UserChangePasswordHandler
         $entity->setPassword($command->getPassword());
         $passwordEncoded = $this->passwordEncoder->hashPassword($entity);
         $user->setPassword($passwordEncoded);
-        $user->changeStatus(UserStatus::ACTIVE());
+        $user->changeStatus(UserStatus::byValue($command->getStatus()));
 
         return $this->userRepository->save($user);
     }

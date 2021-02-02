@@ -32,6 +32,11 @@ security:
             pattern:  ^/api/v1/user/register
             stateless: true
             anonymous: true
+        changepassword:
+            pattern: ^/api/v1/user/change-password
+            stateless: true
+            anonymous: true
+            methods: [PUT]
         refresh:
             pattern:  ^/api/v1/token/refresh
             stateless: true

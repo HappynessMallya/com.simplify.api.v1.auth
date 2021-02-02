@@ -30,6 +30,11 @@ final class UserChangePasswordCommand
     private $password;
 
     /**
+     * @var string
+     */
+    private $status;
+
+    /**
      * @return string
      */
     public function getUsername(): string
@@ -91,5 +96,25 @@ final class UserChangePasswordCommand
     public function setPassword(string $password): void
     {
         $this->password = $password;
+    }
+
+    /**
+     * @param string $status
+     */
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        if (empty($this->status)) {
+            $this->status = 'ACTIVE';
+        }
+
+        return $this->status;
     }
 }
