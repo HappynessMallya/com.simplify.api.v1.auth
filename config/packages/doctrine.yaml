@@ -1,0 +1,30 @@
+doctrine:
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+        types:
+            UserId:
+                class: App\Infrastructure\Symfony\Doctrine\Type\DoctrineUserId
+            UserStatus:
+                class: App\Infrastructure\Symfony\Doctrine\Type\DoctrineUserStatus
+            CompanyId:
+                class: App\Infrastructure\Symfony\Doctrine\Type\DoctrineCompanyId
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        mappings:
+            App\Domain\Model\User:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Infrastructure/Symfony/Doctrine/Mapping/User'
+                prefix: App\Domain\Model\User
+            Company:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Infrastructure/Symfony/Doctrine/Mapping/Company'
+                prefix: App\Domain\Model\Company
+            UserEntity:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/Infrastructure/Symfony/Security'
+                prefix: App\Infrastructure\Symfony\Security
