@@ -42,7 +42,7 @@ class AddUserDataToPayloadWhenLoginIsSuccess
         if ($user instanceof UserEntity || $user instanceof User) {
             $this->userRepository->login($user->userId());
         } else {
-            $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
+            $user = $this->userRepository->findOneBy(['username' => $user->getUsername()]);
         }
 
         $companyRegistration['VRN'] = 'NOT REGISTERED';

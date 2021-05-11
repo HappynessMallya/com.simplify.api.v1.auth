@@ -42,7 +42,12 @@ class JWTCreatedListener
         }
 
         if (!$user instanceof UserEntity && !$user instanceof User) {
-            $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
+            $jwtUser = $user;
+            $user = $this->userRepository->findOneBy(['username' => $jwtUser->getUsername()]);
+
+            if (empty($user)) {
+                $user = $this->userRepository->findOneBy(['email' => $jwtUser->getUsername()]);
+            }
         }
 
         $payload['companyId'] = $user->getCompanyId();
