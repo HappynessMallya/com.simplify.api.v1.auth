@@ -46,6 +46,11 @@ security:
             stateless: true
             anonymous: true
             methods: ['POST']
+        company_gettin:
+            pattern:   ^/api/v1/company/
+            stateless: true
+            anonymous: true
+            methods: ['GET']
         api:
             pattern:   ^/api/v1
             stateless: true
