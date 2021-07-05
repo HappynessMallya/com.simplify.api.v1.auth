@@ -1,0 +1,109 @@
+nelmio_api_doc:
+    areas:
+        path_patterns: # an array of regexps
+            - ^/api(?!/doc$)
+        host_patterns:
+            - ^api\.
+    documentation:
+        info:
+            title: Simplify auth service
+            description: This is the secutiry auth service for Simplify
+            version: 1.1.0
+        schemes:
+            - https
+        host: "127.0.0.1:2000"
+        basePath: "/api/v1"
+        tags:
+            - name: "User"
+              description: "User account"
+        paths:
+            /account/login:
+                post:
+                    summary: User login
+                    tags:
+                        - User
+                    consumes:
+                        - application/json
+                    produces:
+                        - application/json
+                    parameters:
+                        - in: body
+                          name: body
+                          schema:
+                              type: object
+                              required:
+                                  - "username"
+                                  - "password"
+                              properties:
+                                  username:
+                                      type: string
+                                      format: email
+                                  password:
+                                      type: string
+                    responses:
+                        '200':
+                            description: Success
+                        '401':
+                            description: Invalid Credentials
+            /user/register:
+                post:
+                    summary: Create a new user
+                    description: Register a new user
+                    tags:
+                        - User
+                    consumes:
+                        - application/json
+                    produces:
+                        - application/json
+                    parameters:
+                        - in: body
+                          name: body
+                          schema:
+                              $ref: "#/definitions/User"
+                    responses:
+                        '201':
+                            description: User successfully registered
+                            examples: { "success": true }
+                        '404':
+                            description: Invalid request data
+            /user/token_refresh:
+                post:
+                    tags:
+                        - User
+                    summary: Refresh user token
+                    description: Refresh user token
+                    consumes:
+                        - application/json
+                    produces:
+                        - application/json
+                    responses:
+                        '200':
+                            description: Success
+        definitions:
+            User:
+                type: object
+                required:
+                    - "username"
+                    - "email"
+                    - "password"
+                    - "companyId"
+                properties:
+                    username:
+                        type: string
+                    email:
+                        type: string
+                        format: email
+                        description: "will be used as login user"
+                    password:
+                        type: string
+                    companyId:
+                        type: string
+                        format: uuid
+        components:
+            securitySchemes:
+                bearerAuth:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+        security:
+            - bearerAuth: [ ]

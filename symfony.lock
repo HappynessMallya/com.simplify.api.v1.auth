@@ -29,6 +29,9 @@
     "doctrine/dbal": {
         "version": "2.11.1"
     },
+    "doctrine/deprecations": {
+        "version": "v0.5.3"
+    },
     "doctrine/doctrine-bundle": {
         "version": "2.0",
         "recipe": {
@@ -84,6 +87,12 @@
     "doctrine/sql-formatter": {
         "version": "1.1.1"
     },
+    "exsyst/swagger": {
+        "version": "v0.4.2"
+    },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.5"
+    },
     "gesdinet/jwt-refresh-token-bundle": {
         "version": "v0.9.1"
     },
@@ -95,6 +104,9 @@
     },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.1.1"
+    },
+    "lcobucci/clock": {
+        "version": "2.0.0"
     },
     "lcobucci/jwt": {
         "version": "3.3.3"
@@ -138,6 +150,19 @@
     "namshi/jose": {
         "version": "7.2.3"
     },
+    "nelmio/api-doc-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "c8e0c38e1a280ab9e37587a8fa32b251d5bc1c94"
+        },
+        "files": [
+            "config/packages/nelmio_api_doc.yaml",
+            "config/routes/nelmio_api_doc.yaml"
+        ]
+    },
     "nelmio/cors-bundle": {
         "version": "1.5",
         "recipe": {
@@ -159,6 +184,15 @@
     "php": {
         "version": "7.4"
     },
+    "phpdocumentor/reflection-common": {
+        "version": "2.2.0"
+    },
+    "phpdocumentor/reflection-docblock": {
+        "version": "5.2.2"
+    },
+    "phpdocumentor/type-resolver": {
+        "version": "1.4.0"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -176,6 +210,21 @@
     },
     "ramsey/uuid": {
         "version": "4.1.1"
+    },
+    "sensio/framework-extra-bundle": {
+        "version": "5.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.2",
+            "ref": "fb7e19da7f013d0d422fa9bce16f5c510e27609b"
+        },
+        "files": [
+            "config/packages/sensio_framework_extra.yaml"
+        ]
+    },
+    "symfony/asset": {
+        "version": "v5.1.11"
     },
     "symfony/cache": {
         "version": "v5.1.6"
@@ -382,6 +431,23 @@
     "symfony/translation-contracts": {
         "version": "v2.3.0"
     },
+    "symfony/twig-bridge": {
+        "version": "v5.1.11"
+    },
+    "symfony/twig-bundle": {
+        "version": "5.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "5.0",
+            "ref": "fab9149bbaa4d5eca054ed93f9e1b66cc500895d"
+        },
+        "files": [
+            "config/packages/test/twig.yaml",
+            "config/packages/twig.yaml",
+            "templates/base.html.twig"
+        ]
+    },
     "symfony/validator": {
         "version": "4.3",
         "recipe": {
@@ -404,7 +470,16 @@
     "symfony/yaml": {
         "version": "v5.1.6"
     },
+    "twig/twig": {
+        "version": "v3.3.2"
+    },
     "webimpress/safe-writer": {
         "version": "2.1.0"
+    },
+    "webmozart/assert": {
+        "version": "1.10.0"
+    },
+    "zircote/swagger-php": {
+        "version": "3.2.3"
     }
 }
