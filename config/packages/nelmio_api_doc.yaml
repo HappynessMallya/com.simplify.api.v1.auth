@@ -45,27 +45,6 @@ nelmio_api_doc:
                             description: Success
                         '401':
                             description: Invalid Credentials
-            /user/register:
-                post:
-                    summary: Create a new user
-                    description: Register a new user
-                    tags:
-                        - User
-                    consumes:
-                        - application/json
-                    produces:
-                        - application/json
-                    parameters:
-                        - in: body
-                          name: body
-                          schema:
-                              $ref: "#/definitions/User"
-                    responses:
-                        '201':
-                            description: User successfully registered
-                            examples: { "success": true }
-                        '404':
-                            description: Invalid request data
             /user/token_refresh:
                 post:
                     tags:
@@ -76,29 +55,20 @@ nelmio_api_doc:
                         - application/json
                     produces:
                         - application/json
+                    parameters:
+                        - in: header
+                          name: Authorization
+                          schema:
+                              type: bearer
+                              format: string
+                          required: true
+                    security:
+                        - bearerAuth: []
                     responses:
                         '200':
                             description: Success
-        definitions:
-            User:
-                type: object
-                required:
-                    - "username"
-                    - "email"
-                    - "password"
-                    - "companyId"
-                properties:
-                    username:
-                        type: string
-                    email:
-                        type: string
-                        format: email
-                        description: "will be used as login user"
-                    password:
-                        type: string
-                    companyId:
-                        type: string
-                        format: uuid
+                        '401':
+                            description: Access token is missing or invalid
         components:
             securitySchemes:
                 bearerAuth:
