@@ -1,0 +1,26 @@
+version: "3.4"
+
+services:
+  nginx:
+    build:
+      args:
+        VERSION: $NGINX_VERSION
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+      target: prod
+    depends_on:
+      - php-fpm
+    ports:
+      - $NGINX_PORT:443
+    restart: always
+  php-fpm:
+    build:
+      args:
+        VERSION: $PHP_VERSION
+      context: .
+      dockerfile: ./docker/php-fpm/Dockerfile
+      target: prod
+    volumes:
+      - .:/app
+    command: sh -c '/usr/bin/supervisord -n -c /etc/supervisord.conf'
+    restart: always

@@ -9,7 +9,6 @@
 /var/
 /vendor/
 .idea/*
-config/**/**.yaml
 ###< symfony/framework-bundle ###
 
 ###> lexik/jwt-authentication-bundle ###
