@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\EventListener;
 
 use App\Domain\Model\User\User;
+use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use App\Infrastructure\Symfony\Security\UserEntity;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
@@ -21,12 +23,19 @@ class JWTCreatedListener
     private $userRepository;
 
     /**
+     * @var CompanyRepository
+     */
+    private $companyRepository;
+
+    /**
      * JWTCreatedListener constructor.
      * @param UserRepository $userRepository
+     * @param CompanyRepository $companyRepository
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, CompanyRepository $companyRepository)
     {
         $this->userRepository = $userRepository;
+        $this->companyRepository = $companyRepository;
     }
 
     /**
@@ -50,8 +59,15 @@ class JWTCreatedListener
             }
         }
 
-        $payload['companyId'] = $user->getCompanyId();
         $payload['username'] = $user->getEmail();
+        $payload['companyId'] = $user->getCompanyId();
+
+        $company = $this->companyRepository->get($user->companyId());
+
+        if (!empty($company) && !empty($company->traRegistration())) {
+            $payload['companyName'] = $company->name();
+            $payload['vrn'] = $company->traRegistration()['VRN'] !== 'NOT REGISTERED';
+        }
 
         $event->setData($payload);
     }
