@@ -17,7 +17,7 @@ nelmio_api_doc:
             - name: "User"
               description: "User account"
         paths:
-            /account/login:
+            /user/login:
                 post:
                     summary: User login
                     tags:
@@ -45,7 +45,7 @@ nelmio_api_doc:
                             description: Success
                         '401':
                             description: Invalid Credentials
-            /user/token_refresh:
+            /user/token/refresh:
                 post:
                     tags:
                         - User
