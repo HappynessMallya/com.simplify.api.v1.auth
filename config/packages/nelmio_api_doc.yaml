@@ -1,0 +1,79 @@
+nelmio_api_doc:
+    areas:
+        path_patterns: # an array of regexps
+            - ^/api(?!/doc$)
+        host_patterns:
+            - ^api\.
+    documentation:
+        info:
+            title: Simplify auth service
+            description: This is the secutiry auth service for Simplify
+            version: 1.1.0
+        schemes:
+            - https
+        host: "127.0.0.1:2000"
+        basePath: "/api/v1"
+        tags:
+            - name: "User"
+              description: "User account"
+        paths:
+            /account/login:
+                post:
+                    summary: User login
+                    tags:
+                        - User
+                    consumes:
+                        - application/json
+                    produces:
+                        - application/json
+                    parameters:
+                        - in: body
+                          name: body
+                          schema:
+                              type: object
+                              required:
+                                  - "username"
+                                  - "password"
+                              properties:
+                                  username:
+                                      type: string
+                                      format: email
+                                  password:
+                                      type: string
+                    responses:
+                        '200':
+                            description: Success
+                        '401':
+                            description: Invalid Credentials
+            /user/token_refresh:
+                post:
+                    tags:
+                        - User
+                    summary: Refresh user token
+                    description: Refresh user token
+                    consumes:
+                        - application/json
+                    produces:
+                        - application/json
+                    parameters:
+                        - in: header
+                          name: Authorization
+                          schema:
+                              type: bearer
+                              format: string
+                          required: true
+                    security:
+                        - bearerAuth: []
+                    responses:
+                        '200':
+                            description: Success
+                        '401':
+                            description: Access token is missing or invalid
+        components:
+            securitySchemes:
+                bearerAuth:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+        security:
+            - bearerAuth: [ ]
