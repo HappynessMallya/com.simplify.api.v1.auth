@@ -21,11 +21,11 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         login:
-            pattern:  ^/api/v1/account/login
+            pattern:  ^/api/v1/user/login
             stateless: true
             anonymous: true
             json_login:
-                check_path: /api/v1/account/login
+                check_path: /api/v1/user/login
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
         register:
@@ -70,7 +70,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api/v1/account/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/user/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/user/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         #- { path: ^/api/v1/company/, roles: IS_ANONYMOUS, allow_if: "'127.0.0.1' == request.getClientIp()" }
