@@ -8,6 +8,8 @@ services:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
       target: prod
+      volumes:
+        - ./public:/app/public
     depends_on:
       - php-fpm
     ports:

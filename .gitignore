@@ -8,9 +8,23 @@
 /public/bundles/
 /var/
 /vendor/
-.idea/*
 ###< symfony/framework-bundle ###
+
+.idea/*
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+###> docker ssl keys
+docker/nginx/ssl/*
+###< docker ssl keys
+
+supervisord.pid
+supervisord.log
+.phpcs-cache
