@@ -1,15 +1,18 @@
 SHELL := /bin/bash
 ## Default development
-env = 'prod'
+env = 'dev'
+
+lint: ## Run the php linter over the code
+	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php ./vendor/bin/phpcs
 
 create-db: ## Create db
 	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console doctrine:database:create
 
 delete-db: ## Delete db
-	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console doctrine:database:drop
+	-@docker-compose --file docker-compose.dev.yaml exec php-fpm php bin/console doctrine:database:drop --force
 
 migration: ## Execute migration
-	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console doctrine:schema:update -force -no-interaction
+	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console doctrine:migration:migrate --no-interaction
 
 up: ## Run local docker containers
 	-@docker-compose --file docker-compose.$(env).yaml up -d
@@ -17,15 +20,20 @@ up: ## Run local docker containers
 build: ## Build local docker images
 	-@docker-compose --file docker-compose.$(env).yaml build --no-cache
 
+unit: ## Execute unit tests
+	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php ./vendor/bin/simple-phpunit tests/Unit/
+
+integration: ## Execute integration tests
+	-@echo 'Run integration test...'
+	-@docker-compose --file docker-compose.dev.yaml exec php-fpm sh -c 'APP_ENV=test php ./vendor/bin/simple-phpunit tests/'
+	-@echo 'Integration test done.'
+
 down: ## Stop and remove containers, networks, images, and volumes
-	-@docker-compose --file docker-compose.$(env).yaml down -v --remove-orphans
+	-@docker-compose --file docker-compose.$(env).yaml down -v --rmi local --remove-orphans
 	-@echo sudo rm -rf var/cache && sudo chmod -R 777 var
 
 ps: ## list local docker containers
 	-@docker-compose --file docker-compose.$(env).yaml ps
-
-stop: ## Stop local docker containers
-	-@docker-compose --file docker-compose.$(env).yaml stop
 
 kill: ## Kill local docker containers
 	-@docker-compose --file docker-compose.$(env).yaml kill

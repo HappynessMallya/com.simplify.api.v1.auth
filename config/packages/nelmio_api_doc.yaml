@@ -9,52 +9,49 @@ nelmio_api_doc:
             title: Simplify auth service
             description: This is the secutiry auth service for Simplify
             version: 1.1.0
-        schemes:
-            - https
-        host: "127.0.0.1:2000"
-        basePath: "/api/v1"
-        tags:
-            - name: "User"
-              description: "User account"
+        servers:
+            - url: /api/v1
         paths:
             /user/login:
                 post:
-                    summary: User login
                     tags:
                         - User
-                    consumes:
-                        - application/json
-                    produces:
-                        - application/json
-                    parameters:
-                        - in: body
-                          name: body
-                          schema:
-                              type: object
-                              required:
-                                  - "username"
-                                  - "password"
-                              properties:
-                                  username:
-                                      type: string
-                                      format: email
-                                  password:
-                                      type: string
+                    description: User Login
+                    operationId: userLogin
+                    requestBody:
+                        description: The user to authenticate in Simplify
+                        required: true
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/UserLoginRequest'
                     responses:
-                        '200':
-                            description: Success
-                        '401':
-                            description: Invalid Credentials
+                        200:
+                            description: Login authenticated
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/UserLoginResponse'
+                        400:
+                            description: Bad Request
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/BadRequest'
+                        401:
+                            $ref: '#/components/responses/UnauthorizedError'
+                        403:
+                            description: Forbidden
+                        default:
+                            description: Unexpected error
             /user/token/refresh:
                 post:
+                    security:
+                        - bearerAuth: [ ]
                     tags:
-                        - User
-                    summary: Refresh user token
-                    description: Refresh user token
-                    consumes:
-                        - application/json
-                    produces:
-                        - application/json
+                        - User Refresh Token
+                    description: User Refresh Token
+                    operationId: userRefreshToken
                     parameters:
                         - in: header
                           name: Authorization
@@ -62,8 +59,6 @@ nelmio_api_doc:
                               type: bearer
                               format: string
                           required: true
-                    security:
-                        - bearerAuth: []
                     responses:
                         '200':
                             description: Success
@@ -75,5 +70,44 @@ nelmio_api_doc:
                     type: http
                     scheme: bearer
                     bearerFormat: JWT
-        security:
-            - bearerAuth: [ ]
+                    description: "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
+            schemas:
+                UserLoginRequest:
+                    type: object
+                    oneOf:
+                        - $ref: '#/components/schemas/User'
+                UserLoginResponse:
+                    type: object
+                    required:
+                        - token
+                        - refresh_token
+                    properties:
+                        token:
+                            type: string
+                        refresh_token:
+                            type: string
+                User:
+                    type: object
+                    required:
+                        - username
+                        - password
+                    properties:
+                        username:
+                            type: string
+                            format: email
+                            maxLength: 200
+                        password:
+                            type: string
+                            maxLength: 200
+                            minLength: 8
+                BadRequest:
+                    type: object
+                    required:
+                        - errors
+                    properties:
+                        errors:
+                            type: object
+            responses:
+                UnauthorizedError:
+                    description: the access token has expired or identity not authenticated
+
