@@ -57,9 +57,6 @@ RUN rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 RUN apk --update add supervisor
 ADD ./docker/php-fpm/supervisord.conf /etc/supervisord.conf
 
-RUN mkdir -p /app/public/excel_sales && \
-    chmod 777 /app/public/excel_sales
-
 ## Cleanup
 RUN apk del dev-deps && \
     composer global remove hirak/prestissimo && \
