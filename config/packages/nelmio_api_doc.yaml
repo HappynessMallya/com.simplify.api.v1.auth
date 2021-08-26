@@ -74,20 +74,6 @@ nelmio_api_doc:
             schemas:
                 UserLoginRequest:
                     type: object
-                    oneOf:
-                        - $ref: '#/components/schemas/User'
-                UserLoginResponse:
-                    type: object
-                    required:
-                        - token
-                        - refresh_token
-                    properties:
-                        token:
-                            type: string
-                        refresh_token:
-                            type: string
-                User:
-                    type: object
                     required:
                         - username
                         - password
@@ -100,6 +86,16 @@ nelmio_api_doc:
                             type: string
                             maxLength: 200
                             minLength: 8
+                UserLoginResponse:
+                    type: object
+                    required:
+                        - token
+                        - refresh_token
+                    properties:
+                        token:
+                            type: string
+                        refresh_token:
+                            type: string
                 BadRequest:
                     type: object
                     required:
