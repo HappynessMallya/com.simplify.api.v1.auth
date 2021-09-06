@@ -46,31 +46,26 @@ nelmio_api_doc:
                             description: Unexpected error
             /user/token/refresh:
                 post:
-                    security:
-                        - bearerAuth: [ ]
                     tags:
                         - User Refresh Token
                     description: User Refresh Token
                     operationId: userRefreshToken
                     parameters:
-                        - in: header
-                          name: Authorization
+                        - in: query
+                          name: refresh_token
                           schema:
-                              type: bearer
                               format: string
                           required: true
                     responses:
                         '200':
-                            description: Success
+                            description: Login authenticated
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/UserLoginResponse'
                         '401':
                             description: Access token is missing or invalid
         components:
-            securitySchemes:
-                bearerAuth:
-                    type: http
-                    scheme: bearer
-                    bearerFormat: JWT
-                    description: "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
             schemas:
                 UserLoginRequest:
                     type: object
