@@ -50,12 +50,13 @@ nelmio_api_doc:
                         - User Refresh Token
                     description: User Refresh Token
                     operationId: userRefreshToken
-                    parameters:
-                        - in: query
-                          name: refresh_token
-                          schema:
-                              format: string
-                          required: true
+                    requestBody:
+                        description: The refresh token to regenerated JWT login for Simplify
+                        required: true
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/UserRefreshTokenRequest'
                     responses:
                         '200':
                             description: Login authenticated
@@ -81,6 +82,14 @@ nelmio_api_doc:
                             type: string
                             maxLength: 200
                             minLength: 8
+                UserRefreshTokenRequest:
+                    type: object
+                    required:
+                        - refresh_token
+                    properties:
+                        refresh_token:
+                            type: string
+                            maxLength: 200
                 UserLoginResponse:
                     type: object
                     required:
