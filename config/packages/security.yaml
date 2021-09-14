@@ -38,7 +38,7 @@ security:
             anonymous: true
             methods: [PUT]
         refresh:
-            pattern:  ^/api/v1/token/refresh
+            pattern:  ^/api/v1/user/token/refresh
             stateless: true
             anonymous: true
         company_registration:
@@ -71,7 +71,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/v1/user/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/user/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/user/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         #- { path: ^/api/v1/company/, roles: IS_ANONYMOUS, allow_if: "'127.0.0.1' == request.getClientIp()" }
         #- { path: ^/api/v1/company, roles: ROLE_USER }

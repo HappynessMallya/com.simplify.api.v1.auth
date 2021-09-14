@@ -46,31 +46,27 @@ nelmio_api_doc:
                             description: Unexpected error
             /user/token/refresh:
                 post:
-                    security:
-                        - bearerAuth: [ ]
                     tags:
                         - User Refresh Token
                     description: User Refresh Token
                     operationId: userRefreshToken
-                    parameters:
-                        - in: header
-                          name: Authorization
-                          schema:
-                              type: bearer
-                              format: string
-                          required: true
+                    requestBody:
+                        description: The refresh token to regenerated JWT login for Simplify
+                        required: true
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/UserRefreshTokenRequest'
                     responses:
                         '200':
-                            description: Success
+                            description: Login authenticated
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/UserLoginResponse'
                         '401':
                             description: Access token is missing or invalid
         components:
-            securitySchemes:
-                bearerAuth:
-                    type: http
-                    scheme: bearer
-                    bearerFormat: JWT
-                    description: "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\""
             schemas:
                 UserLoginRequest:
                     type: object
@@ -86,6 +82,14 @@ nelmio_api_doc:
                             type: string
                             maxLength: 200
                             minLength: 8
+                UserRefreshTokenRequest:
+                    type: object
+                    required:
+                        - refresh_token
+                    properties:
+                        refresh_token:
+                            type: string
+                            maxLength: 200
                 UserLoginResponse:
                     type: object
                     required:

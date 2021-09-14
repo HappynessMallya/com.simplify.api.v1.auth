@@ -30,7 +30,7 @@ integration: ## Execute integration tests
 
 down: ## Stop and remove containers, networks, images, and volumes
 	-@docker-compose --file docker-compose.$(env).yaml down -v --rmi local --remove-orphans
-	-@echo sudo rm -rf var/cache && sudo chmod -R 777 var
+	-@sudo rm -rf var/cache && sudo chmod -R 777 var
 
 ps: ## list local docker containers
 	-@docker-compose --file docker-compose.$(env).yaml ps
