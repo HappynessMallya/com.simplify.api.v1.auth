@@ -7,7 +7,7 @@ nelmio_api_doc:
     documentation:
         info:
             title: Simplify auth service
-            description: This is the secutiry auth service for Simplify
+            description: This is the security auth service for Simplify
             version: 1.1.0
         servers:
             - url: /api/v1
