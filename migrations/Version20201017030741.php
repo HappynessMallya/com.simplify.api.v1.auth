@@ -29,6 +29,8 @@ final class Version20201017030741 extends AbstractMigration
             created_at DATETIME NOT NULL,
             tin VARCHAR(255) NOT NULL,
             tra_registration LONGTEXT DEFAULT NULL COMMENT \'(DC2Type:json_array)\',
+            phone VARCHAR(20) charset utf8 NULL,
+            enable TINYINT(1) DEFAULT 1 NULL,
             UNIQUE INDEX UNIQ_4FBF094F5E237E06 (name),
             UNIQUE INDEX UNIQ_4FBF094FB28C852F (tin),
             PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB'
