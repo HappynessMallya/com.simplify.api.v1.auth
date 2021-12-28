@@ -2,6 +2,9 @@ SHELL := /bin/bash
 ## Default development
 env = 'dev'
 
+deploy: ## Execute command for deploy in production mode
+	-$(SHELL) deploy.sh
+
 lint: ## Run the php linter over the code
 	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php ./vendor/bin/phpcs
 

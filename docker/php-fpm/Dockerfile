@@ -1,7 +1,5 @@
-ARG VERSION
-
 # Dev image
-FROM php:${VERSION}-fpm-alpine AS dev
+FROM php:7.4-fpm-alpine AS dev
 
 ## Install system dependencies
 RUN apk update && \
@@ -50,12 +48,13 @@ WORKDIR /app
 ## Remove dev dependencies
 RUN composer install --no-dev --no-interaction --optimize-autoloader
 
-## Disable xdebug on production
-RUN rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-
 ## supervisor
 RUN apk --update add supervisor
+RUN mkdir -p /var/log/supervisor
 ADD ./docker/php-fpm/supervisord.conf /etc/supervisord.conf
+
+## Disable xdebug on production
+RUN rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 ## Cleanup
 RUN apk del dev-deps && \

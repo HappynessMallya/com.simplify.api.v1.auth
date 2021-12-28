@@ -3,8 +3,6 @@ version: "3.4"
 services:
   nginx:
     build:
-      args:
-        VERSION: $NGINX_VERSION
       context: .
       dockerfile: ./docker/nginx/Dockerfile
       target: dev
@@ -13,11 +11,9 @@ services:
     depends_on:
       - php-fpm
     ports:
-      - $NGINX_PORT:80
+      - ${CONTAINER_PORT}:80
   php-fpm:
     build:
-      args:
-        VERSION: $PHP_VERSION
       context: .
       dockerfile: ./docker/php-fpm/Dockerfile
       target: dev
@@ -25,9 +21,9 @@ services:
       - .:/app
     command: sh -c 'composer install --no-interaction --optimize-autoloader && php-fpm'
   mysql:
-    image: mariadb:$MYSQL_VERSION
+    image: mariadb:${MYSQL_VERSION}
     ports:
       - 3306:3306
     environment:
-      MYSQL_DATABASE: $MYSQL_DATABASE
-      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
