@@ -1,25 +1,18 @@
 version: "3.4"
 
 services:
-  nginx:
-    build:
-      context: .
-      dockerfile: ./docker/nginx/Dockerfile
-      target: dev
-    volumes:
-      - ./public:/app/public
-    depends_on:
-      - php-fpm
-    ports:
-      - ${CONTAINER_PORT}:80
   php-fpm:
     build:
       context: .
-      dockerfile: ./docker/php-fpm/Dockerfile
+      dockerfile: ./docker/Dockerfile
       target: dev
     volumes:
       - .:/app
-    command: sh -c 'composer install --no-interaction --optimize-autoloader && php-fpm'
+    command: sh -c 'composer install --no-interaction --optimize-autoloader && php -S localhost:8000'
+    ports:
+      - ${CONTAINER_PORT}:8000
+    depends_on:
+      - mysql
   mysql:
     image: mariadb:${MYSQL_VERSION}
     ports:
