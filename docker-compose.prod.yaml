@@ -1,28 +1,25 @@
 version: "3.4"
 
 services:
-  nginx:
+  app:
+    container_name: ${CONTAINER_NAME}_app
     build:
-      args:
-        VERSION: $NGINX_VERSION
       context: .
-      dockerfile: ./docker/nginx/Dockerfile
+      dockerfile: docker/Dockerfile
       target: prod
     volumes:
-      - ./public:/app/public
-    depends_on:
-      - php-fpm
+      - app_volume:/app
+      - ./var/log:/app/var/log
+    command: sh -c '/usr/bin/supervisord'
     ports:
-      - $NGINX_PORT:443
+      - ${CONTAINER_PORT}:80
     restart: always
-  php-fpm:
-    build:
-      args:
-        VERSION: $PHP_VERSION
-      context: .
-      dockerfile: ./docker/php-fpm/Dockerfile
-      target: prod
-    volumes:
-      - .:/app
-    command: sh -c '/usr/bin/supervisord -n -c /etc/supervisord.conf'
-    restart: always
+
+volumes:
+  app_volume:
+    name: ${CONTAINER_NAME}_volume
+
+networks:
+  default:
+    name: ${CONTAINER_NETWORK}
+    external: true

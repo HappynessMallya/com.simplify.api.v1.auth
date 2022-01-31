@@ -1,7 +1,5 @@
-ARG VERSION
-
 # Dev image
-FROM php:${VERSION}-fpm-alpine AS dev
+FROM php:7.4-fpm-alpine AS dev
 
 ## Install system dependencies
 RUN apk update && \
@@ -13,10 +11,8 @@ RUN pecl install xdebug && \
     docker-php-ext-enable xdebug && \
     docker-php-ext-install pdo_mysql zip
 
-RUN apk add --no-cache libpng libpng-dev && docker-php-ext-install gd && apk del libpng-dev
-
 ## Copy php default configuration
-COPY ./docker/php-fpm/default.ini /usr/local/etc/php/conf.d/default.ini
+COPY ./docker/default.ini /usr/local/etc/php/conf.d/default.ini
 
 ENV APP_ENV=dev
 WORKDIR /app
@@ -47,17 +43,25 @@ FROM test AS prod
 ENV APP_ENV=prod
 WORKDIR /app
 
+## Nginx
+## Install system dependencies
+RUN apk update && \
+    apk add --no-cache nginx
+
+COPY ./docker/default.conf /etc/nginx/http.d/default.conf
+
 ## Remove dev dependencies
 RUN composer install --no-dev --no-interaction --optimize-autoloader
+
+## supervisor
+RUN apk --update add supervisor
+RUN mkdir -p /var/log/supervisor
+ADD ./docker/supervisor.ini /etc/supervisor.d/nginx-supervisor.ini
 
 ## Disable xdebug on production
 RUN rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-## supervisor
-RUN apk --update add supervisor
-ADD ./docker/php-fpm/supervisord.conf /etc/supervisord.conf
-
 ## Cleanup
 RUN apk del dev-deps && \
     composer global remove hirak/prestissimo && \
-    rm /usr/local/bin/composer
+    rm /usr/local/bin/composer \
