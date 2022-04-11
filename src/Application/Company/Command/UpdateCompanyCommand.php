@@ -13,43 +13,48 @@ final class UpdateCompanyCommand
     /**
      * @var string
      */
-    protected $companyId;
+    private string $companyId;
 
     /**
      * @var string
      */
-    protected $name;
+    private string $name;
 
     /**
      * @var string
      */
-    protected $tin;
+    private string $tin;
 
     /**
      * @var string|null
      */
-    protected $address;
+    private ?string $address;
 
     /**
      * @var string|null
      */
-    protected $email;
+    private ?string $email;
 
     /**
      * @var string|null
      */
-    protected $phone;
+    private ?string $phone;
 
     /**
      * @var bool|null
      */
-    protected $enable;
+    private ?bool $enable;
 
     /**
      * @var array|null
      */
-    protected $traRegistration;
+    private ?array $traRegistration;
 
+    /**
+     * @var string
+     */
+    private string $companyStatus;
+    
     /**
      * @return string
      */
@@ -176,5 +181,21 @@ final class UpdateCompanyCommand
     public function setTraRegistration(?string $traRegistration): void
     {
         $this->traRegistration = json_decode($traRegistration, true);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompanyStatus(): string
+    {
+        return $this->companyStatus;
+    }
+
+    /**
+     * @param string $companyStatus
+     */
+    public function setCompanyStatus(string $companyStatus): void
+    {
+        $this->companyStatus = $companyStatus;
     }
 }

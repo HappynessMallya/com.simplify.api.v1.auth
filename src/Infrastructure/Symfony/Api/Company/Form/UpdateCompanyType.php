@@ -3,11 +3,13 @@
 namespace App\Infrastructure\Symfony\Api\Company\Form;
 
 use App\Application\Company\Command\UpdateCompanyCommand;
+use App\Entity\Enums\CompanyStatus;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Email;
 
 /**
@@ -25,7 +27,14 @@ final class UpdateCompanyType extends AbstractType
             ->add('phone', TextType::class)
             ->add('enable', TextType::class)
             ->add('traRegistration', TextType::class)
-            ->add('address', TextType::class);
+            ->add('address', TextType::class)
+            ->add(
+                'companyStatus',
+                TextType::class,
+                [
+                    'constraints' => new Choice(CompanyStatus::getValues())
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)
