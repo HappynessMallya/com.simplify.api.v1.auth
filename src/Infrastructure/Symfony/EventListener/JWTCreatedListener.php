@@ -67,7 +67,6 @@ class JWTCreatedListener
         if (!empty($company) && !empty($company->traRegistration())) {
             $payload['companyName'] = $company->name();
             $payload['vrn'] = $company->traRegistration()['VRN'] !== 'NOT REGISTERED';
-            $payload['status'] = $company->companyStatus();
         }
 
         $event->setData($payload);

@@ -27,14 +27,7 @@ final class UpdateCompanyType extends AbstractType
             ->add('phone', TextType::class)
             ->add('enable', TextType::class)
             ->add('traRegistration', TextType::class)
-            ->add('address', TextType::class)
-            ->add(
-                'companyStatus',
-                TextType::class,
-                [
-                    'constraints' => new Choice(CompanyStatus::getValues())
-                ]
-            );
+            ->add('address', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)

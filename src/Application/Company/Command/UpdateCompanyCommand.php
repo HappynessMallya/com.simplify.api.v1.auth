@@ -51,11 +51,6 @@ final class UpdateCompanyCommand
     private ?array $traRegistration;
 
     /**
-     * @var string
-     */
-    private string $companyStatus;
-    
-    /**
      * @return string
      */
     public function getCompanyId(): string
@@ -181,21 +176,5 @@ final class UpdateCompanyCommand
     public function setTraRegistration(?string $traRegistration): void
     {
         $this->traRegistration = json_decode($traRegistration, true);
-    }
-
-    /**
-     * @return string
-     */
-    public function getCompanyStatus(): string
-    {
-        return $this->companyStatus;
-    }
-
-    /**
-     * @param string $companyStatus
-     */
-    public function setCompanyStatus(string $companyStatus): void
-    {
-        $this->companyStatus = $companyStatus;
     }
 }

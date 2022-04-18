@@ -49,8 +49,7 @@ class UpdateCompanyHandler
             'tin' => $command->getTin(),
             'address' => $command->getAddress(),
             'phone' => $command->getPhone(),
-            'traRegistration' => $command->getTraRegistration(),
-            'companyStatus' => $command->getCompanyStatus()
+            'traRegistration' => $command->getTraRegistration()
         ]);
 
         return $this->companyRepository->save($company);
