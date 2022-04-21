@@ -100,7 +100,7 @@ class CompanyAuthenticationTraClient implements CompanyAuthenticationTraService
                 true,
                 ''
             );
-        }  catch (
+        } catch (
             ClientExceptionInterface
             | RedirectionExceptionInterface
             | ServerExceptionInterface
