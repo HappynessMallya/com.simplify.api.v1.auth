@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Domain\Services;
 
-use App\Domain\Services\CompanyAuthenticationTraRequest;
-use App\Domain\Services\CompanyAuthenticationTraResponse;
-use App\Domain\Services\CompanyAuthenticationTraService;
+use App\Domain\Services\CompanyStatusOnTraRequest;
+use App\Domain\Services\CompanyStatusOnTraResponse;
+use App\Domain\Services\TraIntegrationService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -15,7 +15,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class CompanyAuthenticationTraClient implements CompanyAuthenticationTraService
+class TraIntegrationClient implements TraIntegrationService
 {
     public const REQUEST_TOKEN_ENDPOINT = 'requestToken';
 
@@ -46,16 +46,16 @@ class CompanyAuthenticationTraClient implements CompanyAuthenticationTraService
     }
 
     /**
-     * @param CompanyAuthenticationTraRequest $request
-     * @return CompanyAuthenticationTraResponse
+     * @param CompanyStatusOnTraRequest $request
+     * @return CompanyStatusOnTraResponse
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function requestTokenAuthenticationTra(
-        CompanyAuthenticationTraRequest $request
-    ): CompanyAuthenticationTraResponse {
+    public function requestCompanyStatusOnTra(
+        CompanyStatusOnTraRequest $request
+    ): CompanyStatusOnTraResponse {
         $payload = [
             'companyId' => $request->getCompanyId(),
             'tin' => $request->getTin(),
@@ -85,7 +85,7 @@ class CompanyAuthenticationTraClient implements CompanyAuthenticationTraService
             );
 
             if ($response->getStatusCode() === Response::HTTP_NO_CONTENT) {
-                $this->logger->debug(
+                $this->logger->info(
                     'Authentication to TRA was successful',
                     [
                         'company_id' => $request->getCompanyId(),
@@ -96,7 +96,7 @@ class CompanyAuthenticationTraClient implements CompanyAuthenticationTraService
 
             $response->getContent();
 
-            return new CompanyAuthenticationTraResponse(
+            return new CompanyStatusOnTraResponse(
                 true,
                 ''
             );
@@ -118,7 +118,7 @@ class CompanyAuthenticationTraClient implements CompanyAuthenticationTraService
                 ]
             );
 
-            return new CompanyAuthenticationTraResponse(
+            return new CompanyStatusOnTraResponse(
                 false,
                 $exception->getResponse()->getContent(false)
             );

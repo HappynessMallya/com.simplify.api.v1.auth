@@ -53,6 +53,6 @@ services:
         public: true
         alias: http_client
 
-    App\Domain\Services\CompanyAuthenticationTraService:
-        alias: 'App\Infrastructure\Domain\Services\CompanyAuthenticationTraClient'
+    App\Domain\Services\TraIntegrationService:
+        alias: 'App\Infrastructure\Domain\Services\TraIntegrationClient'
         public: true

@@ -3,16 +3,16 @@
 namespace App\Tests;
 
 use App\Domain\Model\Company\CompanyId;
-use App\Domain\Services\CompanyAuthenticationTraRequest;
-use App\Domain\Services\CompanyAuthenticationTraService;
+use App\Domain\Services\CompanyStatusOnTraRequest;
+use App\Domain\Services\TraIntegrationService;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class CompanyAuthenticationTraServiceTest extends KernelTestCase
+class TraIntegrationServiceTest extends KernelTestCase
 {
-    public function testRequestTokenTraWhenIsSuccess(): void
+    public function testRequestCompanyStatusToTraWithSuccess(): void
     {
         $kernel = self::bootKernel();
 
@@ -31,21 +31,21 @@ class CompanyAuthenticationTraServiceTest extends KernelTestCase
 
         $kernel->getContainer()->set(HttpClientInterface::class, $mockHttpClient);
 
-        /** @var $companyAuthenticationTraService CompanyAuthenticationTraService */
-        $companyAuthenticationTraService = $kernel->getContainer()->get(CompanyAuthenticationTraService::class);
+        /** @var $traIntegrationService TraIntegrationService */
+        $traIntegrationService = $kernel->getContainer()->get(TraIntegrationService::class);
 
-        $request = new CompanyAuthenticationTraRequest(
+        $request = new CompanyStatusOnTraRequest(
             CompanyId::generate()->toString(),
             '123456789'
         );
 
-        $response = $companyAuthenticationTraService->requestTokenAuthenticationTra($request);
+        $response = $traIntegrationService->requestCompanyStatusOnTra($request);
 
         $this->assertTrue($response->isSuccess());
         $this->assertEquals($expectedResponse, $response->getErrorMessage());
     }
 
-    public function testRequestTokenTraWhenTinIsEmptyError(): void
+    public function testRequestCompanyStatusToTraWhenTinIsEmptyError(): void
     {
         $kernel = self::bootKernel();
 
@@ -68,21 +68,21 @@ class CompanyAuthenticationTraServiceTest extends KernelTestCase
 
         $kernel->getContainer()->set(HttpClientInterface::class, $mockHttpClient);
 
-        /** @var $companyAuthenticationTraService CompanyAuthenticationTraService */
-        $companyAuthenticationTraService = $kernel->getContainer()->get(CompanyAuthenticationTraService::class);
+        /** @var $traIntegrationService TraIntegrationService */
+        $traIntegrationService = $kernel->getContainer()->get(TraIntegrationService::class);
 
-        $request = new CompanyAuthenticationTraRequest(
+        $request = new CompanyStatusOnTraRequest(
             CompanyId::generate()->toString(),
             ''
         );
 
-        $response = $companyAuthenticationTraService->requestTokenAuthenticationTra($request);
+        $response = $traIntegrationService->requestCompanyStatusOnTra($request);
 
         $this->assertFalse($response->isSuccess());
         $this->assertEquals($expectedResponse, $response->getErrorMessage());
     }
 
-    public function testRequestTokenTraWhenCompanyIdIsEmptyError(): void
+    public function testRequestCompanyStatusToTraWhenCompanyIdIsEmptyError(): void
     {
         $kernel = self::bootKernel();
 
@@ -105,21 +105,21 @@ class CompanyAuthenticationTraServiceTest extends KernelTestCase
 
         $kernel->getContainer()->set(HttpClientInterface::class, $mockHttpClient);
 
-        /** @var $companyAuthenticationTraService CompanyAuthenticationTraService */
-        $companyAuthenticationTraService = $kernel->getContainer()->get(CompanyAuthenticationTraService::class);
+        /** @var $traIntegrationService TraIntegrationService */
+        $traIntegrationService = $kernel->getContainer()->get(TraIntegrationService::class);
 
-        $request = new CompanyAuthenticationTraRequest(
+        $request = new CompanyStatusOnTraRequest(
             '',
             '123456789'
         );
 
-        $response = $companyAuthenticationTraService->requestTokenAuthenticationTra($request);
+        $response = $traIntegrationService->requestCompanyStatusOnTra($request);
 
         $this->assertFalse($response->isSuccess());
         $this->assertEquals($expectedResponse, $response->getErrorMessage());
     }
 
-    public function testRequestTokenTraWhenThrowErrors(): void
+    public function testRequestCompanyStatusToTraWhenThrowErrors(): void
     {
         $kernel = self::bootKernel();
 
@@ -138,15 +138,15 @@ class CompanyAuthenticationTraServiceTest extends KernelTestCase
 
         $kernel->getContainer()->set(HttpClientInterface::class, $mockHttpClient);
 
-        /** @var $companyAuthenticationTraService CompanyAuthenticationTraService */
-        $companyAuthenticationTraService = $kernel->getContainer()->get(CompanyAuthenticationTraService::class);
+        /** @var $traIntegrationService TraIntegrationService */
+        $traIntegrationService = $kernel->getContainer()->get(TraIntegrationService::class);
 
-        $request = new CompanyAuthenticationTraRequest(
+        $request = new CompanyStatusOnTraRequest(
             CompanyId::generate()->toString(),
             '123456789'
         );
 
-        $response = $companyAuthenticationTraService->requestTokenAuthenticationTra($request);
+        $response = $traIntegrationService->requestCompanyStatusOnTra($request);
 
         $this->assertFalse($response->isSuccess());
     }
