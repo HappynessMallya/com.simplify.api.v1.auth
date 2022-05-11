@@ -36,10 +36,11 @@ class GetCompanyByIdController extends BaseController
                 'companyId' => $company->companyId()->toString(),
                 'name' => $company->name(),
                 'tin' => $company->tin(),
-                'email' => $company->email(),
-                'address' => $company->address(),
-                'traRegistration' => $company->traRegistration(),
+                'email' => $company->email() ?? '',
+                'address' => $company->address() ?? '',
+                'traRegistration' => $company->traRegistration() ?? '',
                 'createdAt' => $company->createdAt()->format(DATE_ATOM),
+                'status' => $company->companyStatus(),
             ],
             Response::HTTP_OK
         );

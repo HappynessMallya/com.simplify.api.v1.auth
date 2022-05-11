@@ -28,24 +28,24 @@ class Company
     private int $tin;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $address;
+    private ?string $address;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $email;
+    private ?string $email;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private string $phone;
+    private ?string $phone;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private array $traRegistration;
+    private ?array $traRegistration;
 
     /**
      * @var bool
