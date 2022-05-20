@@ -28,7 +28,7 @@ unit: ## Execute unit tests
 
 integration: ## Execute integration tests
 	-@echo 'Run integration test...'
-	-@docker-compose --file docker-compose.dev.yaml exec php-fpm sh -c 'APP_ENV=test php ./vendor/bin/simple-phpunit tests/'
+	-@docker-compose --file docker-compose.dev.yaml exec php-fpm sh -c 'APP_ENV=test php ./vendor/bin/simple-phpunit tests/Integration/'
 	-@echo 'Integration test done.'
 
 down: ## Stop and remove containers, networks, images, and volumes
