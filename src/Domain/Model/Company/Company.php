@@ -211,4 +211,13 @@ class Company
     {
         return $this->companyStatus;
     }
+
+    /**
+     * @param CompanyStatus $companyStatus
+     * @return void
+     */
+    public function updateCompanyStatus(CompanyStatus $companyStatus): void
+    {
+        $this->companyStatus = $companyStatus->getValue();
+    }
 }

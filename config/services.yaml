@@ -56,3 +56,7 @@ services:
     App\Domain\Services\TraIntegrationService:
         alias: 'App\Infrastructure\Domain\Services\TraIntegrationClient'
         public: true
+
+    App\Domain\Repository\CompanyRepository:
+        alias: 'App\Infrastructure\Repository\DoctrineCompanyRepository'
+        public: true
