@@ -48,3 +48,15 @@ services:
         class: App\Infrastructure\Symfony\EventListener\AddUserDataToPayloadWhenLoginIsSuccess
         tags:
             - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+
+    Symfony\Contracts\HttpClient\HttpClientInterface:
+        public: true
+        alias: http_client
+
+    App\Domain\Services\TraIntegrationService:
+        alias: 'App\Infrastructure\Domain\Services\TraIntegrationClient'
+        public: true
+
+    App\Domain\Repository\CompanyRepository:
+        alias: 'App\Infrastructure\Repository\DoctrineCompanyRepository'
+        public: true

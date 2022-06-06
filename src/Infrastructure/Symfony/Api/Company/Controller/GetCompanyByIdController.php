@@ -40,6 +40,7 @@ class GetCompanyByIdController extends BaseController
                 'address' => $company->address(),
                 'traRegistration' => $company->traRegistration(),
                 'createdAt' => $company->createdAt()->format(DATE_ATOM),
+                'status' => $company->companyStatus(),
             ],
             Response::HTTP_OK
         );
