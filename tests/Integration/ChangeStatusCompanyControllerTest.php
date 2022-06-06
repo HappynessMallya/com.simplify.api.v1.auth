@@ -75,7 +75,7 @@ class ChangeStatusCompanyControllerTest extends WebTestCase
         $this->assertEquals(CompanyStatus::STATUS_ACTIVE()->getValue(), $company->companyStatus());
     }
 
-    public function testChangeStatusOfCompanyToBlockWhenStatusIsBlockShouldBeSuccess()
+    public function testChangeStatusOfCompanyToBlockWhenStatusIsBlockShouldBeError()
     {
         $client = static::createClient();
 
@@ -109,7 +109,7 @@ class ChangeStatusCompanyControllerTest extends WebTestCase
         $this->assertEquals($expectedMessage, $client->getResponse()->getContent());
     }
 
-    public function testChangeStatusOfCompanyWhenStatusIsInvalid()
+    public function testChangeStatusOfCompanyWhenStatusIsInvalidShouldBeError()
     {
         $client = static::createClient();
 
