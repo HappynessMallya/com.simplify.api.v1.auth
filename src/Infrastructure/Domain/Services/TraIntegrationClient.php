@@ -85,7 +85,7 @@ class TraIntegrationClient implements TraIntegrationService
             );
 
             if ($response->getStatusCode() === Response::HTTP_NO_CONTENT) {
-                $this->logger->info(
+                $this->logger->debug(
                     'Authentication to TRA was successful',
                     [
                         'company_id' => $request->getCompanyId(),
