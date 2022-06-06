@@ -7,6 +7,7 @@ namespace App\Application\Company\CommandHandler;
 use App\Application\Company\Command\CreateCompanyCommand;
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
+use App\Domain\Model\Company\CompanyStatus;
 use App\Domain\Repository\CompanyRepository;
 
 /**
@@ -18,7 +19,7 @@ class CreateCompanyHandler
     /**
      * @var CompanyRepository
      */
-    private $companyRepository;
+    private CompanyRepository $companyRepository;
 
     public function __construct(CompanyRepository $companyRepository)
     {
@@ -34,7 +35,8 @@ class CreateCompanyHandler
             $command->getAddress(),
             $command->getEmail(),
             $command->getPhone(),
-            new \DateTime()
+            new \DateTime(),
+            CompanyStatus::STATUS_ACTIVE()
         );
 
         if ($this->companyRepository->save($company)) {

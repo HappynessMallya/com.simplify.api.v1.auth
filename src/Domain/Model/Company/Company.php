@@ -15,47 +15,52 @@ class Company
     /**
      * @var CompanyId
      */
-    private $companyId;
+    private CompanyId $companyId;
 
     /**
      * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @var int
      */
-    private $tin;
+    private int $tin;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $address;
+    private ?string $address;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $email;
+    private ?string $email;
 
     /**
-     * @var string
+     * @var string|null
      */
-    private $phone;
+    private ?string $phone;
 
     /**
-     * @var array
+     * @var array|null
      */
-    private $traRegistration;
+    private ?array $traRegistration;
 
     /**
      * @var bool
      */
-    private $enable;
+    private bool $enable;
 
     /**
      * @var DateTime
      */
-    private $createdAt;
+    private DateTime $createdAt;
+
+    /**
+     * @var string
+     */
+    private string $companyStatus;
 
     /**
      * @param CompanyId $companyId
@@ -65,6 +70,7 @@ class Company
      * @param string|null $email
      * @param string|null $phone
      * @param DateTime $createdAt
+     * @param CompanyStatus $companyStatus
      * @return Company
      */
     public static function create(
@@ -74,7 +80,8 @@ class Company
         ?string $address,
         ?string $email,
         ?string $phone,
-        DateTime $createdAt
+        DateTime $createdAt,
+        CompanyStatus $companyStatus
     ): Company {
         $self = new self();
         $self->companyId = $companyId;
@@ -85,6 +92,7 @@ class Company
         $self->phone = $phone;
         $self->enable = true;
         $self->createdAt = $createdAt;
+        $self->companyStatus = $companyStatus->getValue();
 
         return $self;
     }
@@ -194,5 +202,22 @@ class Company
                 }
             }
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function companyStatus(): string
+    {
+        return $this->companyStatus;
+    }
+
+    /**
+     * @param CompanyStatus $companyStatus
+     * @return void
+     */
+    public function updateCompanyStatus(CompanyStatus $companyStatus): void
+    {
+        $this->companyStatus = $companyStatus->getValue();
     }
 }

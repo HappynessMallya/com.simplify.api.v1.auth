@@ -13,42 +13,42 @@ final class UpdateCompanyCommand
     /**
      * @var string
      */
-    protected $companyId;
+    private string $companyId;
 
     /**
      * @var string
      */
-    protected $name;
+    private string $name;
 
     /**
      * @var string
      */
-    protected $tin;
+    private string $tin;
 
     /**
      * @var string|null
      */
-    protected $address;
+    private ?string $address;
 
     /**
      * @var string|null
      */
-    protected $email;
+    private ?string $email;
 
     /**
      * @var string|null
      */
-    protected $phone;
+    private ?string $phone;
 
     /**
      * @var bool|null
      */
-    protected $enable;
+    private ?bool $enable;
 
     /**
      * @var array|null
      */
-    protected $traRegistration;
+    private ?array $traRegistration;
 
     /**
      * @return string

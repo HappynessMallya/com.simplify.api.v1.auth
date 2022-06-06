@@ -17,13 +17,16 @@ class CompanyTraRegistrationHandler
     /**
      * @var CompanyRepository
      */
-    private $companyRepository;
+    private CompanyRepository $companyRepository;
 
     public function __construct(CompanyRepository $companyRepository)
     {
         $this->companyRepository = $companyRepository;
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(CompanyTraRegistrationCommand $command): ?bool
     {
         $company = $this->companyRepository->findOneBy(['tin' => $command->getTin()]);
