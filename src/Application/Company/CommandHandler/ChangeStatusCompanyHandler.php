@@ -40,10 +40,25 @@ class ChangeStatusCompanyHandler
             $this->logger->critical(
                 'Company not found',
                 [
-                    'tin' => $command->getTin()
+                    'tin' => $command->getTin(),
+                    'method' => __METHOD__,
                 ]
             );
             throw new Exception('Company not found');
+        }
+
+        if (CompanyStatus::byValue($company->companyStatus())->sameValueAs($status)) {
+            $this->logger->critical(
+                'The company already has the same status',
+                [
+                    'company_id' => $company->companyId()->toString(),
+                    'current_status' => $company->companyStatus(),
+                    'new_status' => $status->getValue(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception('The company already has the same status');
         }
 
         $company->updateCompanyStatus($status);

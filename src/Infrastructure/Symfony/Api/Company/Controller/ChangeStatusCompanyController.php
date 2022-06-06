@@ -50,6 +50,7 @@ class ChangeStatusCompanyController extends BaseController
                 'Unexpected error',
                 [
                     'error' => $exception->getMessage(),
+                    'method' => __METHOD__,
                 ]
             );
             return $this->createApiResponse(
