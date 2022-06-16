@@ -18,13 +18,16 @@ class UpdateCompanyHandler
     /**
      * @var CompanyRepository
      */
-    private $companyRepository;
+    private CompanyRepository $companyRepository;
 
     public function __construct(CompanyRepository $companyRepository)
     {
         $this->companyRepository = $companyRepository;
     }
 
+    /**
+     * @throws Exception
+     */
     public function handle(UpdateCompanyCommand $command): ?bool
     {
         $companyId = CompanyId::fromString($command->getCompanyId());
@@ -46,7 +49,7 @@ class UpdateCompanyHandler
             'tin' => $command->getTin(),
             'address' => $command->getAddress(),
             'phone' => $command->getPhone(),
-            'traRegistration' => $command->getTraRegistration(),
+            'traRegistration' => $command->getTraRegistration()
         ]);
 
         return $this->companyRepository->save($company);
