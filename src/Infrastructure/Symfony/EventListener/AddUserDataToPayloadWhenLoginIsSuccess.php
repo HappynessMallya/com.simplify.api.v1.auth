@@ -9,6 +9,7 @@ use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Infrastructure\Symfony\Security\UserEntity;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class AddUserDataToPayloadWhenLoginIsSuccess
@@ -19,15 +20,19 @@ class AddUserDataToPayloadWhenLoginIsSuccess
     /**
      * @var UserRepository
      */
-    private $userRepository;
+    private UserRepository $userRepository;
+
+    private LoggerInterface $logger;
 
     /**
      * AddUserDataToPayloadWhenLoginIsSuccess constructor.
      * @param UserRepository $userRepository
+     * @param LoggerInterface $logger
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, LoggerInterface $logger)
     {
         $this->userRepository = $userRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -35,6 +40,13 @@ class AddUserDataToPayloadWhenLoginIsSuccess
      */
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
+        $this->logger->debug(
+            'Authentication Successfully',
+            [
+                'time' => microtime(true),
+
+            ]
+        );
         $data = $event->getData();
         $user = $event->getUser();
 
@@ -43,6 +55,15 @@ class AddUserDataToPayloadWhenLoginIsSuccess
         } else {
             $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
         }
+
+        $this->logger->debug(
+            'User found successfully',
+            [
+                'user_id' => $user->getUserId(),
+                'username' => $user->getUsername(),
+                'time' => microtime(true),
+            ]
+        );
 
         if ($user->getStatus()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
             $data['data']['change_password'] = 1;

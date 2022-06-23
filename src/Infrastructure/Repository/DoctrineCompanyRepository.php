@@ -6,10 +6,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
-use App\Domain\Model\User\User;
-use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\CompanyRepository;
-use App\Infrastructure\Symfony\Security\UserEntity;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;

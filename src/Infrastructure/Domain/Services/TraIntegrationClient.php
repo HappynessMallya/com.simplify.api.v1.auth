@@ -69,6 +69,7 @@ class TraIntegrationClient implements TraIntegrationService
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $payload,
+                'time' => microtime(true)
             ]
         );
 
@@ -90,6 +91,7 @@ class TraIntegrationClient implements TraIntegrationService
                     [
                         'company_id' => $request->getCompanyId(),
                         'tin' => $request->getTin(),
+                        'time' => microtime(true),
                     ]
                 );
             }

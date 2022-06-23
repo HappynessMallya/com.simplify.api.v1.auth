@@ -23,12 +23,12 @@ class JWTCreatedListener
     /**
      * @var UserRepository
      */
-    private $userRepository;
+    private UserRepository $userRepository;
 
     /**
      * @var CompanyRepository
      */
-    private $companyRepository;
+    private CompanyRepository $companyRepository;
 
     /**
      * @var LoggerInterface
@@ -64,6 +64,13 @@ class JWTCreatedListener
      */
     public function onJWTCreated(JWTCreatedEvent $event): void
     {
+        $this->logger->debug(
+            'JWT created successfully',
+            [
+                'time' => microtime(true)
+            ]
+        );
+
         $user = $event->getUser();
         $payload = $event->getData();
 
@@ -79,6 +86,15 @@ class JWTCreatedListener
                 $user = $this->userRepository->findOneBy(['email' => $jwtUser->getUsername()]);
             }
         }
+
+        $this->logger->debug(
+            'Authentication Successfully',
+            [
+                'user_id' => $user->getUserId(),
+                'username' => $user->getUsername(),
+                'time' => microtime(true),
+            ]
+        );
 
         $payload['username'] = $user->getEmail();
         $payload['companyId'] = $user->getCompanyId();
