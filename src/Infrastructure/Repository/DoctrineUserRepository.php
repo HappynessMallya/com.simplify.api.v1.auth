@@ -152,7 +152,7 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
      * @param string $username
      * @return UserEntity|UserInterface|null
      */
-    public function loadUserByUsername(string $username)
+    public function loadUserByUsername(string $username): ?UserEntity
     {
         try {
             /** @var User $user */

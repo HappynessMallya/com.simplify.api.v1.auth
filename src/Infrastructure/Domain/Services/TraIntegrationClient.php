@@ -69,6 +69,7 @@ class TraIntegrationClient implements TraIntegrationService
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $payload,
+                'time' => microtime(true)
             ]
         );
 
@@ -90,6 +91,7 @@ class TraIntegrationClient implements TraIntegrationService
                     [
                         'company_id' => $request->getCompanyId(),
                         'tin' => $request->getTin(),
+                        'time' => microtime(true),
                     ]
                 );
             }
@@ -103,8 +105,7 @@ class TraIntegrationClient implements TraIntegrationService
         } catch (
             ClientExceptionInterface
             | RedirectionExceptionInterface
-            | ServerExceptionInterface
-            | TransportExceptionInterface $exception
+            | ServerExceptionInterface  $exception
         ) {
             $this->logger->critical(
                 'An exception has been occurred when request token to TRA',
@@ -121,6 +122,22 @@ class TraIntegrationClient implements TraIntegrationService
             return new CompanyStatusOnTraResponse(
                 false,
                 $exception->getResponse()->getContent(false)
+            );
+        } catch (TransportExceptionInterface $exception) {
+            $this->logger->critical(
+                'An exception has been occurred when request token to TRA',
+                [
+                    'company_id' => $request->getCompanyId(),
+                    'tin' => $request->getTin(),
+                    'code' => $exception->getCode(),
+                    'error_message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return new CompanyStatusOnTraResponse(
+                false,
+                $exception->getMessage()
             );
         }
     }
