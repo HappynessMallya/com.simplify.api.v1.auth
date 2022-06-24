@@ -47,7 +47,6 @@ class AddUserDataToPayloadWhenLoginIsSuccess
             'Authentication Successfully',
             [
                 'time' => microtime(true),
-
             ]
         );
         $data = $event->getData();

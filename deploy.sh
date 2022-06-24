@@ -32,5 +32,4 @@ else
 fi
 
 sudo chmod -R 777 var/
-
-docker exec -it com.simplify.api.v1.auth_app chmod -R 777 var/
+docker-compose --file ${FILE_DOCKER_COMPOSE} exec app chmod -R 777 var/
