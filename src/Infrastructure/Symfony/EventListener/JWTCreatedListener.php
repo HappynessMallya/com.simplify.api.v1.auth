@@ -23,12 +23,12 @@ class JWTCreatedListener
     /**
      * @var UserRepository
      */
-    private UserRepository $userRepository;
+    private $userRepository;
 
     /**
      * @var CompanyRepository
      */
-    private CompanyRepository $companyRepository;
+    private $companyRepository;
 
     /**
      * @var LoggerInterface

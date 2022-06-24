@@ -20,9 +20,12 @@ class AddUserDataToPayloadWhenLoginIsSuccess
     /**
      * @var UserRepository
      */
-    private UserRepository $userRepository;
+    private $userRepository;
 
-    private LoggerInterface $logger;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * AddUserDataToPayloadWhenLoginIsSuccess constructor.
