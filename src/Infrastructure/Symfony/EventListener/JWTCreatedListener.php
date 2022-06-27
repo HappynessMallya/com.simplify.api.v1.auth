@@ -67,7 +67,7 @@ class JWTCreatedListener
         $this->logger->debug(
             'JWT created successfully',
             [
-                'time' => microtime(true)
+                'time' => microtime()
             ]
         );
 
@@ -92,7 +92,7 @@ class JWTCreatedListener
             [
                 'user_id' => $user->getUserId(),
                 'username' => $user->getUsername(),
-                'time' => microtime(true),
+                'time' => microtime(),
             ]
         );
 
@@ -101,27 +101,29 @@ class JWTCreatedListener
 
         $company = $this->companyRepository->get($user->companyId());
 
-        $companyStatusOnTraRequest = new CompanyStatusOnTraRequest(
-            $company->companyId()->toString(),
-            (string) $company->tin()
-        );
-
-        $companyStatusOnTraResponse = $this->traIntegrationService->requestCompanyStatusOnTra(
-            $companyStatusOnTraRequest
-        );
-
-        if (!$companyStatusOnTraResponse->isSuccess()) {
-            $this->logger->critical(
-                'An error occurred when request status of company on TRA',
-                [
-                    'company_id' => $companyStatusOnTraRequest->getCompanyId(),
-                    'tin' => $companyStatusOnTraRequest->getTin(),
-                    'error_message' => $companyStatusOnTraResponse->getErrorMessage(),
-                ]
+        if (!empty($company->traRegistration())) {
+            $companyStatusOnTraRequest = new CompanyStatusOnTraRequest(
+                $company->companyId()->toString(),
+                (string) $company->tin(),
+                $company->traRegistration()['USERNAME'],
+                $company->traRegistration()['PASSWORD']
             );
-        }
 
-        $company = $this->companyRepository->get($user->companyId());
+            $companyStatusOnTraResponse = $this->traIntegrationService->requestCompanyStatusOnTra(
+                $companyStatusOnTraRequest
+            );
+
+            if (!$companyStatusOnTraResponse->isSuccess()) {
+                $this->logger->critical(
+                    'An error occurred when request status of company on TRA',
+                    [
+                        'company_id' => $companyStatusOnTraRequest->getCompanyId(),
+                        'tin' => $companyStatusOnTraRequest->getTin(),
+                        'error_message' => $companyStatusOnTraResponse->getErrorMessage(),
+                    ]
+                );
+            }
+        }
 
         if (!empty($company) && !empty($company->traRegistration())) {
             $payload['companyName'] = $company->name();

@@ -17,13 +17,27 @@ class CompanyStatusOnTraRequest
     private string $tin;
 
     /**
+     * @var string
+     */
+    private string $username;
+
+    /**
+     * @var string
+     */
+    private string $password;
+
+    /**
      * @param string $companyId
      * @param string $tin
+     * @param string $username
+     * @param string $password
      */
-    public function __construct(string $companyId, string $tin)
+    public function __construct(string $companyId, string $tin, string $username, string $password)
     {
         $this->companyId = $companyId;
         $this->tin = $tin;
+        $this->username = $username;
+        $this->password = $password;
     }
 
     /**
@@ -40,5 +54,21 @@ class CompanyStatusOnTraRequest
     public function getTin(): string
     {
         return $this->tin;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
     }
 }

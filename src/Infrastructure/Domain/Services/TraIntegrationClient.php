@@ -59,6 +59,8 @@ class TraIntegrationClient implements TraIntegrationService
         $payload = [
             'companyId' => $request->getCompanyId(),
             'tin' => $request->getTin(),
+            'username' => $request->getUsername(),
+            'password' => $request->getPassword(),
         ];
 
         $this->logger->debug(
