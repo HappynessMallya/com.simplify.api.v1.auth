@@ -20,12 +20,12 @@ class UserChangePasswordHandler
     /**
      * @var UserRepository
      */
-    private $userRepository;
+    private UserRepository $userRepository;
 
     /**
      * @var PasswordEncoder
      */
-    private $passwordEncoder;
+    private PasswordEncoder $passwordEncoder;
 
     public function __construct(UserRepository $userRepository, PasswordEncoder $passwordEncoder)
     {
@@ -33,6 +33,10 @@ class UserChangePasswordHandler
         $this->passwordEncoder = $passwordEncoder;
     }
 
+    /**
+     * @param UserChangePasswordCommand $command
+     * @return bool
+     */
     public function handle(UserChangePasswordCommand $command): bool
     {
         /** @var UserEntity $entity */

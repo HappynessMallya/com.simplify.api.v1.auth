@@ -24,15 +24,11 @@ class UserChangePasswordController extends BaseController
      * @Route(path="/change-password", methods={"POST"})
      *
      * @param Request $request
-     * @param TokenStorageInterface $jwtStorage
-     * @param JWTTokenManagerInterface $jwtManager
      * @return JsonResponse
      */
     public function userChangePasswordAction(
-        Request $request,
-        TokenStorageInterface $jwtStorage,
-        JWTTokenManagerInterface $jwtManager
-    ) {
+        Request $request
+    ): JsonResponse {
         $registered = false;
         $userChangePasswordCommand = new UserChangePasswordCommand();
         $form = $this->createForm(UserChangePasswordType::class, $userChangePasswordCommand);
@@ -40,22 +36,37 @@ class UserChangePasswordController extends BaseController
 
         if ($form->isValid() === false) {
             return $this->createApiResponse(
-                ['errors' => $this->getValidationErrors($form)],
+                [
+                    'errors' => $this->getValidationErrors($form)
+                ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         try {
-            $tokenData = $jwtManager->decode($jwtStorage->getToken());
-            if ($tokenData['username'] !== $userChangePasswordCommand->getUsername()) {
-                return $this->createApiResponse(['errors' => 'Incorrect username'], Response::HTTP_BAD_REQUEST);
-            }
-
             $registered = $this->commandBus->handle($userChangePasswordCommand);
         } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage(), [__METHOD__]);
+            $this->logger->critical(
+                'An error has been occurred',
+                [
+                    'message' => $e->getMessage(),
+                    'method' => __METHOD__
+                ]
+            );
+
+            return $this->createApiResponse(
+                [
+                    'success' => false
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
-        return $this->createApiResponse(['success' => $registered], Response::HTTP_OK);
+        return $this->createApiResponse(
+            [
+                'success' => $registered
+            ],
+            Response::HTTP_OK
+        );
     }
 }

@@ -36,7 +36,7 @@ security:
             pattern: ^/api/v1/user/change-password
             stateless: true
             anonymous: true
-            methods: [PUT]
+            methods: [PUT, POST]
         refresh:
             pattern:  ^/api/v1/user/token/refresh
             stateless: true
