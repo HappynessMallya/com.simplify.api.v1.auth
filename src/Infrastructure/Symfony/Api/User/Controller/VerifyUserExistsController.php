@@ -4,34 +4,30 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
-use App\Application\User\Command\UserChangePasswordCommand;
+use App\Application\User\Command\VerifyUserExistsCommand;
+use App\Application\User\CommandHandler\VerifyUserExistsHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
-use App\Infrastructure\Symfony\Api\User\Form\UserChangePasswordType;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use App\Infrastructure\Symfony\Api\User\Form\VerifyUserExistsType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-/**
- * Class UserChangePasswordController
- * @package App\Infrastructure\Symfony\Api\User\Controller
- */
-class UserChangePasswordController extends BaseController
+class VerifyUserExistsController extends BaseController
 {
     /**
-     * @Route(path="/change-password", methods={"POST"})
+     * @Route(path="/verify", methods={"POST"})
      *
      * @param Request $request
      * @return JsonResponse
      */
     public function userChangePasswordAction(
-        Request $request
+        Request $request,
+        VerifyUserExistsHandler $handler
     ): JsonResponse {
-        $registered = false;
-        $userChangePasswordCommand = new UserChangePasswordCommand();
-        $form = $this->createForm(UserChangePasswordType::class, $userChangePasswordCommand);
+
+        $verifyUserExistsCommand = new VerifyUserExistsCommand();
+        $form = $this->createForm(VerifyUserExistsType::class, $verifyUserExistsCommand);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
@@ -44,19 +40,31 @@ class UserChangePasswordController extends BaseController
         }
 
         try {
-            $registered = $this->commandBus->handle($userChangePasswordCommand);
+            $registered = $handler->__invoke($verifyUserExistsCommand);
+
+            if (!$registered) {
+                return $this->createApiResponse(
+                    [
+                        'success' => false,
+                        'error' => 'User could not be found'
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
         } catch (\Exception $e) {
             $this->logger->critical(
-                'An error has been occurred',
+                'An internal error has been occurred',
                 [
-                    'message' => $e->getMessage(),
-                    'method' => __METHOD__
+                    'code' => $e->getCode(),
+                    'error' => $e->getMessage(),
+                    'method' => __METHOD__,
                 ]
             );
 
             return $this->createApiResponse(
                 [
-                    'success' => false
+                    'success' => false,
+                    'error' => $e->getMessage()
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -69,4 +77,5 @@ class UserChangePasswordController extends BaseController
             Response::HTTP_OK
         );
     }
+
 }
