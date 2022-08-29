@@ -7,7 +7,6 @@ namespace App\Domain\Model;
 use App\Domain\Company\CertificateId;
 use App\Domain\Model\Company\TaxIdentificationNumber;
 
-
 class Certificate
 {
     /**

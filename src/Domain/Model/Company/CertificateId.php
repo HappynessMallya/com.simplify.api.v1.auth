@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Company;
 
-
 use App\Domain\Model\ValueObject;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;

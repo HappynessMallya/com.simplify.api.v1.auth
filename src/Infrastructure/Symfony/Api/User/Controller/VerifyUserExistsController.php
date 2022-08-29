@@ -77,5 +77,4 @@ class VerifyUserExistsController extends BaseController
             Response::HTTP_OK
         );
     }
-
 }

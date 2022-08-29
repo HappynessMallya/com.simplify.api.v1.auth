@@ -36,5 +36,4 @@ interface CertificateRepository
      * @return void
      */
     public function remove(CertificateId $certificateId): void;
-
 }
