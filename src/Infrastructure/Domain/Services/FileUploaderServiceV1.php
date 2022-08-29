@@ -30,7 +30,7 @@ class FileUploaderServiceV1 implements FileUploaderService
 
     /**
      * @param UploadedFile $file
-     * @param string $tin
+     * @param TaxIdentificationNumber $tin
      * @return string
      */
     public function uploadFile(UploadedFile $file, TaxIdentificationNumber $tin): string
