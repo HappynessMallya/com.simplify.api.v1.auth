@@ -12,6 +12,7 @@ use App\Domain\Repository\CompanyRepository;
 use App\Domain\Services\FileUploaderService;
 use App\Domain\Services\TraIntegrationService;
 use App\Domain\Repository\CertificateRepository;
+use App\Domain\Services\UploadCertificateToTraRegistrationRequest;
 use Exception;
 use Psr\Log\LoggerInterface;
 
@@ -22,6 +23,10 @@ final class UploadCertificateCompanyFilesHandler
      */
     private LoggerInterface $logger;
 
+    /**
+     * @var TraIntegrationService
+     */
+    private TraIntegrationService $traIntegrationService;
 
     /**
      * @var FileUploaderService
@@ -43,17 +48,20 @@ final class UploadCertificateCompanyFilesHandler
      * @param FileUploaderService $fileUploaderService
      * @param CompanyRepository $companyRepository
      * @param CertificateRepository $certificateRepository
+     * @param TraIntegrationService $traIntegrationService
      */
     public function __construct(
         LoggerInterface $logger,
         FileUploaderService $fileUploaderService,
         CompanyRepository $companyRepository,
-        CertificateRepository $certificateRepository
+        CertificateRepository $certificateRepository,
+        TraIntegrationService $traIntegrationService
     ) {
         $this->logger = $logger;
         $this->fileUploaderService = $fileUploaderService;
         $this->companyRepository = $companyRepository;
         $this->certificateRepository = $certificateRepository;
+        $this->traIntegrationService = $traIntegrationService;
     }
 
     /**
@@ -113,8 +121,24 @@ final class UploadCertificateCompanyFilesHandler
         $this->certificateRepository->save($filesPack);
 
 
+        $request = new UploadCertificateToTraRegistrationRequest(
+            $tin->value(),
+            $filesPath
+        );
 
+        $response = $this->traIntegrationService->uploadCertificateToTraRegistration($request);
+        if (!$response->isSuccess()) {
+            $this->logger->critical(
+                'An error has been occurred when upload the certificate',
+                [
+                    'tin' => $tin->value(),
+                    'errorMessage' => $response->getErrorMessage(),
+                    'method' => __METHOD__
+                ]
+            );
 
+            throw new Exception('An error has been occurred when upload the certificate', 500);
+        }
 
         return [
             'tin' => $tin->value(),
