@@ -14,5 +14,6 @@
         <field name="traRegistration" type="json" column="tra_registration" nullable="true" />
         <field name="createdAt" column="created_at" type="datetime" />
         <field name="companyStatus" column="status" type="string"/>
+        <field name="serial" type="string" nullable="true" />
     </entity>
 </doctrine-mapping>

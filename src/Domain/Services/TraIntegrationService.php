@@ -17,4 +17,8 @@ interface TraIntegrationService
     public function uploadCertificateToTraRegistration(
         UploadCertificateToTraRegistrationRequest $request
     ): UploadCertificateToTraRegistrationResponse;
+
+    public function registrationCompanyToTra(
+        RegistrationCompanyToTraRequest $request
+    ): RegistrationCompanyToTraResponse;
 }

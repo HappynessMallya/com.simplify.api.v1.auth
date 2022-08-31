@@ -36,6 +36,11 @@ final class CreateCompanyCommand
     protected $phone;
 
     /**
+     * @var string|null
+     */
+    protected $serial;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -113,5 +118,21 @@ final class CreateCompanyCommand
     public function setPhone(?string $phone): void
     {
         $this->phone = $phone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSerial(): ?string
+    {
+        return $this->serial;
+    }
+
+    /**
+     * @param string|null $serial
+     */
+    public function setSerial(?string $serial): void
+    {
+        $this->serial = $serial;
     }
 }

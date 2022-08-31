@@ -17,12 +17,12 @@ class UploadCertificateCompanyFilesCommand
     private array $companyFiles;
 
     /**
-     * @param string $companyId
+     * @param string $tin
      * @param array $companyFiles
      */
-    public function __construct(string $companyId, array $companyFiles)
+    public function __construct(string $tin, array $companyFiles)
     {
-        $this->tin = $companyId;
+        $this->tin = $tin;
         $this->companyFiles = $companyFiles;
     }
 

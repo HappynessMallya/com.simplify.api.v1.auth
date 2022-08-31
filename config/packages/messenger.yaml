@@ -1,0 +1,30 @@
+framework:
+    messenger:
+        # reset services after consuming messages
+        reset_on_message: true
+
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        failure_transport: failed
+
+        transports:
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 10
+                    # milliseconds delay = 1 seg
+                    delay: 1000
+                    max_delay: 30000
+                    multiplier: 4
+            failed:
+                dsn: '%env(FAILURE_MESSENGER_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 20
+                    # milliseconds delay = 1 seg
+                    delay: 30000
+                    max_delay: 86400000
+                    multiplier: 3
+
+        routing:
+            # Route your messages to the transports
+            # 'App\Message\YourMessage': async
+            'App\Application\Company\Command\RegisterCompanyToTraCommand': async
