@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Repository;
 
-use App\Domain\Company\CertificateId;
-use App\Domain\Model\Certificate;
+use App\Domain\Model\Company\Certificate;
+use App\Domain\Model\Company\CertificateId;
 use App\Domain\Model\Company\TaxIdentificationNumber;
 use App\Domain\Repository\CertificateRepository;
 use Doctrine\DBAL\Connection;

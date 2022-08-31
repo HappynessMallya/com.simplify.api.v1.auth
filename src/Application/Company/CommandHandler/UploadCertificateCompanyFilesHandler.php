@@ -6,12 +6,11 @@ namespace App\Application\Company\CommandHandler;
 
 use App\Application\Company\Command\RegisterCompanyToTraCommand;
 use App\Application\Company\Command\UploadCertificateCompanyFilesCommand;
-use App\Domain\Company\CertificateId;
-use App\Domain\Model\Certificate;
+use App\Domain\Model\Company\Certificate;
+use App\Domain\Model\Company\CertificateId;
 use App\Domain\Model\Company\TaxIdentificationNumber;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Services\FileUploaderService;
-use App\Domain\Services\RegistrationCompanyToTraRequest;
 use App\Domain\Services\TraIntegrationService;
 use App\Domain\Repository\CertificateRepository;
 use App\Domain\Services\UploadCertificateToTraRegistrationRequest;

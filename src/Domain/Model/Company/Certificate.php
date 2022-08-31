@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\Company;
 
-use App\Domain\Company\CertificateId;
-use App\Domain\Model\Company\TaxIdentificationNumber;
-
 class Certificate
 {
     /**

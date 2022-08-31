@@ -2,8 +2,8 @@
 
 namespace App\Domain\Repository;
 
-use App\Domain\Company\CertificateId;
-use App\Domain\Model\Certificate;
+use App\Domain\Model\Company\Certificate;
+use App\Domain\Model\Company\CertificateId;
 
 interface CertificateRepository
 {
