@@ -18,7 +18,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class UploadCertificateCompanyFilesHandler
+class UploadCertificateCompanyFilesHandler
 {
     /**
      * @var LoggerInterface
@@ -129,6 +129,7 @@ final class UploadCertificateCompanyFilesHandler
                         'certificate_id' => $fileFound->getCertificateId(),
                         'tin' => $fileFound->getTin()->value(),
                         'file_path' => $fileFound->getFilepath(),
+                        'method' => __METHOD__,
                     ]
                 );
 
@@ -146,14 +147,16 @@ final class UploadCertificateCompanyFilesHandler
             $filesPath
         );
 
-        $uploadCertificateResponse = $this->traIntegrationService->uploadCertificateToTraRegistration($uploadCertificateRequest);
+        $uploadCertificateResponse = $this->traIntegrationService->uploadCertificateToTraRegistration(
+            $uploadCertificateRequest
+        );
         if (!$uploadCertificateResponse->isSuccess()) {
             $this->logger->critical(
                 'An error has been occurred when upload the certificate',
                 [
                     'tin' => $tin->value(),
                     'errorMessage' => $uploadCertificateResponse->getErrorMessage(),
-                    'method' => __METHOD__
+                    'method' => __METHOD__,
                 ]
             );
 
@@ -170,7 +173,7 @@ final class UploadCertificateCompanyFilesHandler
             );
 
             $this->messageBus->dispatch($dto);
-        } catch (Exception $exception)  {
+        } catch (Exception $exception) {
             $this->logger->critical(
                 'An error has been occurred when attempt register company on TRA',
                 [

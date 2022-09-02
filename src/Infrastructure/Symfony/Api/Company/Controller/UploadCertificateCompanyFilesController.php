@@ -8,6 +8,7 @@ use App\Application\Company\Command\UploadCertificateCompanyFilesCommand;
 use App\Application\Company\CommandHandler\UploadCertificateCompanyFilesHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,14 +21,23 @@ class UploadCertificateCompanyFilesController extends BaseController
      *
      * @param Request $request
      * @param UploadCertificateCompanyFilesHandler $handler
+     * @param LoggerInterface $logger
      * @return JsonResponse
      */
     public function createCompanyAction(
         Request $request,
-        UploadCertificateCompanyFilesHandler $handler
+        UploadCertificateCompanyFilesHandler $handler,
+        LoggerInterface $logger
     ): JsonResponse {
         $tin = $request->get('tin');
         if (empty($tin)) {
+            $logger->critical(
+                'TIN not valid',
+                [
+                    'method' => __METHOD__,
+                ]
+            );
+
             return $this->createApiResponse(
                 [
                     'success' => false,
@@ -40,6 +50,14 @@ class UploadCertificateCompanyFilesController extends BaseController
         $uploadedFile = $request->files->get('companyFiles');
 
         if (empty($uploadedFile)) {
+            $logger->critical(
+                'Company files must be at least 1',
+                [
+                    'tin' => $tin,
+                    'method' => __METHOD__,
+                ]
+            );
+
             return $this->createApiResponse(
                 [
                     'success' => false,
@@ -56,6 +74,15 @@ class UploadCertificateCompanyFilesController extends BaseController
                 $fileMimeType != 'application/pkcs12' && $fileMimeType != 'application/x-pkcs12' &&
                 $fileMimeType != 'application/octet-stream'
             ) {
+                $logger->critical(
+                    'Company files with extension not valid',
+                    [
+                        'tin' => $tin,
+                        'mime_type' => $fileMimeType,
+                        'method' => __METHOD__,
+                    ]
+                );
+
                 return $this->createApiResponse(
                     [
                         'success' => false,
@@ -74,6 +101,15 @@ class UploadCertificateCompanyFilesController extends BaseController
 
             $response = $handler->__invoke($dto);
         } catch (Exception $exception) {
+            $logger->critical(
+                'An error has been occurred when upload certificates of company',
+                [
+                    'tin' => $tin,
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage()
+                ]
+            );
+
             return $this->createApiResponse(
                 [
                     'success' => false

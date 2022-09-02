@@ -57,7 +57,7 @@ class RegisterCompanyToTraHandler
                 ]
             );
 
-            throw new Exception('An error has been occurred when attempt registration company to TRA',500);
+            throw new Exception('An error has been occurred when attempt registration company to TRA', 500);
         }
 
         $this->logger->debug(
@@ -66,6 +66,5 @@ class RegisterCompanyToTraHandler
                 'tin' => $command->getTin(),
             ]
         );
-
     }
 }
