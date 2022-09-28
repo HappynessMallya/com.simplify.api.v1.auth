@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Tests;
+declare(strict_types=1);
+
+namespace App\Tests\Unit;
 
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Services\CompanyStatusOnTraRequest;
