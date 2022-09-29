@@ -96,6 +96,7 @@ class SendCredentialsClient implements SendCredentialsService
 
             return new SendCredentialsResponse(
                 true,
+                ''
             );
         } catch (
             ClientExceptionInterface
