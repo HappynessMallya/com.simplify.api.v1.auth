@@ -23,7 +23,7 @@ class RegisterUserCommand
     private string $salt;
 
     /** @var string|null */
-    private ?string $password;
+    private ?string $password = null;
 
     /** @var string|null */
     private ?string $confirmationToken;
@@ -32,7 +32,7 @@ class RegisterUserCommand
     private string $status;
 
     /** @var string|null */
-    private ?string $role;
+    private ?string $role = null;
 
     /**
      * @return string|null

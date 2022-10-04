@@ -69,7 +69,7 @@ class User
         CompanyId $companyId,
         string $email,
         ?string $username,
-        string $password,
+        ?string $password,
         ?string $salt,
         UserStatus $userStatus,
         UserRole $rol
@@ -257,9 +257,9 @@ class User
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function password(): string
+    public function password(): ?string
     {
         return $this->password;
     }

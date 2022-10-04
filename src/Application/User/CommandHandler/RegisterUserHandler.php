@@ -110,11 +110,26 @@ class RegisterUserHandler
             );
 
             $response = $this->sendCredentials->onSendCredentials($request);
+
+            if (!$response->isSuccess()) {
+                $this->logger->critical(
+                    'Error trying to send credentials to client',
+                    [
+                        'error_message' => $response->getErrorMessage(),
+                        'username' => $user->username(),
+                        'company_id' => $company->companyId()->toString(),
+                        'method' => __METHOD__,
+                    ]
+                );
+            }
         } catch (Exception $e) {
             $this->logger->critical(
-                'Exception error trying to send credentials to client',
+                'An error has been occurred trying to create user',
                 [
                     'error_message' => $e->getMessage(),
+                    'error_code' => $e->getCode(),
+                    'username' => $command->getUsername(),
+                    'company_id' => $command->getCompanyId(),
                     'method' => __METHOD__,
                 ]
             );
@@ -122,6 +137,6 @@ class RegisterUserHandler
             return false;
         }
 
-        return $response->isSuccess();
+        return true;
     }
 }
