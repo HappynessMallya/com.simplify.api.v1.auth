@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Domain\Services;
 
 /**
- * Interface SendCredentialsInterface
+ * Interface SendCredentialsService
  * @package App\Domain\Services
  */
-interface SendCredentialsInterface
+interface SendCredentialsService
 {
     /**
      * @param SendCredentialsRequest $request

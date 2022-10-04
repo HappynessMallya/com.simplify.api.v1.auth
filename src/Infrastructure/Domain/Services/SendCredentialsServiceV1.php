@@ -6,7 +6,7 @@ namespace App\Infrastructure\Domain\Services;
 
 use App\Domain\Services\SendCredentialsRequest;
 use App\Domain\Services\SendCredentialsResponse;
-use App\Domain\Services\SendCredentialsInterface;
+use App\Domain\Services\SendCredentialsService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -16,10 +16,10 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Class SendCredentialsService
+ * Class SendCredentialsServiceV1
  * @package App\Infrastructure\Domain\Services
  */
-class SendCredentialsService implements SendCredentialsInterface
+class SendCredentialsServiceV1 implements SendCredentialsService
 {
     public const SEND_CREDENTIALS_ENDPOINT = 'credentials/send';
 
@@ -55,6 +55,7 @@ class SendCredentialsService implements SendCredentialsInterface
         $payload = [
             'reason' => $request->getReason(),
             'username' => $request->getUsername(),
+            'password' => $request->getPassword(),
             'email' => $request->getEmail(),
             'company' => $request->getCompany(),
         ];
@@ -123,8 +124,6 @@ class SendCredentialsService implements SendCredentialsInterface
                 $e->getMessage(),
                 [
                     'payload' => $payload,
-                    'response_status_code' => $e->getResponse()->getStatusCode(),
-                    'response_content' => $e->getResponse()->getContent(false),
                     'code' => $e->getCode(),
                     'method' => __METHOD__,
                 ]

@@ -13,7 +13,7 @@ use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\SendCredentialsRequest;
 use App\Domain\Services\User\PasswordEncoder;
-use App\Infrastructure\Domain\Services\SendCredentialsService;
+use App\Domain\Services\SendCredentialsService;
 use App\Infrastructure\Repository\DoctrineCompanyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
