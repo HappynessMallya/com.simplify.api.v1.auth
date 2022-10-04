@@ -22,8 +22,8 @@ class RegisterUserCommand
     /** @var string */
     private string $salt;
 
-    /** @var string */
-    private string $password;
+    /** @var string|null */
+    private ?string $password;
 
     /** @var string|null */
     private ?string $confirmationToken;
@@ -99,17 +99,17 @@ class RegisterUserCommand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
     /**
-     * @param string $password
+     * @param string|null $password
      */
-    public function setPassword(string $password): void
+    public function setPassword(?string $password): void
     {
         $this->password = $password;
     }
@@ -155,9 +155,9 @@ class RegisterUserCommand
     }
 
     /**
-     * @param string $role
+     * @param string|null $role
      */
-    public function setRole(string $role): void
+    public function setRole(?string $role): void
     {
         $this->role = $role;
     }
