@@ -72,12 +72,14 @@ class RegisterUserHandler
         $userRole = !empty($command->getRole()) ? UserRole::byName($command->getRole()) : UserRole::USER();
 
         try {
+            $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
+
             $user = User::create(
                 UserId::generate(),
                 CompanyId::fromString($command->getCompanyId()),
                 $command->getEmail(),
                 $command->getUsername(),
-                empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword(),
+                $password,
                 null,
                 UserStatus::CHANGE_PASSWORD(),
                 $userRole
@@ -104,7 +106,7 @@ class RegisterUserHandler
             $request = new SendCredentialsRequest(
                 'NEW_CREDENTIALS',
                 $user->username(),
-                $user->password(),
+                $password,
                 $user->email(),
                 $company->companyId()->toString()
             );
