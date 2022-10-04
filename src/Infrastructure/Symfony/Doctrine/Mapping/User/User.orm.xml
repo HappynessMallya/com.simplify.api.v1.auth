@@ -15,7 +15,7 @@
         <field name="confirmationToken" type="string" column="confirmation_token" length="180" unique="true" nullable="true" />
         <field name="passwordRequestedAt" type="datetime" column="password_requested_at" nullable="true" />
         <field name="roles" type="array" />
-        <field name="status" type="string" length="50" />
+        <field name="status" type="UserStatus" column="status" length="50" />
         <field name="createdAt" column="created_at" type="datetime" />
     </entity>
 </doctrine-mapping>
