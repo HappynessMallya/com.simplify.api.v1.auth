@@ -17,6 +17,9 @@ class SendCredentialsRequest
     private string $username;
 
     /** @var string */
+    private string $password;
+
+    /** @var string */
     private string $email;
 
     /** @var string */
@@ -25,13 +28,15 @@ class SendCredentialsRequest
     /**
      * @param string $reason
      * @param string $username
+     * @param string $password
      * @param string $email
      * @param string $company
      */
-    public function __construct(string $reason, string $username, string $email, string $company)
+    public function __construct(string $reason, string $username, string $password, string $email, string $company)
     {
         $this->reason = $reason;
         $this->username = $username;
+        $this->password = $password;
         $this->email = $email;
         $this->company = $company;
     }
@@ -50,6 +55,14 @@ class SendCredentialsRequest
     public function getUsername(): string
     {
         return $this->username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
     }
 
     /**

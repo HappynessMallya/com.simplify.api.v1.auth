@@ -8,48 +8,31 @@ namespace App\Application\User\Command;
  * Class RegisterUserCommand
  * @package App\Application\ApiUser\Command
  */
-final class RegisterUserCommand
+class RegisterUserCommand
 {
-    /**
-     * @var string
-     */
-    private $username;
+    /** @var string */
+    private string $username;
 
-    /**
-     * @var string
-     */
-    private $companyId;
+    /** @var string */
+    private string $companyId;
 
-    /**
-     * @var string
-     */
-    private $email;
+    /** @var string */
+    private string $email;
 
-    /**
-     * @var string
-     */
-    private $salt;
+    /** @var string */
+    private string $salt;
 
-    /**
-     * @var string
-     */
-    private $password;
+    /** @var string */
+    private string $password;
 
-    /**
-     * @var string|null
-     */
-    private $confirmationToken;
+    /** @var string|null */
+    private ?string $confirmationToken;
 
-    /**
-     * @var string
-     *
-     */
-    private $status;
+    /** @var string */
+    private string $status;
 
-    /**
-     * @var string
-     */
-    private $role;
+    /** @var string|null */
+    private ?string $role;
 
     /**
      * @return string|null

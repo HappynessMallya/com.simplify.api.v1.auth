@@ -13,7 +13,7 @@ use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\SendCredentialsRequest;
 use App\Domain\Services\User\PasswordEncoder;
-use App\Infrastructure\Domain\Services\SendCredentialsClient;
+use App\Infrastructure\Domain\Services\SendCredentialsService;
 use App\Infrastructure\Repository\DoctrineCompanyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -28,6 +28,8 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
  */
 class RegisterUserHandler
 {
+    public const NEW_PASSWORD = 'tanzaniaSimplify123*';
+
     /** @var UserRepository */
     private UserRepository $userRepository;
 
@@ -37,8 +39,8 @@ class RegisterUserHandler
     /** @var PasswordEncoder */
     private PasswordEncoder $passwordEncoder;
 
-    /** @var SendCredentialsClient */
-    private SendCredentialsClient $sendCredentials;
+    /** @var SendCredentialsService */
+    private SendCredentialsService $sendCredentials;
 
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -47,7 +49,7 @@ class RegisterUserHandler
         UserRepository $userRepository,
         DoctrineCompanyRepository $companyRepository,
         PasswordEncoder $passwordEncoder,
-        SendCredentialsClient $sendCredentials,
+        SendCredentialsService $sendCredentials,
         LoggerInterface $logger
     ) {
         $this->userRepository = $userRepository;
@@ -60,6 +62,7 @@ class RegisterUserHandler
     /**
      * @param RegisterUserCommand $command
      * @return bool
+     * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
@@ -74,7 +77,7 @@ class RegisterUserHandler
                 CompanyId::fromString($command->getCompanyId()),
                 $command->getEmail(),
                 $command->getUsername(),
-                $command->getPassword(),
+                empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword(),
                 null,
                 UserStatus::CHANGE_PASSWORD(),
                 $userRole
@@ -101,21 +104,12 @@ class RegisterUserHandler
             $request = new SendCredentialsRequest(
                 'NEW_CREDENTIALS',
                 $user->username(),
+                $user->password(),
                 $user->email(),
                 $company->companyId()->toString()
             );
 
-            $this->sendCredentials->onSendCredentials($request);
-        } catch (ClientExceptionInterface $e) {
-            $this->logger->critical(
-                'Client exception error trying to send credentials to client',
-                [
-                    'error_message' => $e->getMessage(),
-                    'method' => __METHOD__,
-                ]
-            );
-
-            return false;
+            $response = $this->sendCredentials->onSendCredentials($request);
         } catch (Exception $e) {
             $this->logger->critical(
                 'Exception error trying to send credentials to client',
@@ -128,6 +122,6 @@ class RegisterUserHandler
             return false;
         }
 
-        return true;
+        return $response->isSuccess();
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit;
 
 use App\Domain\Services\SendCredentialsRequest;
-use App\Domain\Services\SendCredentialsService;
+use App\Domain\Services\SendCredentialsInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -33,7 +33,7 @@ class SendCredentialsServiceTest extends KernelTestCase
         $kernel->getContainer()->set(HttpClientInterface::class, $mockHttpClient);
 
         /** @var $sendCredentialsService */
-        $sendCredentialsService = $kernel->getContainer()->get(SendCredentialsService::class);
+        $sendCredentialsService = $kernel->getContainer()->get(SendCredentialsInterface::class);
 
         $request = new SendCredentialsRequest(
             'NEW_CREDENTIALS',

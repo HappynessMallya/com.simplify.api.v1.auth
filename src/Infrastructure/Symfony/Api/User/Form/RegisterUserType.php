@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Symfony\Api\User\Form;
 
 use App\Application\User\Command\RegisterUserCommand;
-use Doctrine\DBAL\Types\StringType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,9 +16,9 @@ class RegisterUserType extends AbstractType
     {
         $builder
             ->add('email', TextType::class, ['constraints' => [new NotBlank(), new Email()]])
-            ->add('password', TextType::class, ['constraints' => new NotBlank()])
+            ->add('password', TextType::class)
             ->add('companyId', TextType::class, ['constraints' => new NotBlank()])
-            ->add('username', TextType::class)
+            ->add('username', TextType::class, ['constraints' => new NotBlank()])
             ->add('role', TextType::class);
     }
 

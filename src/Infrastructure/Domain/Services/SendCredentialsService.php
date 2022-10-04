@@ -6,7 +6,7 @@ namespace App\Infrastructure\Domain\Services;
 
 use App\Domain\Services\SendCredentialsRequest;
 use App\Domain\Services\SendCredentialsResponse;
-use App\Domain\Services\SendCredentialsService;
+use App\Domain\Services\SendCredentialsInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -16,10 +16,10 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Class SendCredentialsClient
+ * Class SendCredentialsService
  * @package App\Infrastructure\Domain\Services
  */
-class SendCredentialsClient implements SendCredentialsService
+class SendCredentialsService implements SendCredentialsInterface
 {
     public const SEND_CREDENTIALS_ENDPOINT = 'credentials/send';
 
@@ -60,7 +60,7 @@ class SendCredentialsClient implements SendCredentialsService
         ];
 
         $this->logger->debug(
-            'SendCredentialsClient::onSendCredentials()',
+            'SendCredentialsService::onSendCredentials()',
             [
                 'url' => $this->urlClient,
                 'headers' => [
