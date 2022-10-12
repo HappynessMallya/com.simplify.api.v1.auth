@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\EventListener;
 
+use App\Application\Company\Command\RequestAuthenticationTraCommand;
 use App\Domain\Model\User\User;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\CompanyStatusOnTraRequest;
 use App\Domain\Services\TraIntegrationService;
 use App\Infrastructure\Symfony\Security\UserEntity;
+use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -23,12 +26,12 @@ class JWTCreatedListener
     /**
      * @var UserRepository
      */
-    private $userRepository;
+    private UserRepository $userRepository;
 
     /**
      * @var CompanyRepository
      */
-    private $companyRepository;
+    private CompanyRepository $companyRepository;
 
     /**
      * @var LoggerInterface
@@ -36,26 +39,26 @@ class JWTCreatedListener
     private LoggerInterface $logger;
 
     /**
-     * @var TraIntegrationService
+     * @var MessageBusInterface
      */
-    private TraIntegrationService $traIntegrationService;
+    private MessageBusInterface $messageBus;
 
     /**
      * @param UserRepository $userRepository
      * @param CompanyRepository $companyRepository
-     * @param TraIntegrationService $traIntegrationService
      * @param LoggerInterface $logger
+     * @param MessageBusInterface $messageBus
      */
     public function __construct(
         UserRepository $userRepository,
         CompanyRepository $companyRepository,
-        TraIntegrationService $traIntegrationService,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        MessageBusInterface $messageBus
     ) {
         $this->userRepository = $userRepository;
         $this->companyRepository = $companyRepository;
-        $this->traIntegrationService = $traIntegrationService;
         $this->logger = $logger;
+        $this->messageBus = $messageBus;
     }
 
     /**
@@ -80,11 +83,7 @@ class JWTCreatedListener
 
         if (!$user instanceof UserEntity && !$user instanceof User) {
             $jwtUser = $user;
-            $user = $this->userRepository->findOneBy(['username' => $jwtUser->getUsername()]);
-
-            if (empty($user)) {
-                $user = $this->userRepository->findOneBy(['email' => $jwtUser->getUsername()]);
-            }
+            $user = $this->userRepository->findOneBy(['email' => $jwtUser->getUsername()]);
         }
 
         $this->logger->debug(
@@ -102,24 +101,24 @@ class JWTCreatedListener
         $company = $this->companyRepository->get($user->companyId());
 
         if (!empty($company->traRegistration())) {
-            $companyStatusOnTraRequest = new CompanyStatusOnTraRequest(
+            $command = new RequestAuthenticationTraCommand(
                 $company->companyId()->toString(),
                 (string) $company->tin(),
                 $company->traRegistration()['USERNAME'],
                 $company->traRegistration()['PASSWORD']
             );
 
-            $companyStatusOnTraResponse = $this->traIntegrationService->requestCompanyStatusOnTra(
-                $companyStatusOnTraRequest
-            );
-
-            if (!$companyStatusOnTraResponse->isSuccess()) {
+            try {
+                $this->messageBus->dispatch($command);
+            } catch (Exception $exception) {
                 $this->logger->critical(
-                    'An error occurred when request status of company on TRA',
+                    'An error has been occurred when trying request authentication in TRA',
                     [
-                        'company_id' => $companyStatusOnTraRequest->getCompanyId(),
-                        'tin' => $companyStatusOnTraRequest->getTin(),
-                        'error_message' => $companyStatusOnTraResponse->getErrorMessage(),
+                        'companyId' => $company->companyId()->toString(),
+                        'tin' => $company->tin(),
+                        'error' => $exception->getMessage(),
+                        'code' => $exception->getCode(),
+                        'method' => __METHOD__,
                     ]
                 );
             }

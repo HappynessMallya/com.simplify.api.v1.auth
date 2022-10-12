@@ -60,3 +60,6 @@ services:
     App\Domain\Repository\CompanyRepository:
         alias: 'App\Infrastructure\Repository\DoctrineCompanyRepository'
         public: true
+
+    App\Application\Company\CommandHandler\RequestAuthenticationTraHandler:
+        tags: [ messenger.message_handler ]
