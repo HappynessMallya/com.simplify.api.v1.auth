@@ -43,27 +43,25 @@ class AddUserDataToPayloadWhenLoginIsSuccess
      */
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
-        $this->logger->debug(
-            'Authentication Successfully',
-            [
-                'time' => microtime(true),
-            ]
-        );
+        $startTimeAddUserPayload = microtime(true);
+
         $data = $event->getData();
         $user = $event->getUser();
 
+        $start = microtime(true);
         if ($user instanceof UserEntity || $user instanceof User) {
             $this->userRepository->login($user->userId());
         } else {
             $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
         }
-
+        $end = microtime(true);
         $this->logger->debug(
-            'User found successfully',
+            'Time duration of login user process',
             [
-                'user_id' => $user->getUserId(),
-                'username' => $user->getUsername(),
-                'time' => microtime(true),
+                'time' => $end - $start,
+                'user' => $user->userId()->toString(),
+                'company' => $user->companyId()->toString(),
+                'method' => __METHOD__
             ]
         );
 
@@ -72,5 +70,14 @@ class AddUserDataToPayloadWhenLoginIsSuccess
         }
 
         $event->setData($data);
+
+        $endTimeAddUserPayload = microtime(true);
+        $this->logger->debug(
+            'Time duration of Add User data to Payload when login is success',
+            [
+                'time' => $endTimeAddUserPayload - $startTimeAddUserPayload,
+                'method' => __METHOD__,
+            ]
+        );
     }
 }
