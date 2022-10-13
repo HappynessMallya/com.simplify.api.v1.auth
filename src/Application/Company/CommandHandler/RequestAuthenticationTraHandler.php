@@ -35,6 +35,7 @@ class RequestAuthenticationTraHandler
      */
     public function __invoke(RequestAuthenticationTraCommand $command): void
     {
+        $startTimeHandler = microtime(true);
         $companyStatusOnTraRequest = new CompanyStatusOnTraRequest(
             $command->getCompanyId(),
             $command->getTin(),
@@ -51,8 +52,19 @@ class RequestAuthenticationTraHandler
             ]
         );
 
+        $start = microtime(true);
         $companyStatusOnTraResponse = $this->traIntegrationService->requestCompanyStatusOnTra(
             $companyStatusOnTraRequest
+        );
+        $end = microtime(true);
+
+        $this->logger->debug(
+            'Time duration request company status on TRA',
+            [
+                'time' => $end - $start,
+                'tin' => $command->getTin(),
+                'company_id' => $command->getCompanyId(),
+            ]
         );
 
         if (!$companyStatusOnTraResponse->isSuccess()) {
@@ -62,6 +74,7 @@ class RequestAuthenticationTraHandler
                     'company_id' => $companyStatusOnTraRequest->getCompanyId(),
                     'tin' => $companyStatusOnTraRequest->getTin(),
                     'error_message' => $companyStatusOnTraResponse->getErrorMessage(),
+                    'method' => __METHOD__
                 ]
             );
         }
@@ -71,6 +84,15 @@ class RequestAuthenticationTraHandler
             [
                 'companyId' => $command->getCompanyId(),
                 'tin' => $command->getTin(),
+                'method' => __METHOD__,
+            ]
+        );
+
+        $endTimeHandler = microtime(true);
+        $this->logger->debug(
+            'Time duration of Request Authentication TRA handler',
+            [
+                'time' => $endTimeHandler - $startTimeHandler,
                 'method' => __METHOD__,
             ]
         );

@@ -67,12 +67,7 @@ class JWTCreatedListener
      */
     public function onJWTCreated(JWTCreatedEvent $event): void
     {
-        $this->logger->debug(
-            'JWT created successfully',
-            [
-                'time' => microtime()
-            ]
-        );
+        $startTimeJwtListener = microtime(true);
 
         $user = $event->getUser();
         $payload = $event->getData();
@@ -81,24 +76,36 @@ class JWTCreatedListener
             return;
         }
 
+        $start = microtime(true);
         if (!$user instanceof UserEntity && !$user instanceof User) {
             $jwtUser = $user;
             $user = $this->userRepository->findOneBy(['email' => $jwtUser->getUsername()]);
         }
+        $end = microtime(true);
 
         $this->logger->debug(
-            'Authentication Successfully',
+            'Time duration of find user for JWT process',
             [
+                'time' => $end - $start,
                 'user_id' => $user->getUserId(),
-                'username' => $user->getUsername(),
-                'time' => microtime(),
             ]
         );
 
         $payload['username'] = $user->getEmail();
         $payload['companyId'] = $user->getCompanyId();
 
+        $start = microtime(true);
         $company = $this->companyRepository->get($user->companyId());
+        $end = microtime(true);
+
+        $this->logger->debug(
+            'Time duration of get company data',
+            [
+                'time' =>  $end - $start,
+                'company_id' => $company->companyId()->toString(),
+                'method' => __METHOD__,
+            ]
+        );
 
         if (!empty($company->traRegistration())) {
             $command = new RequestAuthenticationTraCommand(
@@ -108,6 +115,7 @@ class JWTCreatedListener
                 $company->traRegistration()['PASSWORD']
             );
 
+            $start = microtime(true);
             try {
                 $this->messageBus->dispatch($command);
             } catch (Exception $exception) {
@@ -122,6 +130,16 @@ class JWTCreatedListener
                     ]
                 );
             }
+            $end = microtime(true);
+
+            $this->logger->debug(
+                'Time duration of execution of async command',
+                [
+                    'time' => $end - $start,
+                    'user_id' => $user->userId()->toString(),
+                    'method' => __METHOD__,
+                ]
+            );
         }
 
         if (!empty($company) && !empty($company->traRegistration())) {
@@ -130,5 +148,14 @@ class JWTCreatedListener
         }
 
         $event->setData($payload);
+
+        $endTimeJwtListener = microtime(true);
+        $this->logger->debug(
+            'Time duration of JWT Created Listener',
+            [
+                'time' => $endTimeJwtListener - $startTimeJwtListener,
+                'method' => __METHOD__,
+            ]
+        );
     }
 }
