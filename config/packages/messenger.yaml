@@ -1,8 +1,6 @@
 framework:
     messenger:
         # reset services after consuming messages
-        reset_on_message: true
-
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         failure_transport: failed
 
@@ -28,3 +26,4 @@ framework:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
             'App\Application\Company\Command\RegisterCompanyToTraCommand': async
+            'App\Application\Company\Command\RequestAuthenticationTraCommand': async

@@ -64,6 +64,7 @@ class TraIntegrationClient implements TraIntegrationService
     public function requestCompanyStatusOnTra(
         CompanyStatusOnTraRequest $request
     ): CompanyStatusOnTraResponse {
+        $startTimeRequestCompanyStatus = microtime(true);
         $payload = [
             'companyId' => $request->getCompanyId(),
             'tin' => $request->getTin(),
@@ -79,11 +80,12 @@ class TraIntegrationClient implements TraIntegrationService
                     'Content-Type' => 'application/json',
                 ],
                 'body' => $payload,
-                'time' => microtime(true)
+                'method' => __METHOD__,
             ]
         );
 
         try {
+            $start = microtime(true);
             $response = $this->httpClient->request(
                 'POST',
                 $this->urlClient . self::REQUEST_TOKEN_ENDPOINT,
@@ -94,6 +96,15 @@ class TraIntegrationClient implements TraIntegrationService
                     'body' => json_encode($payload),
                 ]
             );
+            $end = microtime(true);
+            $this->logger->debug(
+                'Time duration request token to TRA',
+                [
+                    'time' => $end - $start,
+                    'tin' => $request->getTin(),
+                    'method' => __METHOD__
+                ]
+            );
 
             if ($response->getStatusCode() === Response::HTTP_NO_CONTENT) {
                 $this->logger->debug(
@@ -101,11 +112,20 @@ class TraIntegrationClient implements TraIntegrationService
                     [
                         'company_id' => $request->getCompanyId(),
                         'tin' => $request->getTin(),
-                        'time' => microtime(true),
+                        'method' => __METHOD__,
                     ]
                 );
             }
 
+            $endTimeRequestCompanyStatus = microtime(true);
+            $this->logger->debug(
+                'Time duration request token to TRA',
+                [
+                    'time' => $endTimeRequestCompanyStatus - $startTimeRequestCompanyStatus,
+                    'tin' => $request->getTin(),
+                    'method' => __METHOD__,
+                ]
+            );
             $response->getContent();
 
             return new CompanyStatusOnTraResponse(

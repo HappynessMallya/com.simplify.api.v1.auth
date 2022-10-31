@@ -7,6 +7,7 @@ namespace App\Application\Company\QueryHandler;
 use App\Application\Company\Query\GetCompaniesQuery ;
 use App\Domain\Model\Company\Company;
 use App\Domain\Repository\CompanyRepository;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class CreateCompanyHandler
@@ -17,20 +18,38 @@ class GetCompaniesHandler
     /**
      * @var CompanyRepository
      */
-    private $companyRepository;
+    private CompanyRepository $companyRepository;
 
-    public function __construct(CompanyRepository $companyRepository)
+    /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
+
+    public function __construct(CompanyRepository $companyRepository, LoggerInterface $logger)
     {
         $this->companyRepository = $companyRepository;
+        $this->logger = $logger;
     }
 
     public function handle(GetCompaniesQuery $command): array
     {
+        $startHandler = microtime(true);
         $companiesData = [];
+
+        $start = microtime(true);
         $companies = $this->companyRepository->getAll(
             $command->getPage(),
             $command->getPageSize(),
             $command->getOrderBy()
+        );
+        $end = microtime(true);
+
+        $this->logger->debug(
+            'Time duration for get all companies',
+            [
+                'time' => $end -  $start,
+                'method' => __METHOD__
+            ]
         );
 
         /** @var Company $company */
@@ -50,6 +69,15 @@ class GetCompaniesHandler
                 'traRegistration' => $traRegistration,
             ];
         }
+        $end = microtime(true);
+
+        $this->logger->debug(
+            'Time duration get companies handler',
+            [
+                'time' => $end - $start,
+                'method' => __METHOD__
+            ]
+        );
 
         return [
             'total' => $companies['total'],

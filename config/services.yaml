@@ -68,3 +68,6 @@ services:
 
     App\Application\Company\CommandHandler\RegisterCompanyToTraHandler:
         tags: [ messenger.message_handler ]
+
+    App\Application\Company\CommandHandler\RequestAuthenticationTraHandler:
+        tags: [ messenger.message_handler ]
