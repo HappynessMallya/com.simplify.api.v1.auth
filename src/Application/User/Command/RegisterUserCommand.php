@@ -8,48 +8,31 @@ namespace App\Application\User\Command;
  * Class RegisterUserCommand
  * @package App\Application\ApiUser\Command
  */
-final class RegisterUserCommand
+class RegisterUserCommand
 {
-    /**
-     * @var string
-     */
-    private $username;
+    /** @var string */
+    private string $username;
 
-    /**
-     * @var string
-     */
-    private $companyId;
+    /** @var string */
+    private string $companyId;
 
-    /**
-     * @var string
-     */
-    private $email;
+    /** @var string */
+    private string $email;
 
-    /**
-     * @var string
-     */
-    private $salt;
+    /** @var string */
+    private string $salt;
 
-    /**
-     * @var string
-     */
-    private $password;
+    /** @var string|null */
+    private ?string $password = null;
 
-    /**
-     * @var string|null
-     */
-    private $confirmationToken;
+    /** @var string|null */
+    private ?string $confirmationToken;
 
-    /**
-     * @var string
-     *
-     */
-    private $status;
+    /** @var string */
+    private string $status;
 
-    /**
-     * @var string
-     */
-    private $role;
+    /** @var string|null */
+    private ?string $role = null;
 
     /**
      * @return string|null
@@ -116,17 +99,17 @@ final class RegisterUserCommand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
     /**
-     * @param string $password
+     * @param string|null $password
      */
-    public function setPassword(string $password): void
+    public function setPassword(?string $password): void
     {
         $this->password = $password;
     }
@@ -172,9 +155,9 @@ final class RegisterUserCommand
     }
 
     /**
-     * @param string $role
+     * @param string|null $role
      */
-    public function setRole(string $role): void
+    public function setRole(?string $role): void
     {
         $this->role = $role;
     }

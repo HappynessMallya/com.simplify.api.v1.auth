@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Integration;
 
-use App\Domain\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -53,5 +54,4 @@ class VerifyUserExistsControllerTest extends WebTestCase
         $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
         $this->assertFalse(json_decode($client->getResponse()->getContent(), true)['success']);
     }
-
 }
