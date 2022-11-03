@@ -170,6 +170,9 @@ ADD ./docker/supervisor.ini /etc/supervisor.d/nginx-supervisor.ini
 ## Disable xdebug on production
 RUN rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+RUN mkdir -p /app/public/certificates && \
+    chmod 777 /app/public/certificates
+
 ## Cleanup
 RUN apk del dev-deps && \
     rm /usr/local/bin/composer \

@@ -10,6 +10,7 @@ services:
     volumes:
       - app_volume:/app
       - ./var/log:/app/var/log
+      - ./public:/app/public
     command: sh -c '/usr/bin/supervisord'
     ports:
       - ${CONTAINER_PORT}:80

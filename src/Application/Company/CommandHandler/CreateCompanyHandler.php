@@ -36,7 +36,8 @@ class CreateCompanyHandler
             $command->getEmail(),
             $command->getPhone(),
             new \DateTime(),
-            CompanyStatus::STATUS_ACTIVE()
+            CompanyStatus::STATUS_ACTIVE(),
+            $command->getSerial()
         );
 
         if ($this->companyRepository->save($company)) {

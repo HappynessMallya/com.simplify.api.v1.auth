@@ -6,9 +6,15 @@ namespace App\Infrastructure\Domain\Services;
 
 use App\Domain\Services\CompanyStatusOnTraRequest;
 use App\Domain\Services\CompanyStatusOnTraResponse;
+use App\Domain\Services\RegistrationCompanyToTraRequest;
+use App\Domain\Services\RegistrationCompanyToTraResponse;
 use App\Domain\Services\TraIntegrationService;
+use App\Domain\Services\UploadCertificateToTraRegistrationRequest;
+use App\Domain\Services\UploadCertificateToTraRegistrationResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\Multipart\FormDataPart;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
@@ -18,6 +24,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class TraIntegrationClient implements TraIntegrationService
 {
     public const REQUEST_TOKEN_ENDPOINT = 'requestToken';
+    public const UPLOAD_CERTIFICATE_ENDPOINT = 'upload';
+    public const REGISTRATION_COMPANY_ENDPOINT = 'register';
 
     /**
      * @var LoggerInterface
@@ -42,7 +50,7 @@ class TraIntegrationClient implements TraIntegrationService
     {
         $this->logger = $logger;
         $this->httpClient = $httpClient;
-        $this->urlClient = $_ENV['TRA_REQUEST_TOKEN_URL'] . self::REQUEST_TOKEN_ENDPOINT;
+        $this->urlClient = $_ENV['TRA_REQUEST_TOKEN_URL'];
     }
 
     /**
@@ -67,7 +75,7 @@ class TraIntegrationClient implements TraIntegrationService
         $this->logger->debug(
             'CompanyAuthenticationTraClient::requestTokenAuthenticationTra()',
             [
-                'url' => $this->urlClient,
+                'url' => $this->urlClient . self::REQUEST_TOKEN_ENDPOINT,
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
@@ -80,7 +88,7 @@ class TraIntegrationClient implements TraIntegrationService
             $start = microtime(true);
             $response = $this->httpClient->request(
                 'POST',
-                $this->urlClient,
+                $this->urlClient . self::REQUEST_TOKEN_ENDPOINT,
                 [
                     'headers' => [
                         'Content-Type' => 'application/json'
@@ -160,6 +168,180 @@ class TraIntegrationClient implements TraIntegrationService
             return new CompanyStatusOnTraResponse(
                 false,
                 $exception->getMessage()
+            );
+        }
+    }
+
+    /**
+     * @param UploadCertificateToTraRegistrationRequest $request
+     * @return UploadCertificateToTraRegistrationResponse
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function uploadCertificateToTraRegistration(
+        UploadCertificateToTraRegistrationRequest $request
+    ): UploadCertificateToTraRegistrationResponse {
+        $formFields = [
+            'tin' => $request->getTin(),
+            'certificateFiles' => [
+                DataPart::fromPath($request->getCertificateFiles()[0]),
+                DataPart::fromPath($request->getCertificateFiles()[1]),
+            ]
+        ];
+        $formData = new FormDataPart($formFields);
+
+        $this->logger->debug(
+            'Request for upload certificate files TraIntegrationClient::uploadCertificateToTraRegistration()',
+            [
+                'url' => $this->urlClient . self::UPLOAD_CERTIFICATE_ENDPOINT,
+                'headers' => $formData->getPreparedHeaders()->toArray(),
+                'body' => $formData->bodyToIterable(),
+            ]
+        );
+
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                $this->urlClient . self::UPLOAD_CERTIFICATE_ENDPOINT,
+                [
+                    'headers' => $formData->getPreparedHeaders()->toArray(),
+                    'body' => $formData->bodyToIterable(),
+                ]
+            );
+
+            if ($response->getStatusCode() == Response::HTTP_OK) {
+                $this->logger->debug(
+                    'Certificate uploaded successfully',
+                    [
+                        'tin' => $request->getTin(),
+                        'certificatesFiles' => $request->getCertificateFiles(),
+                    ]
+                );
+            }
+
+            $response->getContent();
+
+            return new UploadCertificateToTraRegistrationResponse(
+                true,
+                ''
+            );
+        } catch (
+            ClientExceptionInterface |
+            RedirectionExceptionInterface |
+            ServerExceptionInterface $exception
+        ) {
+            $this->logger->critical(
+                'An error has been occurred in client side when attempt upload certificate files',
+                [
+                    'tin' => $request->getTin(),
+                    'http_status' => $exception->getResponse()->getStatusCode(),
+                    'http_response' => $exception->getResponse()->getContent(false),
+                    'errorMessage' => $exception->getMessage(),
+                    'errorCode' => $exception->getCode(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return new UploadCertificateToTraRegistrationResponse(
+                false,
+                $exception->getResponse()->getContent(false)
+            );
+        } catch (TransportExceptionInterface $e) {
+            $this->logger->critical(
+                'An error has been occurred with communication with TRA Integration API',
+                [
+                    'tin' => $request->getTin(),
+                    'errorMessage' => $e->getMessage(),
+                    'errorCode' => $e->getCode(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return new UploadCertificateToTraRegistrationResponse(
+                false,
+                $e->getMessage()
+            );
+        }
+    }
+
+    public function registrationCompanyToTra(RegistrationCompanyToTraRequest $request): RegistrationCompanyToTraResponse
+    {
+        $payload = [
+            'tin' => $request->getTin(),
+            'certKey' => $request->getCertificateKey(),
+            'certSerial' => $request->getCertificateSerial(),
+            'certPassword' => $request->getPassword()
+        ];
+
+        $this->logger->debug(
+            'Request for registration company to TRA TraIntegrationService::registrationCompanyToTra()',
+            [
+                'url' => $this->urlClient . self::REGISTRATION_COMPANY_ENDPOINT,
+                'body' => $payload
+            ]
+        );
+
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                $this->urlClient . self::REGISTRATION_COMPANY_ENDPOINT,
+                [
+                    'body' => json_encode($payload)
+                ]
+            );
+
+            if ($response->getStatusCode() == Response::HTTP_OK) {
+                $this->logger->debug(
+                    'Registration of Company successfully',
+                    [
+                        'tin' => $request->getTin(),
+                    ]
+                );
+            }
+
+            $response->getContent();
+
+            return new RegistrationCompanyToTraResponse(
+                true,
+                ''
+            );
+        } catch (
+            ClientExceptionInterface |
+            RedirectionExceptionInterface |
+            ServerExceptionInterface $e
+        ) {
+            $this->logger->critical(
+                'An error has been occurred in client side attempt registration company to TRA',
+                [
+                    'tin' => $request->getTin(),
+                    'http_status' => $e->getResponse()->getStatusCode(),
+                    'http_body' => $e->getResponse()->getContent(false),
+                    'code' => $e->getCode(),
+                    'errorMessage' => $e->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return new RegistrationCompanyToTraResponse(
+                false,
+                $e->getResponse()->getContent(false)
+            );
+        } catch (TransportExceptionInterface $e) {
+            $this->logger->critical(
+                'An error has been occurred with communication with TRA Integration API',
+                [
+                    'tin' => $request->getTin(),
+                    'errorMessage' => $e->getMessage(),
+                    'errorCode' => $e->getCode(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return new RegistrationCompanyToTraResponse(
+                true,
+                $e->getMessage()
             );
         }
     }

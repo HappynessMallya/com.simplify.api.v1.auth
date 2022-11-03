@@ -13,4 +13,12 @@ interface TraIntegrationService
     public function requestCompanyStatusOnTra(
         CompanyStatusOnTraRequest $request
     ): CompanyStatusOnTraResponse;
+
+    public function uploadCertificateToTraRegistration(
+        UploadCertificateToTraRegistrationRequest $request
+    ): UploadCertificateToTraRegistrationResponse;
+
+    public function registrationCompanyToTra(
+        RegistrationCompanyToTraRequest $request
+    ): RegistrationCompanyToTraResponse;
 }

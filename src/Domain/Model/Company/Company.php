@@ -63,6 +63,11 @@ class Company
     private string $companyStatus;
 
     /**
+     * @var string|null
+     */
+    private ?string $serial;
+
+    /**
      * @param CompanyId $companyId
      * @param string $name
      * @param int $tin
@@ -71,6 +76,7 @@ class Company
      * @param string|null $phone
      * @param DateTime $createdAt
      * @param CompanyStatus $companyStatus
+     * @param string|null $serial
      * @return Company
      */
     public static function create(
@@ -81,7 +87,8 @@ class Company
         ?string $email,
         ?string $phone,
         DateTime $createdAt,
-        CompanyStatus $companyStatus
+        CompanyStatus $companyStatus,
+        ?string $serial
     ): Company {
         $self = new self();
         $self->companyId = $companyId;
@@ -93,6 +100,7 @@ class Company
         $self->enable = true;
         $self->createdAt = $createdAt;
         $self->companyStatus = $companyStatus->getValue();
+        $self->serial = $serial;
 
         return $self;
     }
@@ -219,5 +227,13 @@ class Company
     public function updateCompanyStatus(CompanyStatus $companyStatus): void
     {
         $this->companyStatus = $companyStatus->getValue();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function serial(): ?string
+    {
+        return $this->serial;
     }
 }

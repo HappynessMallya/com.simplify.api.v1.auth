@@ -8,32 +8,37 @@ namespace App\Application\Company\Command;
  * Class CreateCompanyCommand
  * @package App\Application\Company\Command
  */
-final class CreateCompanyCommand
+class CreateCompanyCommand
 {
     /**
      * @var string
      */
-    protected $name;
+    protected string $name;
 
     /**
      * @var string
      */
-    protected $tin;
+    protected string $tin;
 
     /**
      * @var string|null
      */
-    protected $address;
+    protected ?string $address;
 
     /**
      * @var string|null
      */
-    protected $email;
+    protected ?string $email;
 
     /**
      * @var string|null
      */
-    protected $phone;
+    protected ?string $phone;
+
+    /**
+     * @var string|null
+     */
+    protected ?string $serial;
 
     /**
      * @return string
@@ -113,5 +118,21 @@ final class CreateCompanyCommand
     public function setPhone(?string $phone): void
     {
         $this->phone = $phone;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getSerial(): ?string
+    {
+        return $this->serial;
+    }
+
+    /**
+     * @param string|null $serial
+     */
+    public function setSerial(?string $serial): void
+    {
+        $this->serial = $serial;
     }
 }
