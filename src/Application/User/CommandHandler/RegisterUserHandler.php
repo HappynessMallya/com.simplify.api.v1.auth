@@ -108,7 +108,7 @@ class RegisterUserHandler
                 $user->username(),
                 $password,
                 $user->email(),
-                $company->companyId()->toString()
+                $company->name()
             );
 
             $response = $this->sendCredentials->onSendCredentials($request);
