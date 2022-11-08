@@ -47,8 +47,8 @@ class LoginUssdHandler
         $company = $this->companyRepository->findOneBy($criteria);
 
         if (empty($company)) {
-            $this->logger->error(
-                'Company not found by criteria',
+            $this->logger->critical(
+                'Company could not be found by criteria',
                 [
                     'criteria' => $criteria,
                     'method' => __METHOD__,

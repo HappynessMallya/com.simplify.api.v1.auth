@@ -8,13 +8,16 @@ use App\Application\User\Command\VerifyUserExistsCommand;
 use App\Domain\Repository\UserRepository;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class VerifyUserExistsHandler
+ * @package App\Application\User\CommandHandler
+ */
 class VerifyUserExistsHandler
 {
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
     /**
@@ -27,6 +30,10 @@ class VerifyUserExistsHandler
         $this->userRepository = $userRepository;
     }
 
+    /**
+     * @param VerifyUserExistsCommand $command
+     * @return bool
+     */
     public function __invoke(VerifyUserExistsCommand $command): bool
     {
         $criteria = [
@@ -37,7 +44,7 @@ class VerifyUserExistsHandler
 
         if (empty($user)) {
             $this->logger->critical(
-                'The user could not be found',
+                'User could not be found',
                 [
                     'username' => $command->getUsername(),
                     'method' => __METHOD__,
