@@ -12,59 +12,37 @@ use DateTime;
  */
 class Company
 {
-    /**
-     * @var CompanyId
-     */
+    /** @var CompanyId */
     private CompanyId $companyId;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $name;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     private int $tin;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private ?string $address;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private ?string $email;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private ?string $phone;
 
-    /**
-     * @var array|null
-     */
+    /** @var array|null */
     private ?array $traRegistration;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private bool $enable;
 
-    /**
-     * @var DateTime
-     */
+    /** @var DateTime */
     private DateTime $createdAt;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $companyStatus;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private ?string $serial;
 
     /**
