@@ -8,8 +8,6 @@ use App\Application\Company\Command\RequestAuthenticationTraCommand;
 use App\Domain\Model\User\User;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
-use App\Domain\Services\CompanyStatusOnTraRequest;
-use App\Domain\Services\TraIntegrationService;
 use App\Infrastructure\Symfony\Security\UserEntity;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
@@ -23,24 +21,16 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class JWTCreatedListener
 {
-    /**
-     * @var UserRepository
-     */
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
-    /**
-     * @var CompanyRepository
-     */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /**
-     * @var MessageBusInterface
-     */
+    /** @var MessageBusInterface */
     private MessageBusInterface $messageBus;
 
     /**
@@ -63,7 +53,6 @@ class JWTCreatedListener
 
     /**
      * @param JWTCreatedEvent $event
-     * @return void
      */
     public function onJWTCreated(JWTCreatedEvent $event): void
     {
@@ -77,10 +66,17 @@ class JWTCreatedListener
         }
 
         $start = microtime(true);
+
         if (!$user instanceof UserEntity && !$user instanceof User) {
             $jwtUser = $user;
-            $user = $this->userRepository->findOneBy(['email' => $jwtUser->getUsername()]);
+
+            $criteria = [
+                'email' => $jwtUser->getUsername(),
+            ];
+
+            $user = $this->userRepository->findOneBy($criteria);
         }
+
         $end = microtime(true);
 
         $this->logger->debug(
@@ -116,6 +112,7 @@ class JWTCreatedListener
             );
 
             $start = microtime(true);
+
             try {
                 $this->messageBus->dispatch($command);
             } catch (Exception $exception) {
@@ -130,6 +127,7 @@ class JWTCreatedListener
                     ]
                 );
             }
+
             $end = microtime(true);
 
             $this->logger->debug(
@@ -150,6 +148,7 @@ class JWTCreatedListener
         $event->setData($payload);
 
         $endTimeJwtListener = microtime(true);
+
         $this->logger->debug(
             'Time duration of JWT Created Listener',
             [

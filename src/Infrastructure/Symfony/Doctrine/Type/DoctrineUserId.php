@@ -13,12 +13,12 @@ use App\Domain\Model\User\UserId;
  * Class DoctrineUserId
  * @package App\Infrastructure\Persistence\Doctrine\Type
  */
-final class DoctrineUserId extends GuidType
+class DoctrineUserId extends GuidType
 {
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'UserId';
     }
@@ -31,7 +31,7 @@ final class DoctrineUserId extends GuidType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (null === $value) {
+        if ($value === null) {
             return null;
         }
 
@@ -45,9 +45,9 @@ final class DoctrineUserId extends GuidType
     /**
      * @param mixed $value
      * @param AbstractPlatform $platform
-     * @return UserId
+     * @return UserId|null
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?UserId
     {
         if (empty($value)) {
             return null;
@@ -57,8 +57,6 @@ final class DoctrineUserId extends GuidType
             return $value;
         }
 
-        $value = UserId::fromString($value);
-
-        return $value;
+        return UserId::fromString($value);
     }
 }

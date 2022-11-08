@@ -5,11 +5,14 @@ namespace App\Domain\Repository;
 use App\Domain\Model\Company\Certificate;
 use App\Domain\Model\Company\CertificateId;
 
+/**
+ * Interface CertificateRepository
+ * @package App\Domain\Repository
+ */
 interface CertificateRepository
 {
     /**
      * @param array $filesPack
-     * @return void
      */
     public function save(array $filesPack): void;
 
@@ -27,13 +30,11 @@ interface CertificateRepository
 
     /**
      * @param Certificate $file
-     * @return void
      */
     public function update(Certificate $file): void;
 
     /**
-     * @param CertificateId $fileId
-     * @return void
+     * @param CertificateId $certificateId
      */
     public function remove(CertificateId $certificateId): void;
 }

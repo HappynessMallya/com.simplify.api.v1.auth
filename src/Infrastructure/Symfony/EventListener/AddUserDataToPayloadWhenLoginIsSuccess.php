@@ -17,18 +17,14 @@ use Psr\Log\LoggerInterface;
  */
 class AddUserDataToPayloadWhenLoginIsSuccess
 {
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    /** @var UserRepository */
+    private UserRepository $userRepository;
+
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * AddUserDataToPayloadWhenLoginIsSuccess constructor.
+     * AddUserDataToPayloadWhenLoginIsSuccess constructor
      * @param UserRepository $userRepository
      * @param LoggerInterface $logger
      */
@@ -49,19 +45,26 @@ class AddUserDataToPayloadWhenLoginIsSuccess
         $user = $event->getUser();
 
         $start = microtime(true);
+
         if ($user instanceof UserEntity || $user instanceof User) {
             $this->userRepository->login($user->userId());
         } else {
-            $user = $this->userRepository->findOneBy(['email' => $user->getUsername()]);
+            $criteria = [
+                'email' => $user->getUsername(),
+            ];
+
+            $user = $this->userRepository->findOneBy($criteria);
         }
+
         $end = microtime(true);
+
         $this->logger->debug(
             'Time duration of login user process',
             [
                 'time' => $end - $start,
                 'user' => $user->userId()->toString(),
                 'company' => $user->companyId()->toString(),
-                'method' => __METHOD__
+                'method' => __METHOD__,
             ]
         );
 
@@ -72,6 +75,7 @@ class AddUserDataToPayloadWhenLoginIsSuccess
         $event->setData($data);
 
         $endTimeAddUserPayload = microtime(true);
+
         $this->logger->debug(
             'Time duration of Add User data to Payload when login is success',
             [
