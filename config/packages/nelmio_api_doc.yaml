@@ -8,7 +8,7 @@ nelmio_api_doc:
         info:
             title: Simplify auth service
             description: This is the security auth service for Simplify
-            version: 1.1.0
+            version: 1.1.1
         servers:
             - url: /partner/v1/auth
         paths:
@@ -44,6 +44,39 @@ nelmio_api_doc:
                             description: Forbidden
                         default:
                             description: Unexpected error
+            /user/login/ussd:
+                post:
+                    tags:
+                        - User
+                    description: User Login with USSD
+                    operationId: userLoginUssd
+                    requestBody:
+                        description: The user to authenticate in Simplify with USSD
+                        required: true
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/UserLoginUssdRequest'
+                    responses:
+                        200:
+                            description: Login authenticated
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/UserLoginUssdResponse'
+                        400:
+                            description: Bad Request
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/BadRequest'
+                        401:
+                            $ref: '#/components/responses/UnauthorizedError'
+                        403:
+                            description: Forbidden
+                        default:
+                            description: Unexpected error
+
             /user/token/refresh:
                 post:
                     tags:
@@ -77,11 +110,29 @@ nelmio_api_doc:
                         username:
                             type: string
                             format: email
+                            example: 'john.doe@example.co.tz'
                             maxLength: 200
                         password:
                             type: string
-                            maxLength: 200
+                            example: 'str0n9Pa$$w0rD'
                             minLength: 8
+                            maxLength: 200
+                UserLoginUssdRequest:
+                    type: object
+                    required:
+                        - tin
+                        - pin
+                    properties:
+                        tin:
+                            type: string
+                            example: '123456789'
+                            minLength: 9
+                            maxLength: 9
+                        pin:
+                            type: string
+                            example: '123456'
+                            minLength: 2
+                            maxLength: 6
                 UserRefreshTokenRequest:
                     type: object
                     required:
@@ -98,8 +149,22 @@ nelmio_api_doc:
                     properties:
                         token:
                             type: string
+                            example: 'very-long-chain'
                         refresh_token:
                             type: string
+                            example: 'long-chain'
+                UserLoginUssdResponse:
+                    type: object
+                    required:
+                        - token
+                        - refresh_token
+                    properties:
+                        token:
+                            type: string
+                            example: 'very-long-chain'
+                        refresh_token:
+                            type: string
+                            example: 'long-chain'
                 BadRequest:
                     type: object
                     required:
@@ -110,4 +175,3 @@ nelmio_api_doc:
             responses:
                 UnauthorizedError:
                     description: the access token has expired or identity not authenticated
-
