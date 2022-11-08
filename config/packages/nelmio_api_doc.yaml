@@ -131,7 +131,7 @@ nelmio_api_doc:
                         pin:
                             type: string
                             example: '123456'
-                            minLength: 2
+                            minLength: 6
                             maxLength: 6
                 UserRefreshTokenRequest:
                     type: object

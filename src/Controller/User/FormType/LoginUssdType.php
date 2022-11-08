@@ -55,7 +55,7 @@ class LoginUssdType extends AbstractType
                         ),
                         new Assert\Length(
                             [
-                                'min' => 2,
+                                'min' => 6,
                                 'max' => 6,
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
