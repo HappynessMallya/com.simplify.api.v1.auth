@@ -6,11 +6,13 @@ namespace App\Domain\Model\Company;
 
 use App\Domain\Model\ValueObject;
 
+/**
+ * Class TaxIdentificationNumber
+ * @package App\Domain\Model\Company
+ */
 class TaxIdentificationNumber implements ValueObject
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $value;
 
     /**

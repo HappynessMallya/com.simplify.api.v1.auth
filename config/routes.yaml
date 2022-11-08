@@ -1,6 +1,7 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
 login:
     path: /api/v1/user/login
     methods: ['POST']
@@ -9,3 +10,8 @@ gesdinet_jwt_refresh_token:
     path:       /api/v1/user/token/refresh
     controller: gesdinet.jwtrefreshtoken::refresh
     methods: ['POST']
+
+app_login_ussd:
+    path: /api/v1/user/login/ussd
+    controller: App\Controller\User\LoginUssdController::action
+    methods: post
