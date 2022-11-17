@@ -44,38 +44,6 @@ nelmio_api_doc:
                             description: Forbidden
                         default:
                             description: Unexpected error
-            /user/login/ussd:
-                post:
-                    tags:
-                        - User
-                    description: User Login with USSD
-                    operationId: userLoginUssd
-                    requestBody:
-                        description: The user to authenticate in Simplify with USSD
-                        required: true
-                        content:
-                            application/json:
-                                schema:
-                                    $ref: '#/components/schemas/UserLoginUssdRequest'
-                    responses:
-                        200:
-                            description: Login authenticated
-                            content:
-                                application/json:
-                                    schema:
-                                        $ref: '#/components/schemas/UserLoginUssdResponse'
-                        400:
-                            description: Bad Request
-                            content:
-                                application/json:
-                                    schema:
-                                        $ref: '#/components/schemas/BadRequest'
-                        401:
-                            $ref: '#/components/responses/UnauthorizedError'
-                        403:
-                            description: Forbidden
-                        default:
-                            description: Unexpected error
 
             /user/token/refresh:
                 post:
@@ -117,22 +85,6 @@ nelmio_api_doc:
                             example: 'str0n9Pa$$w0rD'
                             minLength: 8
                             maxLength: 200
-                UserLoginUssdRequest:
-                    type: object
-                    required:
-                        - tin
-                        - pin
-                    properties:
-                        tin:
-                            type: string
-                            example: '123456789'
-                            minLength: 9
-                            maxLength: 9
-                        pin:
-                            type: string
-                            example: '123456'
-                            minLength: 6
-                            maxLength: 6
                 UserRefreshTokenRequest:
                     type: object
                     required:
@@ -142,18 +94,6 @@ nelmio_api_doc:
                             type: string
                             maxLength: 200
                 UserLoginResponse:
-                    type: object
-                    required:
-                        - token
-                        - refresh_token
-                    properties:
-                        token:
-                            type: string
-                            example: 'very-long-chain'
-                        refresh_token:
-                            type: string
-                            example: 'long-chain'
-                UserLoginUssdResponse:
                     type: object
                     required:
                         - token
