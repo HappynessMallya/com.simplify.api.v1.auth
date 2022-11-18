@@ -18,14 +18,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class GetCompanyByTinController extends BaseController
 {
     /**
-     * @Route(path="/tin/{tinId}", methods={"GET"})
+     * @Route(path="/tin/{tin}", methods={"GET"})
      *
      * @param Request $request
      * @return JsonResponse
      */
     public function action(Request $request): JsonResponse
     {
-        $query = new GetCompanyByTinQuery($request->get('tinId'));
+        $query = new GetCompanyByTinQuery($request->get('tin'));
         $company =  $this->commandBus->handle($query);
 
         if (empty($company)) {
@@ -38,16 +38,7 @@ class GetCompanyByTinController extends BaseController
         }
 
         return $this->createApiResponse(
-            [
-                'companyId' => $company->companyId()->toString(),
-                'name' => $company->name(),
-                'tin' => $company->tin(),
-                'email' => $company->email(),
-                'address' => $company->address(),
-                'traRegistration' => $company->traRegistration(),
-                'createdAt' => $company->createdAt()->format(DATE_ATOM),
-                'status' => $company->companyStatus(),
-            ],
+            $company,
             Response::HTTP_OK
         );
     }

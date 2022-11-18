@@ -11,22 +11,22 @@ namespace App\Application\Company\Query;
 class GetCompanyByTinQuery
 {
     /** @var string */
-    protected string $companyTin;
+    protected string $tin;
 
     /**
      * GetCompanyByTinQuery constructor
-     * @param string $companyTin
+     * @param string $tin
      */
-    public function __construct(string $companyTin)
+    public function __construct(string $tin)
     {
-        $this->companyTin = $companyTin;
+        $this->tin = $tin;
     }
 
     /**
      * @return string
      */
-    public function getCompanyTin(): string
+    public function getTin(): string
     {
-        return $this->companyTin;
+        return $this->tin;
     }
 }

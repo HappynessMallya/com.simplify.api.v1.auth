@@ -28,14 +28,29 @@ class GetCompanyByTinHandler
 
     /**
      * @param GetCompanyByTinQuery $query
-     * @return Company|null
+     * @return array
      */
-    public function handle(GetCompanyByTinQuery $query): ?Company
+    public function handle(GetCompanyByTinQuery $query): array
     {
         $criteria = [
-            'tin' => $query->getCompanyTin(),
+            'tin' => $query->getTin(),
         ];
 
-        return $this->companyRepository->findOneBy($criteria);
+        $company = $this->companyRepository->findOneBy($criteria);
+
+        if (empty($company)) {
+            return [];
+        }
+
+        return [
+            'companyId' => $company->companyId()->toString(),
+            'name' => $company->name(),
+            'tin' => $company->tin(),
+            'email' => $company->email(),
+            'address' => $company->address(),
+            'traRegistration' => $company->traRegistration(),
+            'createdAt' => $company->createdAt()->format(DATE_ATOM),
+            'status' => $company->companyStatus(),
+        ];
     }
 }
