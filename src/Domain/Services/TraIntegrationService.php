@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Services;
 
+/**
+ * Interface TraIntegrationService
+ * @package App\Domain\Services
+ */
 interface TraIntegrationService
 {
     /**
@@ -14,10 +18,18 @@ interface TraIntegrationService
         CompanyStatusOnTraRequest $request
     ): CompanyStatusOnTraResponse;
 
+    /**
+     * @param UploadCertificateToTraRegistrationRequest $request
+     * @return UploadCertificateToTraRegistrationResponse
+     */
     public function uploadCertificateToTraRegistration(
         UploadCertificateToTraRegistrationRequest $request
     ): UploadCertificateToTraRegistrationResponse;
 
+    /**
+     * @param RegistrationCompanyToTraRequest $request
+     * @return RegistrationCompanyToTraResponse
+     */
     public function registrationCompanyToTra(
         RegistrationCompanyToTraRequest $request
     ): RegistrationCompanyToTraResponse;

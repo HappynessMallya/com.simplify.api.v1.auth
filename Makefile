@@ -5,14 +5,17 @@ env = 'dev'
 deploy: ## Execute command for deploy in production mode
 	-$(SHELL) deploy.sh
 
-lint: ## Run the php linter over the code
-	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php ./vendor/bin/phpcs
-
 service-bus: ## Consuming Messages (Running the Worker)
 	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console messenger:consume async -vv
 
+lint: ## Run the php linter over the code
+	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php ./vendor/bin/phpcs
+
+cache-clear: ## Clear service cache
+	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console cache:clear
+
 create-db: ## Create db
-	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console doctrine:database:create
+	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console doctrine:database:create --if-not-exists
 
 delete-db: ## Delete db
 	-@docker-compose --file docker-compose.dev.yaml exec php-fpm php bin/console doctrine:database:drop --force

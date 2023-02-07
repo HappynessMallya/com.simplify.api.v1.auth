@@ -9,6 +9,9 @@ use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Company\CompanyStatus;
 use App\Domain\Repository\CompanyRepository;
+use DateTime;
+use Exception;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class CreateCompanyHandler
@@ -16,32 +19,61 @@ use App\Domain\Repository\CompanyRepository;
  */
 class CreateCompanyHandler
 {
-    /**
-     * @var CompanyRepository
-     */
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    public function __construct(CompanyRepository $companyRepository)
-    {
+    /**
+     * CreateCompanyHandler constructor
+     * @param LoggerInterface $logger
+     * @param CompanyRepository $companyRepository
+     */
+    public function __construct(
+        LoggerInterface $logger,
+        CompanyRepository $companyRepository
+    ) {
+        $this->logger = $logger;
         $this->companyRepository = $companyRepository;
     }
 
+    /**
+     * @param CreateCompanyCommand $command
+     * @return string|null
+     * @throws Exception
+     */
     public function handle(CreateCompanyCommand $command): ?string
     {
+        $companyId = CompanyId::generate();
+
         $company = Company::create(
-            CompanyId::generate(),
+            $companyId,
             $command->getName(),
             (int) $command->getTin(),
             $command->getAddress(),
             $command->getEmail(),
             $command->getPhone(),
-            new \DateTime(),
+            new DateTime(),
             CompanyStatus::STATUS_ACTIVE(),
             $command->getSerial()
         );
 
-        if ($this->companyRepository->save($company)) {
-            return $company->companyId()->toString();
+        try {
+            $isSaved = $this->companyRepository->save($company);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                $exception->getMessage(),
+                [
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception($exception->getMessage());
+        }
+
+        if ($isSaved) {
+            return $companyId->toString();
         }
 
         return null;

@@ -12,12 +12,10 @@ use Ramsey\Uuid\UuidInterface;
  * Class CompanyId
  * @package App\Domain\Model\Company
  */
-final class CompanyId implements ValueObject
+class CompanyId implements ValueObject
 {
-    /**
-     * @var UuidInterface
-     */
-    private $uuid;
+    /** @var UuidInterface */
+    private UuidInterface $uuid;
 
     public static function generate(): CompanyId
     {

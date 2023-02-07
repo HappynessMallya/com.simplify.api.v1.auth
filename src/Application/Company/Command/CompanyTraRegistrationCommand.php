@@ -8,17 +8,13 @@ namespace App\Application\Company\Command;
  * Class CompanyTraRegistrationCommand
  * @package App\Application\Company\Command
  */
-final class CompanyTraRegistrationCommand
+class CompanyTraRegistrationCommand
 {
-    /**
-     * @var string
-     */
-    protected $tin;
+    /** @var string */
+    protected string $tin;
 
-    /**
-     * @var string
-     */
-    protected $traRegistration;
+    /** @var string */
+    protected string $traRegistration;
 
     /**
      * @return string

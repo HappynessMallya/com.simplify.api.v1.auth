@@ -8,38 +8,77 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class CreateCompanyType
  * @package App\Infrastructure\Symfony\Api\Company\Form
  */
-final class CreateCompanyType extends AbstractType
+class CreateCompanyType extends AbstractType
 {
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class, ['constraints' => new NotBlank()])
-            ->add('tin', TextType::class, ['constraints' => new NotBlank()])
-            ->add('email', TextType::class, ['constraints' => new Email()])
-            ->add('phone', TextType::class)
-            ->add('address', TextType::class)
             ->add(
+                'name',
+                TextType::class,
+                [
+                    'constraints' => new Assert\NotBlank(),
+                ]
+            )->add(
+                'tin',
+                TextType::class,
+                [
+                    'constraints' => new Assert\NotBlank(),
+                ]
+            )->add(
+                'email',
+                TextType::class,
+                [
+                    'constraints' => new Email(),
+                ]
+            )->add(
+                'phone',
+                TextType::class
+            )->add(
+                'address',
+                TextType::class
+            )->add(
                 'serial',
                 TextType::class,
                 [
-                    'constraints' => new NotBlank()
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            [
+                                'min' => 10,
+                                'max' => 10,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
                 ]
-            );
+            )
+        ;
     }
 
+    /**
+     * @param OptionsResolver $resolver
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => CreateCompanyCommand::class,
-            'csrf_protection' => false,
-            'is_edit' => false,
-            'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}'
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => CreateCompanyCommand::class,
+                'csrf_protection' => false,
+                'is_edit' => false,
+                'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}',
+            ]
+        );
     }
 }

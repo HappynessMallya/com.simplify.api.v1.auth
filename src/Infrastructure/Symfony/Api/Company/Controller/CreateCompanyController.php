@@ -7,6 +7,7 @@ namespace App\Infrastructure\Symfony\Api\Company\Controller;
 use App\Application\Company\Command\CreateCompanyCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Company\Form\CreateCompanyType;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,7 @@ class CreateCompanyController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function createCompanyAction(Request $request)
+    public function createCompanyAction(Request $request): JsonResponse
     {
         try {
             $command = new CreateCompanyCommand();
@@ -33,7 +34,9 @@ class CreateCompanyController extends BaseController
 
             if ($form->isValid() === false) {
                 return $this->createApiResponse(
-                    ['errors' => $this->getValidationErrors($form)],
+                    [
+                        'errors' => $this->getValidationErrors($form),
+                    ],
                     Response::HTTP_BAD_REQUEST
                 );
             }
@@ -41,12 +44,27 @@ class CreateCompanyController extends BaseController
             $companyId = $this->commandBus->handle($command);
 
             if (!empty($companyId)) {
-                return $this->createApiResponse(['company_id' => $companyId], Response::HTTP_CREATED);
+                return $this->createApiResponse(
+                    [
+                        'company_id' => $companyId,
+                    ],
+                    Response::HTTP_CREATED
+                );
             }
-        } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage(), [__METHOD__]);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                $exception->getMessage(),
+                [
+                    'method' => __METHOD__,
+                ]
+            );
         }
 
-        return $this->createApiResponse(['errors' => 'No created'], Response::HTTP_FORBIDDEN);
+        return $this->createApiResponse(
+            [
+                'errors' => 'Company no created',
+            ],
+            Response::HTTP_FORBIDDEN
+        );
     }
 }

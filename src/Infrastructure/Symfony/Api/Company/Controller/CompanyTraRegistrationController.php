@@ -7,6 +7,7 @@ namespace App\Infrastructure\Symfony\Api\Company\Controller;
 use App\Application\Company\Command\CompanyTraRegistrationCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Company\Form\TraRegistrationCompanyType;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,14 +20,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class CompanyTraRegistrationController extends BaseController
 {
     /**
-     * @Route(path="/{tinId}", methods={"POST"})
+     * @Route(path="/{tin}", methods={"POST"})
      *
      * @param Request $request
-     * @param string $tinId
+     * @param string $tin
      * @return JsonResponse
      */
-    public function action(Request $request, string $tinId)
-    {
+    public function action(
+        Request $request,
+        string $tin
+    ): JsonResponse {
         $updated = false;
         $command = new CompanyTraRegistrationCommand();
         $form = $this->createForm(TraRegistrationCompanyType::class, $command);
@@ -39,18 +42,33 @@ class CompanyTraRegistrationController extends BaseController
             );
         }
 
-        $command->setTin($tinId);
+        $command->setTin($tin);
 
         try {
             $updated = $this->commandBus->handle($command);
-        } catch (\Exception $e) {
-            if ($e->getCode() === 404) {
-                return $this->createApiResponse(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
-            }
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                $exception->getMessage(),
+                [
+                    'method' => __METHOD__,
+                ]
+            );
 
-            $this->logger->critical($e->getMessage(), [__METHOD__]);
+            if ($exception->getCode() === 404) {
+                return $this->createApiResponse(
+                    [
+                        'errors' => 'Not found' . $exception->getMessage(),
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
         }
 
-        return $this->createApiResponse(['success' => $updated], Response::HTTP_OK);
+        return $this->createApiResponse(
+            [
+                'success' => $updated,
+            ],
+            Response::HTTP_OK
+        );
     }
 }
