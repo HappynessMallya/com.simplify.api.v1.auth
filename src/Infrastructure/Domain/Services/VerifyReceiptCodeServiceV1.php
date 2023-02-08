@@ -47,16 +47,16 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
     }
 
     /**
+     * @param VerifyReceiptCodeRequest $request
+     * @return VerifyReceiptCodeResponse
      * @throws ClientExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function onVerifyReceiptCode(VerifyReceiptCodeRequest $request): VerifyReceiptCodeResponse {
-        $payload = [
-            'receiptCode' => $request->getReceiptCode()
-        ];
-
+    public function onVerifyReceiptCode(
+        VerifyReceiptCodeRequest $request
+    ): VerifyReceiptCodeResponse {
         $this->logger->debug(
             'VerifyReceiptCodeServiceV1::onVerifyReceiptCode()',
             [
@@ -64,7 +64,6 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
-                'body' => $payload,
             ]
         );
 
@@ -76,7 +75,6 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
                     'headers' => [
                         'Content-Type' => 'application/json'
                     ],
-                    'body' => json_encode($payload),
                 ]
             );
 
@@ -84,7 +82,6 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
                 $this->logger->critical(
                     'Receipt code verified',
                     [
-                        'payload' => $payload,
                         'method' => __METHOD__,
                     ]
                 );
@@ -104,7 +101,6 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
             $this->logger->critical(
                 'Exception error trying to verify receipt code',
                 [
-                    'payload' => $payload,
                     'response_status_code' => $exception->getResponse()->getStatusCode(),
                     'response_content' => $exception->getResponse()->getContent(false),
                     'message' => $exception->getMessage(),
@@ -121,7 +117,6 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
             $this->logger->critical(
                 'Transport exception error trying to verify receipt code',
                 [
-                    'payload' => $payload,
                     'message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
                     'method' => __METHOD__,

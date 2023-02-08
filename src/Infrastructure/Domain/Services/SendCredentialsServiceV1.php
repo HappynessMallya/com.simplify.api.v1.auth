@@ -33,6 +33,7 @@ class SendCredentialsServiceV1 implements SendCredentialsService
     private string $urlClient;
 
     /**
+     * SendCredentialsServiceV1 constructor
      * @param LoggerInterface $logger
      * @param HttpClientInterface $httpClient
      */
@@ -51,7 +52,9 @@ class SendCredentialsServiceV1 implements SendCredentialsService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function onSendCredentials(SendCredentialsRequest $request): SendCredentialsResponse {
+    public function onSendCredentials(
+        SendCredentialsRequest $request
+    ): SendCredentialsResponse {
         $payload = [
             'reason' => $request->getReason(),
             'username' => $request->getUsername(),
