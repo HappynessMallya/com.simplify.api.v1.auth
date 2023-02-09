@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Services;
+namespace App\Application\Company\Command;
 
 /**
- * Class VerifyReceiptCodeRequest
- * @package App\Domain\Services
+ * Class VerifyReceiptCodeCommand
+ * @package App\Application\Company\Command
  */
-class VerifyReceiptCodeRequest
+class VerifyReceiptCodeCommand
 {
     /** @var string */
     private string $companyId;
@@ -17,7 +17,7 @@ class VerifyReceiptCodeRequest
     private string $receiptCode;
 
     /**
-     * VerifyReceiptCodeRequest constructor
+     * VerifyReceiptCodeCommand constructor
      * @param string $companyId
      * @param string $receiptCode
      */

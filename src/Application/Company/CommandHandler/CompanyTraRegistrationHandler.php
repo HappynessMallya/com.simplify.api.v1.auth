@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Application\Company\CommandHandler;
 
 use App\Application\Company\Command\CompanyTraRegistrationCommand;
+use App\Application\Company\Command\VerifyReceiptCodeCommand;
 use App\Domain\Repository\CompanyRepository;
-use App\Domain\Services\VerifyReceiptCodeRequest;
-use App\Domain\Services\VerifyReceiptCodeService;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class CompanyTraRegistrationHandler
@@ -20,26 +20,26 @@ class CompanyTraRegistrationHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
+    /** @var MessageBusInterface */
+    private MessageBusInterface $messageBus;
+
     /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
-
-    /** @var VerifyReceiptCodeService */
-    private VerifyReceiptCodeService $verifyReceiptCode;
 
     /**
      * CompanyTraRegistrationHandler constructor
      * @param LoggerInterface $logger
+     * @param MessageBusInterface $messageBus
      * @param CompanyRepository $companyRepository
-     * @param VerifyReceiptCodeService $verifyReceiptCode
      */
     public function __construct(
         LoggerInterface $logger,
-        CompanyRepository $companyRepository,
-        VerifyReceiptCodeService $verifyReceiptCode
+        MessageBusInterface $messageBus,
+        CompanyRepository $companyRepository
     ) {
         $this->logger = $logger;
+        $this->messageBus = $messageBus;
         $this->companyRepository = $companyRepository;
-        $this->verifyReceiptCode = $verifyReceiptCode;
     }
 
     /**
@@ -65,24 +65,15 @@ class CompanyTraRegistrationHandler
 
         $company->updateTraRegistration(json_decode($command->getTraRegistration(), true));
 
-        $request = new VerifyReceiptCodeRequest(
+        $isSaved = $this->companyRepository->save($company);
+
+        $dto = new VerifyReceiptCodeCommand(
+            $company->companyId()->toString(),
             json_decode($command->getTraRegistration(), true)['RECEIPTCODE']
         );
 
-        $response = $this->verifyReceiptCode->onVerifyReceiptCode($request);
+        $this->messageBus->dispatch($dto);
 
-        if (!$response->isSuccess()) {
-            $this->logger->critical(
-                'Receipt code not verified',
-                [
-                    'error_message' => $response->getErrorMessage(),
-                    'method' => __METHOD__,
-                ]
-            );
-
-            throw new Exception('Receipt code not verified. ' . $command->getTin(), 500);
-        }
-
-        return $this->companyRepository->save($company);
+        return $isSaved;
     }
 }
