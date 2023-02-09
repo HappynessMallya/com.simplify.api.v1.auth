@@ -7,6 +7,7 @@ namespace App\Application\Company\CommandHandler;
 use App\Application\Company\Command\VerifyReceiptCodeCommand;
 use App\Domain\Services\VerifyReceiptCodeRequest;
 use App\Domain\Services\VerifyReceiptCodeService;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -36,6 +37,7 @@ class VerifyReceiptCodeHandler
 
     /**
      * @param VerifyReceiptCodeCommand $command
+     * @throws Exception
      */
     public function handle(VerifyReceiptCodeCommand $command): void
     {
@@ -48,12 +50,14 @@ class VerifyReceiptCodeHandler
 
         if (!$response->isSuccess()) {
             $this->logger->debug(
-                'Failed trying to verufy receipt code',
+                'Failed trying to verify receipt code',
                 [
                     'company_id' => $command->getCompanyId(),
                     'receipt_code' => $command->getReceiptCode(),
                 ]
             );
+
+            throw new Exception('Failed trying to verify receipt code', 500);
         }
     }
 }
