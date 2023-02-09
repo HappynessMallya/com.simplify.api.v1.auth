@@ -65,15 +65,27 @@ class CompanyTraRegistrationHandler
 
         $company->updateTraRegistration(json_decode($command->getTraRegistration(), true));
 
-        $isSaved = $this->companyRepository->save($company);
+        try {
+            $isSaved = $this->companyRepository->save($company);
 
-        $dto = new VerifyReceiptCodeCommand(
-            $company->companyId()->toString(),
-            json_decode($command->getTraRegistration(), true)['RECEIPTCODE']
-        );
+            $dto = new VerifyReceiptCodeCommand(
+                $company->companyId()->toString(),
+                json_decode($command->getTraRegistration(), true)['RECEIPTCODE']
+            );
 
-        $this->messageBus->dispatch($dto);
+            $this->messageBus->dispatch($dto);
 
-        return $isSaved;
+            return $isSaved;
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                $exception->getMessage(),
+                [
+                    'tin' => $command->tin(),
+                    'method' => __METHOD__,
+                ]
+            );
+        }
+
+        return null;
     }
 }

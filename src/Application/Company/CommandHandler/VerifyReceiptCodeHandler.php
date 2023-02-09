@@ -7,6 +7,7 @@ namespace App\Application\Company\CommandHandler;
 use App\Application\Company\Command\VerifyReceiptCodeCommand;
 use App\Domain\Services\VerifyReceiptCodeRequest;
 use App\Domain\Services\VerifyReceiptCodeService;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class VerifyReceiptCodeHandler
@@ -14,16 +15,22 @@ use App\Domain\Services\VerifyReceiptCodeService;
  */
 class VerifyReceiptCodeHandler
 {
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
     /** @var VerifyReceiptCodeService */
     private VerifyReceiptCodeService $verifyReceiptCode;
 
     /**
      * VerifyReceiptCodeHandler constructor
+     * @param LoggerInterface $logger
      * @param VerifyReceiptCodeService $verifyReceiptCode
      */
     public function __construct(
+        LoggerInterface $logger,
         VerifyReceiptCodeService $verifyReceiptCode
     ) {
+        $this->logger = $logger;
         $this->verifyReceiptCode = $verifyReceiptCode;
     }
 
@@ -37,6 +44,16 @@ class VerifyReceiptCodeHandler
             $command->getReceiptCode()
         );
 
-        $this->verifyReceiptCode->onVerifyReceiptCode($request);
+        $response = $this->verifyReceiptCode->onVerifyReceiptCode($request);
+
+        if (!$response->isSuccess()) {
+            $this->logger->debug(
+                'Failed trying to verufy receipt code',
+                [
+                    'company_id' => $command->getCompanyId(),
+                    'receipt_code' => $command->getReceiptCode(),
+                ]
+            );
+        }
     }
 }
