@@ -71,3 +71,6 @@ services:
 
     App\Application\Company\CommandHandler\RequestAuthenticationTraHandler:
         tags: [ messenger.message_handler ]
+
+    App\Application\Company\CommandHandler\VerifyReceiptCodeHandler:
+        tags: [ messenger.message_handler ]

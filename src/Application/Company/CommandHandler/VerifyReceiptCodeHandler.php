@@ -39,7 +39,7 @@ class VerifyReceiptCodeHandler
      * @param VerifyReceiptCodeCommand $command
      * @throws Exception
      */
-    public function handle(VerifyReceiptCodeCommand $command): void
+    public function __invoke(VerifyReceiptCodeCommand $command): void
     {
         $request = new VerifyReceiptCodeRequest(
             $command->getCompanyId(),

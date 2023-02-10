@@ -27,3 +27,4 @@ framework:
             # 'App\Message\YourMessage': async
             'App\Application\Company\Command\RegisterCompanyToTraCommand': async
             'App\Application\Company\Command\RequestAuthenticationTraCommand': async
+            'App\Application\Company\Command\VerifyReceiptCodeCommand': async

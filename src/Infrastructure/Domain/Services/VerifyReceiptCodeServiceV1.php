@@ -21,7 +21,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
 {
-    public const VERIFY_RECEIPT_CODE_ENDPOINT = 'verify/receiptCode/';
+    public const VERIFY_RECEIPT_CODE_ENDPOINT = 'company/verify/receiptCode/';
 
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -60,9 +60,12 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
         $this->logger->debug(
             'VerifyReceiptCodeServiceV1::onVerifyReceiptCode()',
             [
-                'url' => $this->urlClient . $request->getReceiptCode(),
+                'url' => $this->urlClient . $request->getCompanyId(),
                 'headers' => [
                     'Content-Type' => 'application/json',
+                ],
+                'body' => [
+                    'receiptCode' => $request->getReceiptCode()
                 ],
             ]
         );
@@ -70,18 +73,23 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
         try {
             $response = $this->httpClient->request(
                 'POST',
-                $this->urlClient . $request->getReceiptCode(),
+                $this->urlClient . $request->getCompanyId(),
                 [
                     'headers' => [
                         'Content-Type' => 'application/json'
                     ],
+                    'body' => json_encode([
+                        'receiptCode' => $request->getReceiptCode()
+                    ]),
                 ]
             );
 
             if ($response->getStatusCode() === Response::HTTP_OK) {
-                $this->logger->critical(
+                $this->logger->debug(
                     'Receipt code verified',
                     [
+                        'company_id' => $request->getCompanyId(),
+                        'receipt_code' => $request->getReceiptCode(),
                         'method' => __METHOD__,
                     ]
                 );
@@ -111,7 +119,8 @@ class VerifyReceiptCodeServiceV1 implements VerifyReceiptCodeService
 
             return new VerifyReceiptCodeResponse(
                 false,
-                'Exception error trying to verify receipt code: ' . $exception->getMessage()
+                'Exception error trying to verify receipt code: ' .
+                    $exception->getResponse()->getContent(false)
             );
         } catch (TransportExceptionInterface $exception) {
             $this->logger->critical(

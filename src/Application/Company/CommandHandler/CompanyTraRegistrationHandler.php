@@ -49,13 +49,14 @@ class CompanyTraRegistrationHandler
      */
     public function handle(CompanyTraRegistrationCommand $command): ?bool
     {
+        $isSaved = false;
         $company = $this->companyRepository->findOneBy(['tin' => $command->getTin()]);
 
         if (empty($company)) {
             $this->logger->critical(
                 'Company not found by TIN',
                 [
-                    'tin' => $command->tin(),
+                    'tin' => $command->getTin(),
                     'method' => __METHOD__,
                 ]
             );
@@ -74,18 +75,16 @@ class CompanyTraRegistrationHandler
             );
 
             $this->messageBus->dispatch($dto);
-
-            return $isSaved;
         } catch (Exception $exception) {
             $this->logger->critical(
                 $exception->getMessage(),
                 [
-                    'tin' => $command->tin(),
+                    'tin' => $command->getTin(),
                     'method' => __METHOD__,
                 ]
             );
         }
 
-        return null;
+        return $isSaved;
     }
 }

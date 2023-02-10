@@ -57,7 +57,7 @@ class CompanyTraRegistrationController extends BaseController
             if ($exception->getCode() === 404) {
                 return $this->createApiResponse(
                     [
-                        'errors' => 'Not found' . $exception->getMessage(),
+                        'errors' => $exception->getMessage(),
                     ],
                     Response::HTTP_NOT_FOUND
                 );
