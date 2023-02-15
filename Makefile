@@ -8,6 +8,9 @@ deploy: ## Execute command for deploy in production mode
 lint: ## Run the php linter over the code
 	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php ./vendor/bin/phpcs
 
+cache-clear: ## Clear service cache
+	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console cache:clear
+
 service-bus: ## Consuming Messages (Running the Worker)
 	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console messenger:consume async -vv
 

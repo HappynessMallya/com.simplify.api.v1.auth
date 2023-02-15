@@ -12,13 +12,15 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Exception;
 
+/**
+ * Class DoctrineCertificateRepository
+ * @package App\Infrastructure\Repository
+ */
 class DoctrineCertificateRepository implements CertificateRepository
 {
     public const ENTITY_TABLE_NAME = "certificate";
 
-    /**
-     * @var Connection
-     */
+    /** @var Connection */
     private Connection $connection;
 
     /**

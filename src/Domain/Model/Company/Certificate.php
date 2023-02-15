@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\Company;
 
+/**
+ * Class Certificate
+ * @package App\Domain\Model\Company
+ */
 class Certificate
 {
-    /**
-     * @var CertificateId
-     */
+    /** @var CertificateId */
     private CertificateId $certificateId;
 
-    /**
-     * @var TaxIdentificationNumber
-     */
+    /** @var TaxIdentificationNumber */
     private TaxIdentificationNumber $tin;
 
     /** @var string */
