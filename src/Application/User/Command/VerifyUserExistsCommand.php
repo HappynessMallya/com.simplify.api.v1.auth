@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace App\Application\User\Command;
 
+/**
+ * Class VerifyUserExistsCommand
+ * @package App\Application\User\Command
+ */
 class VerifyUserExistsCommand
 {
+    /** @var string */
     private string $username;
 
     /**

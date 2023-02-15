@@ -9,7 +9,6 @@ use App\Domain\Model\Enum;
 /**
  * Class CompanyStatus
  * @package App\Domain\Model\Company
- *
  * @method static CompanyStatus STATUS_ACTIVE()
  * @method static CompanyStatus STATUS_BLOCK()
  * @method static CompanyStatus STATUS_INACTIVE()

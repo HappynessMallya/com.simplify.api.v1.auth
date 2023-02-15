@@ -8,12 +8,12 @@ use App\Domain\Model\Enum;
 
 /**
  * Class UserStatus
- * @package App\Domain\Model\ApiUser
+ * @package App\Domain\Model\User
  * @method static UserStatus ACTIVE()
  * @method static UserStatus SUSPENDED()
  * @method static UserStatus CHANGE_PASSWORD()
  */
-final class UserStatus extends Enum
+class UserStatus extends Enum
 {
     public const ACTIVE = 'ACTIVE';
     public const SUSPENDED = 'SUSPENDED';

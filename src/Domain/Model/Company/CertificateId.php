@@ -8,11 +8,13 @@ use App\Domain\Model\ValueObject;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
+/**
+ * Class CertificateId
+ * @package App\Domain\Model\Company
+ */
 class CertificateId implements ValueObject
 {
-    /**
-     * @var Uuid
-     */
+    /** @var Uuid */
     private $uuid;
 
     /**
