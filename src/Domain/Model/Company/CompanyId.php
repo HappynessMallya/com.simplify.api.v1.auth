@@ -17,33 +17,53 @@ class CompanyId implements ValueObject
     /** @var UuidInterface */
     private UuidInterface $uuid;
 
+    /**
+     * @return CompanyId
+     */
     public static function generate(): CompanyId
     {
         return new self(Uuid::uuid4());
     }
 
+    /**
+     * @param string $userId
+     * @return CompanyId
+     */
     public static function fromString(string $userId): CompanyId
     {
         return new self(Uuid::fromString($userId));
     }
 
+    /**
+     * @param UuidInterface $uuid
+     */
     private function __construct(UuidInterface $uuid)
     {
         $this->uuid = $uuid;
     }
 
+    /**
+     * @return string
+     */
     public function toString(): string
     {
         return $this->uuid->toString();
     }
 
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->toString();
     }
 
-    public function sameValueAs(ValueObject $other): bool
+    /**
+     * @param ValueObject $object
+     * @return bool
+     */
+    public function sameValueAs(ValueObject $object): bool
     {
-        return get_class($this) === get_class($other) && $this->uuid->equals($other->uuid);
+        return get_class($this) === get_class($object) && $this->uuid->equals($object->uuid);
     }
 }

@@ -10,42 +10,62 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * Class UserId
- * @package App\Domain\Model\ApiUser
+ * @package App\Domain\Model\User
  */
-final class UserId implements ValueObject
+class UserId implements ValueObject
 {
     /**
      * @var UuidInterface
      */
-    private $uuid;
+    private UuidInterface $uuid;
 
+    /**
+     * @return UserId
+     */
     public static function generate(): UserId
     {
         return new self(Uuid::uuid4());
     }
 
+    /**
+     * @param string $userId
+     * @return UserId
+     */
     public static function fromString(string $userId): UserId
     {
         return new self(Uuid::fromString($userId));
     }
 
+    /**
+     * @param UuidInterface $uuid
+     */
     private function __construct(UuidInterface $uuid)
     {
         $this->uuid = $uuid;
     }
 
+    /**
+     * @return string
+     */
     public function toString(): string
     {
         return $this->uuid->toString();
     }
 
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         return $this->toString();
     }
 
-    public function sameValueAs(ValueObject $other): bool
+    /**
+     * @param ValueObject $object
+     * @return bool
+     */
+    public function sameValueAs(ValueObject $object): bool
     {
-        return get_class($this) === get_class($other) && $this->uuid->equals($other->uuid);
+        return get_class($this) === get_class($object) && $this->uuid->equals($object->uuid);
     }
 }

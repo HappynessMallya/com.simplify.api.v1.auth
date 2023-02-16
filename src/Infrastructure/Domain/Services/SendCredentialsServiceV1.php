@@ -52,9 +52,8 @@ class SendCredentialsServiceV1 implements SendCredentialsService
      * @throws ServerExceptionInterface
      * @throws TransportExceptionInterface
      */
-    public function onSendCredentials(
-        SendCredentialsRequest $request
-    ): SendCredentialsResponse {
+    public function onSendCredentials(SendCredentialsRequest $request): SendCredentialsResponse
+    {
         $payload = [
             'reason' => $request->getReason(),
             'username' => $request->getUsername(),

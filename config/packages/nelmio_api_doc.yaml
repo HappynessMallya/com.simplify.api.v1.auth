@@ -8,7 +8,7 @@ nelmio_api_doc:
         info:
             title: Simplify auth service
             description: This is the security auth service for Simplify
-            version: 1.1.0
+            version: 1.1.1
         servers:
             - url: /partner/v1/auth
         paths:
@@ -44,6 +44,7 @@ nelmio_api_doc:
                             description: Forbidden
                         default:
                             description: Unexpected error
+
             /user/token/refresh:
                 post:
                     tags:
@@ -77,11 +78,13 @@ nelmio_api_doc:
                         username:
                             type: string
                             format: email
+                            example: 'john.doe@example.co.tz'
                             maxLength: 200
                         password:
                             type: string
-                            maxLength: 200
+                            example: 'str0n9Pa$$w0rD'
                             minLength: 8
+                            maxLength: 200
                 UserRefreshTokenRequest:
                     type: object
                     required:
@@ -98,8 +101,10 @@ nelmio_api_doc:
                     properties:
                         token:
                             type: string
+                            example: 'very-long-chain'
                         refresh_token:
                             type: string
+                            example: 'long-chain'
                 BadRequest:
                     type: object
                     required:
@@ -110,4 +115,3 @@ nelmio_api_doc:
             responses:
                 UnauthorizedError:
                     description: the access token has expired or identity not authenticated
-

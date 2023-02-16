@@ -104,7 +104,7 @@ class Company
      */
     public function tin(): int
     {
-        return (int) $this->tin;
+        return $this->tin;
     }
 
     /**

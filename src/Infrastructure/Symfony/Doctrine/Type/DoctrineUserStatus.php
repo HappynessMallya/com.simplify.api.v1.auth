@@ -13,12 +13,12 @@ use App\Domain\Model\User\UserStatus;
  * Class DoctrineUserStatus
  * @package App\Infrastructure\Symfony\Doctrine\Type
  */
-final class DoctrineUserStatus extends StringType
+class DoctrineUserStatus extends StringType
 {
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'UserStatus';
     }
@@ -31,7 +31,7 @@ final class DoctrineUserStatus extends StringType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (null === $value) {
+        if ($value === null) {
             return null;
         }
 
@@ -45,9 +45,9 @@ final class DoctrineUserStatus extends StringType
     /**
      * @param mixed $value
      * @param AbstractPlatform $platform
-     * @return UserStatus
+     * @return UserStatus|null
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?UserStatus
     {
         if (empty($value)) {
             return null;
@@ -57,8 +57,6 @@ final class DoctrineUserStatus extends StringType
             return $value;
         }
 
-        $value = UserStatus::byValue($value);
-
-        return $value;
+        return UserStatus::byValue($value);
     }
 }

@@ -13,12 +13,12 @@ use App\Domain\Model\Company\CompanyId;
  * Class DoctrineUserId
  * @package App\Infrastructure\Persistence\Doctrine\Type
  */
-final class DoctrineCompanyId extends GuidType
+class DoctrineCompanyId extends GuidType
 {
     /**
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return 'CompanyId';
     }
@@ -31,7 +31,7 @@ final class DoctrineCompanyId extends GuidType
      */
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-        if (null === $value) {
+        if ($value === null) {
             return null;
         }
 
@@ -45,9 +45,9 @@ final class DoctrineCompanyId extends GuidType
     /**
      * @param mixed $value
      * @param AbstractPlatform $platform
-     * @return CompanyId
+     * @return CompanyId|null
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?CompanyId
     {
         if (empty($value)) {
             return null;
@@ -57,8 +57,6 @@ final class DoctrineCompanyId extends GuidType
             return $value;
         }
 
-        $value = CompanyId::fromString($value);
-
-        return $value;
+        return CompanyId::fromString($value);
     }
 }
