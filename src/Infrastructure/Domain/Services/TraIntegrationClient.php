@@ -21,33 +21,34 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * Class TraIntegrationClient
+ * @package App\Infrastructure\Domain\Services
+ */
 class TraIntegrationClient implements TraIntegrationService
 {
     public const REQUEST_TOKEN_ENDPOINT = 'requestToken';
     public const UPLOAD_CERTIFICATE_ENDPOINT = 'upload';
     public const REGISTRATION_COMPANY_ENDPOINT = 'register';
 
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /**
-     * @var HttpClientInterface
-     */
+    /** @var HttpClientInterface */
     private HttpClientInterface $httpClient;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $urlClient;
 
     /**
+     * TraIntegrationClient constructor
      * @param LoggerInterface $logger
      * @param HttpClientInterface $httpClient
      */
-    public function __construct(LoggerInterface $logger, HttpClientInterface $httpClient)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        HttpClientInterface $httpClient
+    ) {
         $this->logger = $logger;
         $this->httpClient = $httpClient;
         $this->urlClient = $_ENV['TRA_REQUEST_TOKEN_URL'];
@@ -266,8 +267,17 @@ class TraIntegrationClient implements TraIntegrationService
         }
     }
 
-    public function registrationCompanyToTra(RegistrationCompanyToTraRequest $request): RegistrationCompanyToTraResponse
-    {
+    /**
+     * @param RegistrationCompanyToTraRequest $request
+     * @return RegistrationCompanyToTraResponse
+     * @throws ClientExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws TransportExceptionInterface
+     */
+    public function registrationCompanyToTra(
+        RegistrationCompanyToTraRequest $request
+    ): RegistrationCompanyToTraResponse {
         $payload = [
             'tin' => $request->getTin(),
             'certKey' => $request->getCertificateKey(),

@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Application\Company\CommandHandler;
 
 use App\Application\Company\Command\CompanyTraRegistrationCommand;
+use App\Application\Company\Command\VerifyReceiptCodeCommand;
 use App\Domain\Repository\CompanyRepository;
 use Exception;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Class CompanyTraRegistrationHandler
@@ -14,29 +17,74 @@ use Exception;
  */
 class CompanyTraRegistrationHandler
 {
-    /**
-     * @var CompanyRepository
-     */
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
+    /** @var MessageBusInterface */
+    private MessageBusInterface $messageBus;
+
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    public function __construct(CompanyRepository $companyRepository)
-    {
+    /**
+     * CompanyTraRegistrationHandler constructor
+     * @param LoggerInterface $logger
+     * @param MessageBusInterface $messageBus
+     * @param CompanyRepository $companyRepository
+     */
+    public function __construct(
+        LoggerInterface $logger,
+        MessageBusInterface $messageBus,
+        CompanyRepository $companyRepository
+    ) {
+        $this->logger = $logger;
+        $this->messageBus = $messageBus;
         $this->companyRepository = $companyRepository;
     }
 
     /**
+     * @param CompanyTraRegistrationCommand $command
+     * @return bool|null
      * @throws Exception
      */
     public function handle(CompanyTraRegistrationCommand $command): ?bool
     {
+        $isSaved = false;
         $company = $this->companyRepository->findOneBy(['tin' => $command->getTin()]);
 
         if (empty($company)) {
-            throw new Exception('No Company found by Tin ' . $command->getTin(), 404);
+            $this->logger->critical(
+                'Company not found by TIN',
+                [
+                    'tin' => $command->getTin(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception('Company not found by TIN: ' . $command->getTin(), 404);
         }
 
         $company->updateTraRegistration(json_decode($command->getTraRegistration(), true));
 
-        return $this->companyRepository->save($company);
+        $isSaved = $this->companyRepository->save($company);
+
+        try {
+            $dto = new VerifyReceiptCodeCommand(
+                $company->companyId()->toString(),
+                json_decode($command->getTraRegistration(), true)['RECEIPTCODE']
+            );
+
+            $this->messageBus->dispatch($dto);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                $exception->getMessage(),
+                [
+                    'tin' => $command->getTin(),
+                    'method' => __METHOD__,
+                ]
+            );
+        }
+
+        return $isSaved;
     }
 }

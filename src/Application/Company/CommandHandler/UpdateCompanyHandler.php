@@ -46,7 +46,7 @@ class UpdateCompanyHandler
         $company->update([
             'name' => $command->getName(),
             'email' => $command->getEmail(),
-            'tin' => $command->getTin(),
+            'tin' => (int) $command->getTin(),
             'address' => $command->getAddress(),
             'phone' => $command->getPhone(),
             'traRegistration' => $command->getTraRegistration()

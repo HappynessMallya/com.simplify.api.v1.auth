@@ -7,9 +7,7 @@ RUN apk update && \
     apk add --no-cache zlib-dev libzip-dev
 
 ## Install php extensions
-RUN pecl install xdebug && \
-    docker-php-ext-enable xdebug && \
-    docker-php-ext-install pdo_mysql zip
+RUN docker-php-ext-install pdo_mysql zip
 
 ## Copy php default configuration
 COPY ./docker/default.ini /usr/local/etc/php/conf.d/default.ini
@@ -166,9 +164,6 @@ RUN composer install --no-dev --no-interaction --optimize-autoloader
 RUN apk --update add supervisor
 RUN mkdir -p /var/log/supervisor
 ADD ./docker/supervisor.ini /etc/supervisor.d/nginx-supervisor.ini
-
-## Disable xdebug on production
-RUN rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 RUN mkdir -p /app/public/certificates && \
     chmod 777 /app/public/certificates
