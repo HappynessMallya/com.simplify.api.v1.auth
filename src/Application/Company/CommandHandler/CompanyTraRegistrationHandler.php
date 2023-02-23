@@ -66,9 +66,9 @@ class CompanyTraRegistrationHandler
 
         $company->updateTraRegistration(json_decode($command->getTraRegistration(), true));
 
-        try {
-            $isSaved = $this->companyRepository->save($company);
+        $isSaved = $this->companyRepository->save($company);
 
+        try {
             $dto = new VerifyReceiptCodeCommand(
                 $company->companyId()->toString(),
                 json_decode($command->getTraRegistration(), true)['RECEIPTCODE']

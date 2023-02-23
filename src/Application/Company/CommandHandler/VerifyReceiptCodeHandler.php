@@ -54,6 +54,7 @@ class VerifyReceiptCodeHandler
                 [
                     'company_id' => $command->getCompanyId(),
                     'receipt_code' => $command->getReceiptCode(),
+                    'error_message' => $response->getErrorMessage(),
                 ]
             );
 
