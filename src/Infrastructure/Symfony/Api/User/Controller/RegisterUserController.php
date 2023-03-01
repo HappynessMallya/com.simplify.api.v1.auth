@@ -24,7 +24,7 @@ class RegisterUserController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function registerUserAction(Request $request)
+    public function registerUserAction(Request $request): JsonResponse
     {
         $registerUserCommand = new RegisterUserCommand();
         $form = $this->createForm(RegisterUserType::class, $registerUserCommand);
@@ -32,13 +32,20 @@ class RegisterUserController extends BaseController
 
         if ($form->isValid() === false) {
             return $this->createApiResponse(
-                ['errors' => $this->getValidationErrors($form)],
+                [
+                    'errors' => $this->getValidationErrors($form),
+                ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         $registered = $this->commandBus->handle($registerUserCommand);
 
-        return $this->createApiResponse(['success' => $registered], Response::HTTP_CREATED);
+        return $this->createApiResponse(
+            [
+                'success' => $registered,
+            ],
+            $registered ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST
+        );
     }
 }

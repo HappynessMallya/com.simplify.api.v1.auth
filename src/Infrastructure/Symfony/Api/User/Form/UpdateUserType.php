@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Symfony\Api\User\Form;
 
-use App\Application\User\Command\RegisterUserCommand;
+use App\Application\User\Command\UpdateUserCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -10,10 +10,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class RegisterUserType
+ * Class UpdateUserType
  * @package App\Infrastructure\Symfony\Api\User\Form
  */
-class RegisterUserType extends AbstractType
+class UpdateUserType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -22,18 +22,43 @@ class RegisterUserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('companyId', TextType::class, ['constraints' => new Assert\NotBlank()])
-            ->add('firstName', TextType::class, ['constraints' => new Assert\NotBlank()])
-            ->add('lastName', TextType::class, ['constraints' => new Assert\NotBlank()])
-            ->add('username', TextType::class, ['constraints' => new Assert\NotBlank()])
+            ->add(
+                'firstName',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\Length(
+                            [
+                                'min' => 2,
+                                'max' => 100,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            ->add(
+                'lastName',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\Length(
+                            [
+                                'min' => 2,
+                                'max' => 100,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+                ]
+            )
             ->add(
                 'email',
                 TextType::class,
                 [
-                    'constraints' => [
-                        new Assert\NotBlank(),
-                        new Assert\Email(),
-                    ],
+                    'constraints' => new Assert\Email(),
                 ]
             )
             ->add(
@@ -50,8 +75,7 @@ class RegisterUserType extends AbstractType
                     ],
                 ]
             )
-            ->add('password', TextType::class)
-            ->add('role', TextType::class);
+        ;
     }
 
     /**
@@ -61,7 +85,7 @@ class RegisterUserType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => RegisterUserCommand::class,
+                'data_class' => UpdateUserCommand::class,
                 'csrf_protection' => false,
                 'is_edit' => false,
                 'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}',
