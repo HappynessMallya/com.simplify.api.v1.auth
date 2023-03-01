@@ -4,36 +4,44 @@ declare(strict_types=1);
 
 namespace App\Application\User\Command;
 
+use App\Domain\Model\User\UserStatus;
+
 /**
  * Class UserChangePasswordCommand
  * @package App\Application\User\Command
  */
-final class UserChangePasswordCommand
+class UserChangePasswordCommand
 {
-    /**
-     * @var string
-     */
-    private $username;
+    /** @var string|null */
+    private ?string $companyId;
+
+    /** @var string */
+    private string $username;
+
+    /** @var string */
+    private string $password;
+
+    /** @var string */
+    private string $status;
+
+    /** @var string|null */
+    private ?string $salt;
 
     /**
-     * @var string|null
+     * @return string|null
      */
-    private $companyId;
+    public function getCompanyId(): ?string
+    {
+        return empty($this->companyId) ? null : $this->companyId;
+    }
 
     /**
-     * @var string|null
+     * @param string $companyId
      */
-    private $salt;
-
-    /**
-     * @var string
-     */
-    private $password;
-
-    /**
-     * @var string
-     */
-    private $status;
+    public function setCompanyId(string $companyId): void
+    {
+        $this->companyId = $companyId;
+    }
 
     /**
      * @return string
@@ -49,38 +57,6 @@ final class UserChangePasswordCommand
     public function setUsername(string $username): void
     {
         $this->username = $username;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getCompanyId(): ?string
-    {
-        return $this->companyId;
-    }
-
-    /**
-     * @param string $companyId
-     */
-    public function setCompanyId(string $companyId): void
-    {
-        $this->companyId = $companyId;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSalt(): ?string
-    {
-        return $this->salt;
-    }
-
-    /**
-     * @param string|null $salt
-     */
-    public function setSalt(?string $salt): void
-    {
-        $this->salt = $salt;
     }
 
     /**
@@ -100,6 +76,18 @@ final class UserChangePasswordCommand
     }
 
     /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        if (empty($this->status)) {
+            $this->status = UserStatus::ACTIVE;
+        }
+
+        return $this->status;
+    }
+
+    /**
      * @param string $status
      */
     public function setStatus(string $status): void
@@ -108,14 +96,18 @@ final class UserChangePasswordCommand
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStatus(): string
+    public function getSalt(): ?string
     {
-        if (empty($this->status)) {
-            $this->status = 'ACTIVE';
-        }
+        return empty($this->salt) ? null : $this->salt;
+    }
 
-        return $this->status;
+    /**
+     * @param string|null $salt
+     */
+    public function setSalt(?string $salt): void
+    {
+        $this->salt = $salt;
     }
 }

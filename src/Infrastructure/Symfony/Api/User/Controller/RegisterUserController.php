@@ -26,8 +26,8 @@ class RegisterUserController extends BaseController
      */
     public function registerUserAction(Request $request): JsonResponse
     {
-        $registerUserCommand = new RegisterUserCommand();
-        $form = $this->createForm(RegisterUserType::class, $registerUserCommand);
+        $command = new RegisterUserCommand();
+        $form = $this->createForm(RegisterUserType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
@@ -39,7 +39,7 @@ class RegisterUserController extends BaseController
             );
         }
 
-        $registered = $this->commandBus->handle($registerUserCommand);
+        $registered = $this->commandBus->handle($command);
 
         return $this->createApiResponse(
             [

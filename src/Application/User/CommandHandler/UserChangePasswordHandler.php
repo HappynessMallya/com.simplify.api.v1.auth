@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Application\User\CommandHandler;
 
 use App\Application\User\Command\UserChangePasswordCommand;
-use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\User\PasswordEncoder;
-use App\Infrastructure\Symfony\Security\UserEntity;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class UserChangePasswordHandler
@@ -17,16 +17,16 @@ use App\Infrastructure\Symfony\Security\UserEntity;
  */
 class UserChangePasswordHandler
 {
-    /**
-     * @var UserRepository
-     */
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
-    /**
-     * @var PasswordEncoder
-     */
+    /** @var PasswordEncoder */
     private PasswordEncoder $passwordEncoder;
 
+    /**
+     * @param UserRepository $userRepository
+     * @param PasswordEncoder $passwordEncoder
+     */
     public function __construct(UserRepository $userRepository, PasswordEncoder $passwordEncoder)
     {
         $this->userRepository = $userRepository;
@@ -36,18 +36,30 @@ class UserChangePasswordHandler
     /**
      * @param UserChangePasswordCommand $command
      * @return bool
+     * @throws Exception
      */
     public function handle(UserChangePasswordCommand $command): bool
     {
-        /** @var UserEntity $entity */
-        $entity = $this->userRepository->findOneBy(['email' => $command->getUsername()]);
-        /** @var User $user */
-        $user = $this->userRepository->find($entity->userId());
+        $userEntity = $this->userRepository->findOneBy(
+            [
+                'email' => $command->getUsername(),
+            ]
+        );
 
-        $entity->setPassword($command->getPassword());
-        $passwordEncoded = $this->passwordEncoder->hashPassword($entity);
+        if (empty($userEntity)) {
+            throw new Exception(
+                'User not found by email: ' . $command->getUsername(),
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        $user = $this->userRepository->get($userEntity->userId());
+
+        $userEntity->setPassword($command->getPassword());
+        $passwordEncoded = $this->passwordEncoder->hashPassword($userEntity);
+
         $user->setPassword($passwordEncoded);
-        $user->changeStatus(UserStatus::byValue($command->getStatus()));
+        $user->changeStatus(UserStatus::CHANGE_PASSWORD());
 
         return $this->userRepository->save($user);
     }
