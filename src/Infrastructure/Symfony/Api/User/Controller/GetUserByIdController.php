@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
 use App\Application\User\Query\GetUserByIdQuery;
-use App\Domain\Model\User\User;
 use App\Infrastructure\Symfony\Api\BaseController;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,15 +27,35 @@ class GetUserByIdController extends BaseController
     {
         $query = new GetUserByIdQuery($userId);
 
-        /** @var User $user */
-        $user =  $this->commandBus->handle($query);
+        $user = null;
+
+        try {
+            $user = $this->commandBus->handle($query);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                'Exception error trying to get user',
+                [
+                    'error_message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
+                return $this->createApiResponse(
+                    [
+                        'errors' => 'Exception error trying to get user. ' . $exception->getMessage(),
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+        }
 
         if (empty($user)) {
             return $this->createApiResponse(
                 [
-                    'errors' => 'User not found by ID',
+                    'errors' => 'Internal server error trying to get user. Invalid userId: ' . $userId,
                 ],
-                Response::HTTP_NOT_FOUND
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
