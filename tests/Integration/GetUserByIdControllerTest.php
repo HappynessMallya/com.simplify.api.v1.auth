@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class GetUserByIdControllerTest extends WebTestCase
 {
-    public function testGetUserByIdWhenIsSuccess()
+    public function testSubmitValidDataShouldBeSuccess()
     {
         // Given
         $client = self::createClient();

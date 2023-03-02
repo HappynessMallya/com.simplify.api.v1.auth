@@ -59,7 +59,7 @@ class UpdateUserController extends BaseController
             if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
                 return $this->createApiResponse(
                     [
-                        'errors' => $exception->getMessage(),
+                        'errors' => 'Exception error trying to update user. ' . $exception->getMessage(),
                     ],
                     Response::HTTP_NOT_FOUND
                 );
