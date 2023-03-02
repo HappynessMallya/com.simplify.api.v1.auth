@@ -23,7 +23,7 @@ class GetUserByIdController extends BaseController
      * @param string $userId
      * @return JsonResponse
      */
-    public function getUserAction(string $userId): JsonResponse
+    public function getUserByIdAction(string $userId): JsonResponse
     {
         $query = new GetUserByIdQuery($userId);
 
