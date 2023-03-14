@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
-use App\Application\User\Query\GetUserByIdQuery;
+use App\Application\User\Query\GetUserByUsernameQuery;
+use App\Domain\Model\User\User;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class GetUserByIdController
@@ -18,18 +22,25 @@ use Symfony\Component\Routing\Annotation\Route;
 class GetUserByIdController extends BaseController
 {
     /**
-     * @Route(path="/profile/{userId}", methods={"GET"})
+     * @Route(path="/profile", methods={"GET"})
      *
-     * @param string $userId
+     * @param TokenStorageInterface $jwtStorage
+     * @param JWTTokenManagerInterface $jwtManager
      * @return JsonResponse
+     * @throws JWTDecodeFailureException
      */
-    public function getUserByIdAction(string $userId): JsonResponse
-    {
-        $query = new GetUserByIdQuery($userId);
+    public function getUserByIdAction(
+        JWTTokenManagerInterface $jwtManager,
+        TokenStorageInterface $jwtStorage
+    ): JsonResponse {
+        $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $username = $tokenData['username'];
 
+        $query = new GetUserByUsernameQuery($username);
         $user = null;
 
         try {
+            /** @var User $user */
             $user = $this->commandBus->handle($query);
         } catch (Exception $exception) {
             $this->logger->critical(
@@ -53,7 +64,7 @@ class GetUserByIdController extends BaseController
         if (empty($user)) {
             return $this->createApiResponse(
                 [
-                    'errors' => 'Internal server error trying to get user. Invalid userId: ' . $userId,
+                    'errors' => 'Internal server error trying to get user',
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );

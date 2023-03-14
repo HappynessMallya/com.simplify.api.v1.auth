@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace App\Application\User\QueryHandler;
 
-use App\Application\User\Query\GetUserByIdQuery;
+use App\Application\User\Query\GetUserByUsernameQuery;
 use App\Domain\Model\User\User;
-use App\Domain\Model\User\UserId;
 use App\Domain\Repository\UserRepository;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetUserByIdHandler
+ * Class GetUserByUsernameHandler
  * @package App\Application\User\QueryHandler
  */
-class GetUserByIdHandler
+class GetUserByUsernameHandler
 {
     /** @var UserRepository */
     private UserRepository $userRepository;
@@ -29,17 +28,19 @@ class GetUserByIdHandler
     }
 
     /**
-     * @param GetUserByIdQuery $command
+     * @param GetUserByUsernameQuery $query
      * @return User|null
      * @throws Exception
      */
-    public function handle(GetUserByIdQuery $command): ?User
+    public function handle(GetUserByUsernameQuery $query): ?User
     {
-        $userId = UserId::fromString($command->getUserId());
-        $user = $this->userRepository->get($userId);
+        $user = $this->userRepository->getByUsername($query->getUsername());
 
         if (empty($user)) {
-            throw new Exception('User not found by ID: ' . $userId, Response::HTTP_NOT_FOUND);
+            throw new Exception(
+                'User not found by username: ' . $query->getUsername(),
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         return $user;

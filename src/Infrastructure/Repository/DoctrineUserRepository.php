@@ -19,18 +19,21 @@ use Exception;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-final class DoctrineUserRepository implements UserRepository, UserLoaderInterface, ObjectRepository
+/**
+ * Class DoctrineUserRepository
+ * @package App\Infrastructure\Repository
+ */
+class DoctrineUserRepository implements UserRepository, UserLoaderInterface, ObjectRepository
 {
-    /**
-     * @var EntityManager
-     */
+    /** @var EntityManager */
     private $em;
 
-    /**
-     * @var EntityRepository
-     */
+    /** @var EntityRepository */
     private $repository;
 
+    /**
+     * @param EntityManagerInterface $em
+     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -100,7 +103,7 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
         );
     }
 
-    public function getClassName()
+    public function getClassName(): string
     {
         return 'DoctrineUserRepository';
     }
@@ -112,6 +115,16 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
     public function get(UserId $userId): ?User
     {
         return $this->find($userId);
+    }
+
+    /**
+     * @param string $username
+     * @return User|null
+     */
+    public function getByUsername(string $username): ?User
+    {
+        $users = $this->findBy(['username' => $username]);
+        return empty($users) ? null : $users[0];
     }
 
     /**
