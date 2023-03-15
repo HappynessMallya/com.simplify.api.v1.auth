@@ -8,10 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class UpdateUserControllerTest
+ * Class GetUserByUsernameControllerTest
  * @package App\Tests\Integration\Controller
  */
-class UpdateUserControllerTest extends WebTestCase
+class GetUserByUsernameControllerTest extends WebTestCase
 {
     public function testSubmitValidDataShouldBeSuccess()
     {
@@ -28,27 +28,19 @@ class UpdateUserControllerTest extends WebTestCase
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
-        $dto = [
-            'firstName' => 'John',
-            'lastName' => 'Doe',
-            'email' => 'john.doe@example.co.tz',
-            'mobileNumber' => '123456770'
-        ];
-
         // When
         $client->request(
-            'PUT',
+            'GET',
             '/api/v1/user/profile',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-            ],
-            json_encode($dto)
+            ]
         );
 
         // Then
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertTrue(json_decode($client->getResponse()->getContent(), true)['success']);
+        $this->assertNotNull(json_decode($client->getResponse()->getContent(), true)['userId']);
     }
 }

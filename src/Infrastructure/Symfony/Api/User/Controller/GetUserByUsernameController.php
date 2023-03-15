@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
 use App\Application\User\Query\GetUserByUsernameQuery;
-use App\Domain\Model\User\User;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -16,10 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetUserByIdController
+ * Class GetUserByUsernameController
  * @package App\Infrastructure\Symfony\Api\User\Controller
  */
-class GetUserByIdController extends BaseController
+class GetUserByUsernameController extends BaseController
 {
     /**
      * @Route(path="/profile", methods={"GET"})
