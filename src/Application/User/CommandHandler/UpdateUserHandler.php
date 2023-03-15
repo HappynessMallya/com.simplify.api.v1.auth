@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\User\CommandHandler;
 
 use App\Application\User\Command\UpdateUserCommand;
-use App\Domain\Model\User\UserId;
 use App\Domain\Repository\UserRepository;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,11 +33,13 @@ class UpdateUserHandler
      */
     public function handle(UpdateUserCommand $command): ?bool
     {
-        $userId = UserId::fromString($command->getUserId());
-        $user = $this->userRepository->get($userId);
+        $user = $this->userRepository->getByUsername($command->getUsername());
 
         if (empty($user)) {
-            throw new Exception('User not found by ID: ' . $userId, Response::HTTP_NOT_FOUND);
+            throw new Exception(
+                'User not found by username: ' . $command->getUsername(),
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         $user->update(

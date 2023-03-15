@@ -40,7 +40,6 @@ class GetUserByIdController extends BaseController
         $user = null;
 
         try {
-            /** @var User $user */
             $user = $this->commandBus->handle($query);
         } catch (Exception $exception) {
             $this->logger->critical(

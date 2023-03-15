@@ -8,10 +8,13 @@ use App\Application\User\Command\UpdateUserCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\User\Form\UpdateUserType;
 use Exception;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class UpdateUserController
@@ -20,14 +23,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class UpdateUserController extends BaseController
 {
     /**
-     * @Route(path="/profile/{userId}", methods={"PUT"})
+     * @Route(path="/profile", methods={"PUT"})
      *
      * @param Request $request
-     * @param string $userId
+     * @param JWTTokenManagerInterface $jwtManager
+     * @param TokenStorageInterface $jwtStorage
      * @return JsonResponse
+     * @throws JWTDecodeFailureException
      */
-    public function updateUserAction(Request $request, string $userId): JsonResponse
-    {
+    public function updateUserAction(
+        Request $request,
+        JWTTokenManagerInterface $jwtManager,
+        TokenStorageInterface $jwtStorage
+    ): JsonResponse {
+        $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $username = $tokenData['username'];
+
         $command = new UpdateUserCommand();
         $form = $this->createForm(UpdateUserType::class, $command);
         $this->processForm($request, $form);
@@ -41,7 +52,7 @@ class UpdateUserController extends BaseController
             );
         }
 
-        $command->setUserId($userId);
+        $command->setUsername($username);
 
         $updated = false;
 

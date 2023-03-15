@@ -11,7 +11,7 @@ namespace App\Application\User\Command;
 class UpdateUserCommand
 {
     /** @var string */
-    private string $userId;
+    private string $username;
 
     /** @var string|null */
     private ?string $firstName;
@@ -28,17 +28,17 @@ class UpdateUserCommand
     /**
      * @return string
      */
-    public function getUserId(): string
+    public function getUsername(): string
     {
-        return $this->userId;
+        return $this->username;
     }
 
     /**
-     * @param string $userId
+     * @param string $username
      */
-    public function setUserId(string $userId): void
+    public function setUsername(string $username): void
     {
-        $this->userId = $userId;
+        $this->username = $username;
     }
 
     /**
