@@ -96,7 +96,8 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
             $user->password(),
             $user->salt(),
             $user->status(),
-            $user->roles()
+            $user->roles(),
+            $user->getUserType()
         );
     }
 
@@ -176,7 +177,8 @@ final class DoctrineUserRepository implements UserRepository, UserLoaderInterfac
                 $user->password(),
                 $user->salt(),
                 $user->status(),
-                $user->roles()
+                $user->roles(),
+                $user->userType()
             );
         } catch (NonUniqueResultException $e) {
             return null;
