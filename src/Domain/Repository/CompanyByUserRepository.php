@@ -3,9 +3,12 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Model\Company\CompanyId;
-use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserId;
 
+/**
+ * Interface CompanyByUserRepository
+ * @package App\Domain\Repository
+ */
 interface CompanyByUserRepository
 {
     /**

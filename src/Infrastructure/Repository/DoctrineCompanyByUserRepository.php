@@ -28,7 +28,6 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
      * @param UserId $userId
      * @return array
      * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function getCompaniesByUser(UserId $userId): array
     {

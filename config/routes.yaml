@@ -11,11 +11,11 @@ login_v2:
     methods: ['POST']
 
 gesdinet_jwt_refresh_token:
-    path:       /api/v1/user/token/refresh
+    path: /api/v1/user/token/refresh
     controller: gesdinet.jwtrefreshtoken::refresh
     methods: ['POST']
 
 gesdinet_jwt_refresh_token_v2:
-    path:       /api/v2/user/token/refresh
+    path: /api/v2/user/token/refresh
     controller: App\Infrastructure\Symfony\Api\User\Controller\V2\RefreshTokenController::refresh
     methods: ['POST']
