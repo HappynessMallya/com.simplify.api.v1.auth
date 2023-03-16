@@ -55,6 +55,9 @@ class User
     /** @var DateTime */
     protected DateTime $createdAt;
 
+    /** @var UserType  */
+    protected UserType $userType;
+
     /** @var string */
     protected string $firstName;
 
@@ -82,6 +85,7 @@ class User
         ?string $password,
         ?string $salt,
         UserStatus $userStatus,
+        UserType $userType,
         string $firstName,
         string $lastName,
         ?string $mobileNumber
@@ -103,6 +107,7 @@ class User
         $self->lastLogin = null;
         $self->confirmationToken = null;
         $self->passwordRequestedAt = null;
+        $self->userType = $userType;
 
         return $self;
     }
@@ -349,6 +354,14 @@ class User
     public function passwordRequestedAt(): DateTime
     {
         return $this->passwordRequestedAt;
+    }
+
+    /**
+     * @return UserType
+     */
+    public function getUserType(): UserType
+    {
+        return $this->userType;
     }
 
     /**

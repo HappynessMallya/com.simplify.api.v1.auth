@@ -5,6 +5,7 @@
     https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
     <entity name="App\Domain\Model\Company\Company" table="company">
         <id name="companyId" type="CompanyId" column="id" />
+        <field name="organizationId" type="OrganizationId" column="organization_id" />
         <field name="name" type="string" unique="true" />
         <field name="tin" type="string" unique="true" />
         <field name="address" type="string" nullable="true" />
