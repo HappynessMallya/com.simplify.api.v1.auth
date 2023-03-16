@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Application\User\Query;
 
 /**
- * Class GetUserByUsernameQuery
+ * Class GetProfileByUsernameQuery
  * @package App\Application\User\Query
  */
-class GetUserByUsernameQuery
+class GetProfileByUsernameQuery
 {
     /** @var string */
     protected string $username;

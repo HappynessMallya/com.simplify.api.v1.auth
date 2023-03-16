@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\User\QueryHandler;
 
-use App\Application\User\Query\GetUserByUsernameQuery;
+use App\Application\User\Query\GetProfileByUsernameQuery;
 use App\Domain\Model\User\User;
 use App\Domain\Repository\UserRepository;
 use Exception;
@@ -12,10 +12,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetUserByUsernameHandler
+ * Class GetProfileByUsernameHandler
  * @package App\Application\User\QueryHandler
  */
-class GetUserByUsernameHandler
+class GetProfileByUsernameHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -36,11 +36,11 @@ class GetUserByUsernameHandler
     }
 
     /**
-     * @param GetUserByUsernameQuery $query
+     * @param GetProfileByUsernameQuery $query
      * @return User|null
      * @throws Exception
      */
-    public function handle(GetUserByUsernameQuery $query): ?User
+    public function handle(GetProfileByUsernameQuery $query): ?User
     {
         $user = $this->userRepository->getByUsername($query->getUsername());
 

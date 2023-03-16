@@ -8,10 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetUserByUsernameControllerTest
+ * Class GetProfileByUsernameControllerTest
  * @package App\Tests\Integration\Controller
  */
-class GetUserByUsernameControllerTest extends WebTestCase
+class GetProfileByUsernameControllerTest extends WebTestCase
 {
     public function testSubmitValidDataShouldBeSuccess()
     {
