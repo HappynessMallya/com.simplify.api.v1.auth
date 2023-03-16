@@ -94,8 +94,10 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $user = $this->userRepository->get($jwtUser->userId());
 
         $payload = [
-            'lastLogin' => (!empty($user->lastLogin())) ? $user->lastLogin()->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
-                ->format('Y-m-d H:i:s') : null,
+            'lastLogin' => (!empty($user->lastLogin()))
+                ? $user->lastLogin()->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
+                    ->format('Y-m-d H:i:s')
+                : null,
             'status' => $user->status()->toString(),
         ];
 

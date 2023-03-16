@@ -86,8 +86,10 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
             'username' => $user->username(),
             'companies' => $companiesUser,
             'userType' => $user->getUserType()->toString(),
-            'lastLogin' => (!empty($user->lastLogin())) ? $user->lastLogin()->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
-                ->format('Y-m-d H:i:s') : null,
+            'lastLogin' => (!empty($user->lastLogin()))
+                ? $user->lastLogin()->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
+                    ->format('Y-m-d H:i:s')
+                : null,
             'status' => $user->status()->toString(),
         ];
 
