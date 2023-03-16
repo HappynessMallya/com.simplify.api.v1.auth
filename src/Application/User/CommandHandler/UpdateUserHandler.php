@@ -7,6 +7,7 @@ namespace App\Application\User\CommandHandler;
 use App\Application\User\Command\UpdateUserCommand;
 use App\Domain\Repository\UserRepository;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,14 +16,21 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class UpdateUserHandler
 {
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
     /** @var UserRepository */
     private UserRepository $userRepository;
 
     /**
+     * @param LoggerInterface $logger
      * @param UserRepository $userRepository
      */
-    public function __construct(UserRepository $userRepository)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        UserRepository $userRepository
+    ) {
+        $this->logger = $logger;
         $this->userRepository = $userRepository;
     }
 
@@ -36,6 +44,15 @@ class UpdateUserHandler
         $user = $this->userRepository->getByUsername($command->getUsername());
 
         if (empty($user)) {
+            $this->logger->critical(
+                'User not found by username',
+                [
+                    'username' => $command->getUsername(),
+                    'email' => $command->getEmail(),
+                    'method' => __METHOD__,
+                ]
+            );
+
             throw new Exception(
                 'User not found by username: ' . $command->getUsername(),
                 Response::HTTP_NOT_FOUND

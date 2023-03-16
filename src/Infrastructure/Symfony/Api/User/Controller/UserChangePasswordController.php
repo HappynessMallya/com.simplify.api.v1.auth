@@ -63,11 +63,20 @@ class UserChangePasswordController extends BaseController
             }
         }
 
+        if (!$changed) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         return $this->createApiResponse(
             [
-                'success' => $changed,
+                'success' => true,
             ],
-            $changed ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST
+            Response::HTTP_OK
         );
     }
 }

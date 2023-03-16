@@ -9,6 +9,7 @@ use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\User\PasswordEncoder;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -17,6 +18,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class UserChangePasswordHandler
 {
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
     /** @var UserRepository */
     private UserRepository $userRepository;
 
@@ -24,11 +28,16 @@ class UserChangePasswordHandler
     private PasswordEncoder $passwordEncoder;
 
     /**
+     * @param LoggerInterface $logger
      * @param UserRepository $userRepository
      * @param PasswordEncoder $passwordEncoder
      */
-    public function __construct(UserRepository $userRepository, PasswordEncoder $passwordEncoder)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        UserRepository $userRepository,
+        PasswordEncoder $passwordEncoder
+    ) {
+        $this->logger = $logger;
         $this->userRepository = $userRepository;
         $this->passwordEncoder = $passwordEncoder;
     }
@@ -47,6 +56,14 @@ class UserChangePasswordHandler
         );
 
         if (empty($userEntity)) {
+            $this->logger->critical(
+                'User not found by email',
+                [
+                    'username' => $command->getUsername(),
+                    'method' => __METHOD__,
+                ]
+            );
+
             throw new Exception(
                 'User not found by email: ' . $command->getUsername(),
                 Response::HTTP_NOT_FOUND

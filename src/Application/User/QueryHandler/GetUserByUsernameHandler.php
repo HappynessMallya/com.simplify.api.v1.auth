@@ -8,6 +8,7 @@ use App\Application\User\Query\GetUserByUsernameQuery;
 use App\Domain\Model\User\User;
 use App\Domain\Repository\UserRepository;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -16,14 +17,21 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class GetUserByUsernameHandler
 {
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
     /** @var UserRepository */
     private UserRepository $userRepository;
 
     /**
+     * @param LoggerInterface $logger
      * @param UserRepository $userRepository
      */
-    public function __construct(UserRepository $userRepository)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        UserRepository $userRepository
+    ) {
+        $this->logger = $logger;
         $this->userRepository = $userRepository;
     }
 
@@ -37,6 +45,14 @@ class GetUserByUsernameHandler
         $user = $this->userRepository->getByUsername($query->getUsername());
 
         if (empty($user)) {
+            $this->logger->critical(
+                'User not found by username',
+                [
+                    'username' => $query->getUsername(),
+                    'method' => __METHOD__,
+                ]
+            );
+
             throw new Exception(
                 'User not found by username: ' . $query->getUsername(),
                 Response::HTTP_NOT_FOUND

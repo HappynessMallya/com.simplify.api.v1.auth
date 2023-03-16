@@ -41,11 +41,20 @@ class RegisterUserController extends BaseController
 
         $registered = $this->commandBus->handle($command);
 
+        if (!$registered) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         return $this->createApiResponse(
             [
-                'success' => $registered,
+                'success' => true,
             ],
-            $registered ? Response::HTTP_CREATED : Response::HTTP_BAD_REQUEST
+            Response::HTTP_CREATED
         );
     }
 }

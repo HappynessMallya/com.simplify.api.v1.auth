@@ -77,11 +77,20 @@ class UpdateUserController extends BaseController
             }
         }
 
+        if (!$updated) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         return $this->createApiResponse(
             [
-                'success' => $updated,
+                'success' => true,
             ],
-            $updated ? Response::HTTP_OK : Response::HTTP_BAD_REQUEST
+            Response::HTTP_OK
         );
     }
 }
