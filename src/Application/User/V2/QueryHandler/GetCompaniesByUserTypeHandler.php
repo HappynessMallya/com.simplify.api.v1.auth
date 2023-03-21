@@ -63,6 +63,11 @@ class GetCompaniesByUserTypeHandler
                     'method' => __METHOD__,
                 ]
             );
+
+            throw new Exception(
+                'User is not an owner: ' . $userType->getValue(),
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         if (empty($companiesByUser)) {

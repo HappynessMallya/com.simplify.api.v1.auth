@@ -8,33 +8,43 @@ use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use DateTime;
 use DateTimeZone;
+use Exception;
 use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken;
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
+/**
+ * Class ApiV2AuthenticationSuccessHandler
+ * @package App\Infrastructure\Symfony\Security
+ */
 class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
-    /** @var JWTTokenManagerInterface  */
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
+    /** @var JWTTokenManagerInterface */
     private JWTTokenManagerInterface $JWTTokenManager;
 
-    /** @var CompanyByUserRepository  */
+    /** @var CompanyByUserRepository */
     private CompanyByUserRepository $companyByUserRepository;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /** @var UserRepository  */
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
-    /** @var RefreshTokenManagerInterface  */
+    /** @var RefreshTokenManagerInterface */
     private RefreshTokenManagerInterface $refreshTokenManager;
 
     /**
+     * @param LoggerInterface $logger
      * @param JWTTokenManagerInterface $JWTTokenManager
      * @param CompanyByUserRepository $companyByUserRepository
      * @param CompanyRepository $companyRepository
@@ -42,12 +52,14 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
      * @param RefreshTokenManagerInterface $refreshTokenManager
      */
     public function __construct(
+        LoggerInterface $logger,
         JWTTokenManagerInterface $JWTTokenManager,
         CompanyByUserRepository $companyByUserRepository,
         CompanyRepository $companyRepository,
         UserRepository $userRepository,
         RefreshTokenManagerInterface $refreshTokenManager
     ) {
+        $this->logger = $logger;
         $this->JWTTokenManager = $JWTTokenManager;
         $this->companyByUserRepository = $companyByUserRepository;
         $this->companyRepository = $companyRepository;
@@ -59,7 +71,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
      * @param Request $request
      * @param TokenInterface $token
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): JsonResponse
     {
@@ -71,8 +83,27 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $companies = $this->companyByUserRepository->getCompaniesByUser($userId);
 
         $companiesUser = [];
+
         foreach ($companies as $companyUser) {
             $company = $this->companyRepository->get(CompanyId::fromString($companyUser['company_id']));
+
+            if (empty($company->traRegistration())) {
+                $this->logger->critical(
+                    'Missing TRA registration',
+                    [
+                        'companyId' => $company->companyId()->toString(),
+                        'tin' => $company->tin(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                return new JsonResponse(
+                    [
+                        'error' => 'Missing TRA registration for one of the companies',
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             $companiesUser[] = [
                 'company_id' => $company->companyId()->toString(),

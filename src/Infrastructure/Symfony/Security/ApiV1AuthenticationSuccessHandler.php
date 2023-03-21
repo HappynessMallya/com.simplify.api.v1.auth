@@ -18,6 +18,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
+/**
+ * Class ApiV1AuthenticationSuccessHandler
+ * @package App\Infrastructure\Symfony\Security
+ */
 class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     /** @var UserRepository */
@@ -32,7 +36,7 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
     /** @var MessageBusInterface */
     private MessageBusInterface $messageBus;
 
-    /** @var JWTTokenManagerInterface  */
+    /** @var JWTTokenManagerInterface */
     private JWTTokenManagerInterface $JWTTokenManager;
 
     private RefreshTokenManagerInterface $refreshTokenManager;

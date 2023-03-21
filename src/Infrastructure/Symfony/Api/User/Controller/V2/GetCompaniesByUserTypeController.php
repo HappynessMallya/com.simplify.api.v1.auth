@@ -30,7 +30,7 @@ class GetCompaniesByUserTypeController extends BaseController
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getCompanioesByUserTypeAction(
+    public function getCompaniesByUserTypeAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
         GetCompaniesByUserTypeHandler $handler
