@@ -67,28 +67,45 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
 
         $company = $this->companyRepository->get($jwtUser->companyId());
 
-        if (!empty($company->traRegistration())) {
-            $command = new RequestAuthenticationTraCommand(
-                $company->companyId()->toString(),
-                (string) $company->tin(),
-                $company->traRegistration()['USERNAME'],
-                $company->traRegistration()['PASSWORD']
+        if (empty($company->traRegistration())) {
+            $this->logger->critical(
+                'Company has not been registered in TRA',
+                [
+                    'tin' => $company->tin(),
+                    'company_id' => $company->companyId(),
+                    'method' => __METHOD__,
+                ]
             );
 
-            try {
-                $this->messageBus->dispatch($command);
-            } catch (Exception $exception) {
-                $this->logger->critical(
-                    'An error has been occurred when trying request authentication in TRA',
-                    [
-                        'companyId' => $company->companyId()->toString(),
-                        'tin' => $company->tin(),
-                        'error' => $exception->getMessage(),
-                        'code' => $exception->getCode(),
-                        'method' => __METHOD__,
-                    ]
-                );
-            }
+            return new JsonResponse(
+                [
+                    'success' => false,
+                    'error' => 'Company has not been registered in TRA'
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $command = new RequestAuthenticationTraCommand(
+            $company->companyId()->toString(),
+            (string) $company->tin(),
+            $company->traRegistration()['USERNAME'],
+            $company->traRegistration()['PASSWORD']
+        );
+
+        try {
+            $this->messageBus->dispatch($command);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                'An error has been occurred when trying request authentication in TRA',
+                [
+                    'companyId' => $company->companyId()->toString(),
+                    'tin' => $company->tin(),
+                    'error' => $exception->getMessage(),
+                    'code' => $exception->getCode(),
+                    'method' => __METHOD__,
+                ]
+            );
         }
 
         $user = $this->userRepository->get($jwtUser->userId());
