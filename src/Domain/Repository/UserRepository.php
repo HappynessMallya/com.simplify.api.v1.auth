@@ -21,12 +21,6 @@ interface UserRepository
     public function get(UserId $userId): ?User;
 
     /**
-     * @param string $username
-     * @return User|null
-     */
-    public function getByUsername(string $username): ?User;
-
-    /**
      * @param User $user
      * @return bool
      */

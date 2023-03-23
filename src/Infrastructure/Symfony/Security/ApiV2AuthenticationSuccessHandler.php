@@ -87,24 +87,6 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         foreach ($companies as $companyUser) {
             $company = $this->companyRepository->get(CompanyId::fromString($companyUser['company_id']));
 
-            if (empty($company->traRegistration())) {
-                $this->logger->critical(
-                    'Missing TRA registration',
-                    [
-                        'companyId' => $company->companyId()->toString(),
-                        'tin' => $company->tin(),
-                        'method' => __METHOD__,
-                    ]
-                );
-
-                return new JsonResponse(
-                    [
-                        'error' => 'Missing TRA registration for one of the companies',
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
-
             $companiesUser[] = [
                 'company_id' => $company->companyId()->toString(),
                 'name' => $company->name(),

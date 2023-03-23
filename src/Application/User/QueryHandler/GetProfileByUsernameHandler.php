@@ -7,6 +7,7 @@ namespace App\Application\User\QueryHandler;
 use App\Application\User\Query\GetProfileByUsernameQuery;
 use App\Domain\Model\User\User;
 use App\Domain\Repository\UserRepository;
+use App\Infrastructure\Symfony\Security\UserEntity;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,7 +43,11 @@ class GetProfileByUsernameHandler
      */
     public function handle(GetProfileByUsernameQuery $query): ?User
     {
-        $user = $this->userRepository->getByUsername($query->getUsername());
+        /** @var UserEntity $userEntity */
+        $userEntity = $this->userRepository->findOneBy(['username' => $query->getUsername()]);
+
+        /** @var User $user */
+        $user = $this->userRepository->get($userEntity->userId());
 
         if (empty($user)) {
             $this->logger->critical(
