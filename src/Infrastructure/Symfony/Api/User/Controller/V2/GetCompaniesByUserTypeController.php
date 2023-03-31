@@ -40,6 +40,7 @@ class GetCompaniesByUserTypeController extends BaseController
         $userType = $tokenData['userType'];
 
         $query = new GetCompaniesByUserTypeQuery($userId, $userType);
+
         $companies = null;
 
         try {

@@ -37,11 +37,9 @@ class GetUsersByOrganizationController extends BaseController
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
         $organizationId = $tokenData['organizationId'];
-        $companyId = $tokenData['companyId'];
-        $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
-        $query = new GetUsersByOrganizationQuery($organizationId, $companyId, $userId, $userType);
+        $query = new GetUsersByOrganizationQuery($organizationId, $userType);
 
         try {
             $operators = $handler->__invoke($query);

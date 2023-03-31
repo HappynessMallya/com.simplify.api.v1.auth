@@ -32,7 +32,7 @@ class ChangeUserStatusByIdController extends BaseController
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function disableOperatorByIdIdAction(
+    public function changeUserStatusByIdAction(
         Request $request,
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
