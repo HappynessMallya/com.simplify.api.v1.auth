@@ -49,6 +49,7 @@ class UserChangePasswordController extends BaseController
                 'Exception error trying to change password',
                 [
                     'error_message' => $exception->getMessage(),
+                    'error_code' => $exception->getCode(),
                     'method' => __METHOD__,
                 ]
             );
@@ -56,7 +57,8 @@ class UserChangePasswordController extends BaseController
             if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
                 return $this->createApiResponse(
                     [
-                        'errors' => $exception->getMessage(),
+                        'success' => false,
+                        'error_message' => 'Exception error trying to change password. ' . $exception->getMessage(),
                     ],
                     Response::HTTP_NOT_FOUND
                 );
@@ -67,6 +69,7 @@ class UserChangePasswordController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
+                    'error_message' => 'Password not changed',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -75,6 +78,7 @@ class UserChangePasswordController extends BaseController
         return $this->createApiResponse(
             [
                 'success' => true,
+                'message' => 'Password changed successfully',
             ],
             Response::HTTP_OK
         );

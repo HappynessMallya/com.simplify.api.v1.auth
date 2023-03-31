@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
-use App\Application\User\Command\UserChangePasswordCommand;
+use App\Application\User\Command\UserChangePasswordByAdminCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
-use App\Infrastructure\Symfony\Api\User\Form\UserChangePasswordType;
+use App\Infrastructure\Symfony\Api\User\Form\UserChangePasswordByAdminType;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,8 +27,8 @@ class UserChangePasswordByAdminController extends BaseController
      */
     public function userChangePasswordByAdminAction(Request $request): JsonResponse
     {
-        $command = new UserChangePasswordCommand();
-        $form = $this->createForm(UserChangePasswordType::class, $command);
+        $command = new UserChangePasswordByAdminCommand();
+        $form = $this->createForm(UserChangePasswordByAdminType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
@@ -49,6 +49,7 @@ class UserChangePasswordByAdminController extends BaseController
                 'Exception error trying to change password',
                 [
                     'error_message' => $exception->getMessage(),
+                    'error_code' => $exception->getCode(),
                     'method' => __METHOD__,
                 ]
             );
@@ -56,7 +57,8 @@ class UserChangePasswordByAdminController extends BaseController
             if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
                 return $this->createApiResponse(
                     [
-                        'errors' => $exception->getMessage(),
+                        'success' => false,
+                        'error_message' => 'Exception error trying to change password. ' . $exception->getMessage(),
                     ],
                     Response::HTTP_NOT_FOUND
                 );
@@ -67,6 +69,7 @@ class UserChangePasswordByAdminController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
+                    'error_message' => 'Password not changed',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -75,6 +78,7 @@ class UserChangePasswordByAdminController extends BaseController
         return $this->createApiResponse(
             [
                 'success' => true,
+                'message' => 'Password changed successfully',
             ],
             Response::HTTP_OK
         );
