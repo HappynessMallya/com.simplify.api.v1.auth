@@ -54,15 +54,13 @@ class UserChangePasswordByAdminController extends BaseController
                 ]
             );
 
-            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'error_message' => 'Exception error trying to change password. ' . $exception->getMessage(),
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error_message' => 'Exception error trying to change password. ' . $exception->getMessage(),
+                ],
+                $exception->getCode()
+            );
         }
 
         if (!$changed) {
