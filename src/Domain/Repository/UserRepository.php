@@ -42,4 +42,10 @@ interface UserRepository
      * @return UserEntity|null
      */
     public function findOneBy(array $criteria): ?UserEntity;
+
+    /**
+     * @param array $criteria
+     * @return User|null
+     */
+    public function findByCriteria(array $criteria): ?array;
 }

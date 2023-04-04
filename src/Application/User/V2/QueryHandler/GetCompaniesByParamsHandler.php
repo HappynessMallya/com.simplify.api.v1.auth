@@ -23,7 +23,7 @@ class GetCompaniesByParamsHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
     /** @var CompanyByUserRepository */

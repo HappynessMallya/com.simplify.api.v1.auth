@@ -104,6 +104,26 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
         );
     }
 
+    /**
+     * @param array $criteria
+     * @return array|null
+     */
+    public function findByCriteria(array $criteria): ?array
+    {
+        if (empty($criteria['status'])) {
+            $criteria['status'] = [
+                UserStatus::ACTIVE(),
+                UserStatus::CHANGE_PASSWORD(),
+                UserStatus::SUSPENDED(),
+            ];
+        }
+
+        return $this->repository->findBy($criteria);
+    }
+
+    /**
+     * @return string
+     */
     public function getClassName(): string
     {
         return 'DoctrineUserRepository';
@@ -193,9 +213,9 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
                 $user->roles(),
                 $user->userType()
             );
-        } catch (NonUniqueResultException $e) {
+        } catch (NonUniqueResultException $exception) {
             return null;
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             return null;
         }
     }

@@ -119,6 +119,8 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $payload = [
             'userId' => $userId->toString(),
             'username' => $user->username(),
+            'firstName' => $user->firstName(),
+            'lastName' => $user->lastName(),
             'organizationId' => $organizationId,
             'companies' => $companiesUser,
             'userType' => $user->getUserType()->toString(),
