@@ -14,10 +14,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetUsersByOrganizationHandler
+ * Class GetOperatorsByOrganizationHandler
  * @package App\Application\User\V2\QueryHandler
  */
-class GetUsersByOrganizationHandler
+class GetOperatorsByOrganizationHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -44,11 +44,11 @@ class GetUsersByOrganizationHandler
     }
 
     /**
-     * @param GetUsersByOrganizationQuery $query
+     * @param GetOperatorsByOrganizationQuery $query
      * @return array
      * @throws Exception
      */
-    public function __invoke(GetUsersByOrganizationQuery $query): array
+    public function __invoke(GetOperatorsByOrganizationQuery $query): array
     {
         $organizationId = OrganizationId::fromString($query->getOrganizationId());
         $userType = UserType::byName($query->getUserType());

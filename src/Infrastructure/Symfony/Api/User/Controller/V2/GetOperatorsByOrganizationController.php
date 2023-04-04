@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
 
-use App\Application\User\V2\QueryHandler\GetUsersByOrganizationHandler;
-use App\Application\User\V2\QueryHandler\GetUsersByOrganizationQuery;
+use App\Application\User\V2\QueryHandler\GetOperatorsByOrganizationHandler;
+use App\Application\User\V2\QueryHandler\GetOperatorsByOrganizationQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -16,30 +16,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetUsersByOrganizationController
+ * Class GetOperatorsByOrganizationController
  * @package App\Infrastructure\Symfony\Api\ApiUser\Controller\V2
  */
-class GetUsersByOrganizationController extends BaseController
+class GetOperatorsByOrganizationController extends BaseController
 {
     /**
      * @Route(path="/operators", methods={"GET"})
      *
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
-     * @param GetUsersByOrganizationHandler $handler
+     * @param GetOperatorsByOrganizationHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
     public function getUsersByOrganizationAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
-        GetUsersByOrganizationHandler $handler
+        GetOperatorsByOrganizationHandler $handler
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
         $organizationId = $tokenData['organizationId'];
         $userType = $tokenData['userType'];
 
-        $query = new GetUsersByOrganizationQuery($organizationId, $userType);
+        $query = new GetOperatorsByOrganizationQuery($organizationId, $userType);
 
         try {
             $operators = $handler->__invoke($query);
