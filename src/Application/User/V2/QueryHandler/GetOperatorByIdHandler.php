@@ -120,8 +120,8 @@ class GetOperatorByIdHandler
                 'email' => $company->email(),
                 'address' => $company->address(),
                 'traRegistration' => $company->traRegistration(),
-                'createdAt' => $company->createdAt()->format(DATE_ATOM),
                 'status' => $company->companyStatus(),
+                'createdAt' => $company->createdAt()->format(DATE_ATOM),
             ];
         }
 
@@ -132,8 +132,8 @@ class GetOperatorByIdHandler
             'email' => $operator->email(),
             'mobileNumber' => $operator->mobileNumber(),
             'companies' => $companies,
-            'createdAt' => $operator->createdAt()->format(DATE_ATOM),
             'status' => $operator->status()->getValue(),
+            'createdAt' => $operator->createdAt()->format(DATE_ATOM),
         ];
     }
 }

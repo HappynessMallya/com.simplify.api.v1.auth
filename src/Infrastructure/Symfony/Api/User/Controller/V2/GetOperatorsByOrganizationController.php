@@ -73,7 +73,7 @@ class GetOperatorsByOrganizationController extends BaseController
 
         return $this->createApiResponse(
             [
-                'organization_id' => $organizationId,
+                'organizationId' => $organizationId,
                 'operators' => $operators,
             ],
             Response::HTTP_OK

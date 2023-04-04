@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
 
-use App\Application\User\V2\QueryHandler\GetCompaniesByUserTypeHandler;
-use App\Application\User\V2\QueryHandler\GetCompaniesByUserTypeQuery;
+use App\Application\User\V2\QueryHandler\GetCompaniesByOrganizationHandler;
+use App\Application\User\V2\QueryHandler\GetCompaniesByOrganizationQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -16,32 +16,31 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetCompaniesByUserTypeController
+ * Class GetCompaniesByOrganizationController
  * @package App\Infrastructure\Symfony\Api\ApiUser\Controller\V2
  */
-class GetCompaniesByUserTypeController extends BaseController
+class GetCompaniesByOrganizationController extends BaseController
 {
     /**
      * @Route(path="/companies", methods={"GET"})
      *
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
-     * @param GetCompaniesByUserTypeHandler $handler
+     * @param GetCompaniesByOrganizationHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
     public function getCompaniesByUserTypeAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
-        GetCompaniesByUserTypeHandler $handler
+        GetCompaniesByOrganizationHandler $handler
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $organizationId = $tokenData['organizationId'];
         $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
-        $query = new GetCompaniesByUserTypeQuery($userId, $userType);
-
-        $companies = null;
+        $query = new GetCompaniesByOrganizationQuery($userId, $userType);
 
         try {
             $companies = $handler->__invoke($query);
@@ -75,7 +74,8 @@ class GetCompaniesByUserTypeController extends BaseController
 
         return $this->createApiResponse(
             [
-                'user_id' => $userId,
+                'userId' => $userId,
+                'organizationId' => $organizationId,
                 'companies' => $companies,
             ],
             Response::HTTP_OK

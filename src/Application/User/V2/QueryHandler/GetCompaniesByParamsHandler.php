@@ -130,8 +130,8 @@ class GetCompaniesByParamsHandler
                         'phone' => $company->phone(),
                         'address' => $company->address(),
                         'traRegistration' => $company->traRegistration(),
-                        'createdAt' => $company->createdAt()->format(DATE_ATOM),
                         'status' => $company->companyStatus(),
+                        'createdAt' => $company->createdAt()->format(DATE_ATOM),
                     ];
                 }
             }

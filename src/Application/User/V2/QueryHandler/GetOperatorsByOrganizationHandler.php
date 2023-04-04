@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\User\V2\QueryHandler;
 
+use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserType;
 use App\Domain\Repository\CompanyByUserRepository;
+use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -22,6 +24,9 @@ class GetOperatorsByOrganizationHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
+    /** @var CompanyRepository  */
+    private CompanyRepository $companyRepository;
+
     /** @var CompanyByUserRepository  */
     private CompanyByUserRepository $companyByUserRepository;
 
@@ -30,15 +35,18 @@ class GetOperatorsByOrganizationHandler
 
     /**
      * @param LoggerInterface $logger
+     * @param CompanyRepository $companyRepository
      * @param CompanyByUserRepository $companyByUserRepository
      * @param UserRepository $userRepository
      */
     public function __construct(
         LoggerInterface $logger,
+        CompanyRepository $companyRepository,
         CompanyByUserRepository $companyByUserRepository,
         UserRepository $userRepository
     ) {
         $this->logger = $logger;
+        $this->companyRepository = $companyRepository;
         $this->companyByUserRepository = $companyByUserRepository;
         $this->userRepository = $userRepository;
     }
@@ -89,16 +97,30 @@ class GetOperatorsByOrganizationHandler
 
         foreach ($operatorsByOrganization as $operator) {
             $operatorFound = $this->userRepository->get(UserId::fromString($operator['user_id']));
+            $companiesByOperator = $this->companyByUserRepository->getCompaniesByUser($operatorFound->userId());
+
+            $operatorsCompanies = [];
+
+            foreach ($companiesByOperator as $company) {
+                $companyId = CompanyId::fromString($company['company_id']);
+                $companyFound = $this->companyRepository->get($companyId);
+
+                $operatorsCompanies[] = [
+                    'companyId' => $companyId->toString(),
+                    'companyName' => $companyFound->name(),
+                    'status' => $companyFound->companyStatus(),
+                ];
+            }
 
             $operators[] = [
                 'userId' => $operatorFound->userId()->toString(),
-                'companyId' => $operatorFound->companyId()->toString(),
                 'firstName' => $operatorFound->firstName(),
                 'lastName' => $operatorFound->lastName(),
                 'email' => $operatorFound->email(),
                 'mobileNumber' => $operatorFound->mobileNumber(),
-                'createdAt' => $operatorFound->createdAt()->format(DATE_ATOM),
+                'companies' => $operatorsCompanies,
                 'status' => $operatorFound->status()->getValue(),
+                'createdAt' => $operatorFound->createdAt()->format(DATE_ATOM),
             ];
         }
 

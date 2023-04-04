@@ -98,8 +98,8 @@ class GetOperatorsByParamsHandler
                     'lastName' => $operator->lastName(),
                     'email' => $operator->email(),
                     'mobileNumber' => $operator->mobileNumber() ?? '',
-                    'createdAt' => $operator->createdAt()->format(DATE_ATOM),
                     'status' => $operator->status()->getValue(),
+                    'createdAt' => $operator->createdAt()->format(DATE_ATOM),
                 ];
             }
         }
