@@ -95,27 +95,27 @@ class GetCompaniesByParamsHandler
             ];
 
             if (!empty($query->getCompanyName())) {
-                $criteria['name'] = $query->getCompanyName();
+                $criteria['name'] = trim($query->getCompanyName());
             }
 
             if (!empty($query->getTin())) {
-                $criteria['tin'] = $query->getTin();
+                $criteria['tin'] = trim($query->getTin());
             }
 
             if (!empty($query->getEmail())) {
-                $criteria['email'] = $query->getEmail();
+                $criteria['email'] = trim($query->getEmail());
             }
 
             if (!empty($query->getMobileNumber())) {
-                $criteria['phone'] = $query->getMobileNumber();
+                $criteria['phone'] = trim($query->getMobileNumber());
             }
 
             if (!empty($query->getSerial())) {
-                $criteria['serial'] = $query->getSerial();
+                $criteria['serial'] = trim($query->getSerial());
             }
 
             if ($query->getStatus() !== 'ALL') {
-                $criteria['companyStatus'] = CompanyStatus::byValue($query->getStatus())->getValue();
+                $criteria['companyStatus'] = CompanyStatus::byValue(trim($query->getStatus()))->getValue();
             }
 
             $company = $this->companyRepository->findOneBy($criteria);
@@ -127,6 +127,7 @@ class GetCompaniesByParamsHandler
                         'name' => $company->name(),
                         'tin' => $company->tin(),
                         'email' => $company->email(),
+                        'phone' => $company->phone(),
                         'address' => $company->address(),
                         'traRegistration' => $company->traRegistration(),
                         'createdAt' => $company->createdAt()->format(DATE_ATOM),

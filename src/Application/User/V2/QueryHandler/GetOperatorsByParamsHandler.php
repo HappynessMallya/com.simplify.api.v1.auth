@@ -52,23 +52,23 @@ class GetOperatorsByParamsHandler
             ];
 
             if (!empty($query->getFirstName())) {
-                $criteria['firstName'] = $query->getFirstName();
+                $criteria['firstName'] = trim($query->getFirstName());
             }
 
             if (!empty($query->getLastName())) {
-                $criteria['lastName'] = $query->getLastName();
+                $criteria['lastName'] = trim($query->getLastName());
             }
 
             if (!empty($query->getEmail())) {
-                $criteria['email'] = $query->getEmail();
+                $criteria['email'] = trim($query->getEmail());
             }
 
             if (!empty($query->getMobileNumber())) {
-                $criteria['mobileNumber'] = $query->getMobileNumber();
+                $criteria['mobileNumber'] = trim($query->getMobileNumber());
             }
 
             if ($query->getStatus() !== 'ALL') {
-                $criteria['status'] = UserStatus::byValue($query->getStatus());
+                $criteria['status'] = UserStatus::byValue(trim($query->getStatus()));
             }
 
             $operatorsByCriteria = $this->userRepository->findByCriteria($criteria);
