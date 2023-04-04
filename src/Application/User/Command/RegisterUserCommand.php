@@ -112,7 +112,7 @@ class RegisterUserCommand
      */
     public function getPassword(): ?string
     {
-        return $this->password;
+        return empty($this->password) ? null : $this->password;
     }
 
     /**
@@ -128,7 +128,7 @@ class RegisterUserCommand
      */
     public function getConfirmationToken(): ?string
     {
-        return $this->confirmationToken;
+        return empty($this->confirmationToken) ? null : $this->confirmationToken;
     }
 
     /**
@@ -160,7 +160,7 @@ class RegisterUserCommand
      */
     public function getRole(): ?string
     {
-        return $this->role;
+        return empty($this->role) ? null : $this->role;
     }
 
     /**

@@ -43,6 +43,13 @@ class RegisterUserHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
+    /**
+     * @param UserRepository $userRepository
+     * @param DoctrineCompanyRepository $companyRepository
+     * @param PasswordEncoder $passwordEncoder
+     * @param SendCredentialsService $sendCredentials
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         UserRepository $userRepository,
         DoctrineCompanyRepository $companyRepository,
@@ -67,11 +74,12 @@ class RegisterUserHandler
         $userRole = empty($command->getRole()) ? UserRole::USER() : UserRole::byName($command->getRole());
 
         try {
+            $userId = UserId::generate();
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
 
             $user = User::create(
                 $userRole,
-                UserId::generate(),
+                $userId,
                 CompanyId::fromString($command->getCompanyId()),
                 $command->getEmail(),
                 $command->getUsername(),

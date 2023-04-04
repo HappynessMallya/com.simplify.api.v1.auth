@@ -87,7 +87,7 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
 
         foreach ($companies as $index => $company) {
             if ($index < count($companies) - 1) {
-                $query .= "('" . $userId->toString() . "', '" . $company . "', 'ACTIVE'),";
+                $query .= "('" . $userId->toString() . "', '" . $company . "', 'ACTIVE'), ";
             } else {
                 $query .= "('" . $userId->toString() . "', '" . $company . "', 'ACTIVE')";
             }

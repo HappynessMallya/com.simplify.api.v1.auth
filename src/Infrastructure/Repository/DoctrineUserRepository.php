@@ -157,7 +157,7 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
         try {
             $this->em->persist($user);
             $this->em->flush();
-        } catch (ORMException $e) {
+        } catch (ORMException $exception) {
             return false;
         }
 
