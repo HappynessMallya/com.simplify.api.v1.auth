@@ -11,13 +11,22 @@ namespace App\Application\User\Command;
 class RegisterUserCommand
 {
     /** @var string */
-    private string $username;
-
-    /** @var string */
     private string $companyId;
 
     /** @var string */
+    private string $firstName;
+
+    /** @var string */
+    private string $lastName;
+
+    /** @var string */
+    private string $username;
+
+    /** @var string */
     private string $email;
+
+    /** @var string|null */
+    private ?string $mobileNumber;
 
     /** @var string */
     private string $salt;
@@ -28,20 +37,11 @@ class RegisterUserCommand
     /** @var string|null */
     private ?string $confirmationToken;
 
-    /** @var string */
-    private string $status;
-
     /** @var string|null */
     private ?string $role = null;
 
     /** @var string */
-    private string $firstName;
-
-    /** @var string */
-    private string $lastName;
-
-    /** @var string|null */
-    private ?string $mobileNumber;
+    private string $status;
 
     /**
      * @return string|null

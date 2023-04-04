@@ -40,8 +40,6 @@ class UserChangePasswordByAdminController extends BaseController
             );
         }
 
-        $changed = false;
-
         try {
             $changed = $this->commandBus->handle($command);
         } catch (Exception $exception) {

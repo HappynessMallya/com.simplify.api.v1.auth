@@ -71,6 +71,7 @@ class RegisterUserController extends BaseController
         }
 
         $response = null;
+
         try {
             $response = $handler->__invoke($command);
         } catch (Exception $exception) {
