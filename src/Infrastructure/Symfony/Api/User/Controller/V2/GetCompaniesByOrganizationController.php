@@ -58,7 +58,8 @@ class GetCompaniesByOrganizationController extends BaseController
                 [
                     'success' => false,
                     'error' => 'Exception error trying to get companies. ' . $exception->getMessage(),
-                ]
+                ],
+                Response::HTTP_BAD_REQUEST
             );
         }
 

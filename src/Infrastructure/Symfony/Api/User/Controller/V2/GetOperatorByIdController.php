@@ -60,7 +60,8 @@ class GetOperatorByIdController extends BaseController
                 [
                     'success' => false,
                     'error' => 'Exception error trying to get operator details. ' . $exception->getMessage(),
-                ]
+                ],
+                Response::HTTP_BAD_REQUEST
             );
         }
 

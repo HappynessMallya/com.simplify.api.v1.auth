@@ -89,7 +89,7 @@ class GetCompaniesByParamsController extends BaseController
                 return $this->createApiResponse(
                     [
                         'success' => false,
-                        'message' => 'No companies found by the search criteria',
+                        'error' => 'No companies found by the search criteria',
                     ],
                     Response::HTTP_NOT_FOUND
                 );
@@ -109,7 +109,7 @@ class GetCompaniesByParamsController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Error trying to find the set of companies: ' . $exception->getMessage(),
+                    'error' => 'Error trying to find the set of companies. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );

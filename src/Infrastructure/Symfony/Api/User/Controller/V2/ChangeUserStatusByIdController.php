@@ -63,7 +63,8 @@ class ChangeUserStatusByIdController extends BaseController
                 [
                     'success' => false,
                     'error' => 'Exception error trying to change status of operator. ' . $exception->getMessage(),
-                ]
+                ],
+                Response::HTTP_BAD_REQUEST
             );
         }
 
@@ -71,6 +72,7 @@ class ChangeUserStatusByIdController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
+                    'error' => 'User status not changed',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -79,6 +81,7 @@ class ChangeUserStatusByIdController extends BaseController
         return $this->createApiResponse(
             [
                 'success' => true,
+                'message' => 'User status changed',
             ],
             Response::HTTP_OK
         );
