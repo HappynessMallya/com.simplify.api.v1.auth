@@ -40,7 +40,7 @@ class UserChangePasswordByAdminType extends AbstractType
                         new Assert\NotBlank(),
                         new Assert\Length(
                             [
-                                'min' => 6,
+                                'min' => 5,
                                 'max' => 100,
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
@@ -55,6 +55,10 @@ class UserChangePasswordByAdminType extends AbstractType
                 [
                     'constraints' => [
                         new Assert\NotBlank(),
+                        new Assert\Regex([
+                            'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){6,20}$/',
+                            'message' => 'This value must comply with the terms.',
+                        ]),
                         new Assert\Length(
                             [
                                 'min' => 6,
