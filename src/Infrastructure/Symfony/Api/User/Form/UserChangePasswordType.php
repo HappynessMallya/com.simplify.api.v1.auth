@@ -38,6 +38,10 @@ class UserChangePasswordType extends AbstractType
                 [
                     'constraints' => [
                         new Assert\NotBlank(),
+                        new Assert\Regex([
+                            'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){6,20}$/',
+                            'message' => 'This value must comply with the terms.',
+                        ]),
                         new Assert\Length(
                             [
                                 'min' => 6,
