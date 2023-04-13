@@ -55,7 +55,7 @@ class UserChangePasswordByAdminController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Exception error trying to change password. ' . $exception->getMessage(),
+                    'error' => 'Exception error trying to change password. ' . $exception->getMessage(),
                 ],
                 $exception->getCode()
             );
@@ -65,7 +65,7 @@ class UserChangePasswordByAdminController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Password not changed',
+                    'error' => 'Invalid current password',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
