@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class UpdateUserController extends BaseController
 {
     /**
-     * @Route(path="/profile", methods={"PUT"})
+     * @Route(path="/", methods={"PUT"})
      *
      * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
