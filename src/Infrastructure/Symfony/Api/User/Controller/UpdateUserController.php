@@ -4,31 +4,43 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
-use App\Application\User\Command\UserChangePasswordCommand;
+use App\Application\User\Command\UpdateUserCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
-use App\Infrastructure\Symfony\Api\User\Form\UserChangePasswordType;
+use App\Infrastructure\Symfony\Api\User\Form\UpdateUserType;
 use Exception;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class UserChangePasswordController
+ * Class UpdateUserController
  * @package App\Infrastructure\Symfony\Api\User\Controller
  */
-class UserChangePasswordController extends BaseController
+class UpdateUserController extends BaseController
 {
     /**
-     * @Route(path="/change-password", methods={"POST"})
+     * @Route(path="/", methods={"PUT"})
      *
      * @param Request $request
+     * @param JWTTokenManagerInterface $jwtManager
+     * @param TokenStorageInterface $jwtStorage
      * @return JsonResponse
+     * @throws JWTDecodeFailureException
      */
-    public function userChangePasswordAction(Request $request): JsonResponse
-    {
-        $command = new UserChangePasswordCommand();
-        $form = $this->createForm(UserChangePasswordType::class, $command);
+    public function updateUserAction(
+        Request $request,
+        JWTTokenManagerInterface $jwtManager,
+        TokenStorageInterface $jwtStorage
+    ): JsonResponse {
+        $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $username = $tokenData['username'];
+
+        $command = new UpdateUserCommand();
+        $form = $this->createForm(UpdateUserType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
@@ -40,16 +52,17 @@ class UserChangePasswordController extends BaseController
             );
         }
 
-        $changed = false;
+        $command->setUsername($username);
+
+        $updated = false;
 
         try {
-            $changed = $this->commandBus->handle($command);
+            $updated = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to change password',
+                'Exception error trying to update user',
                 [
                     'error_message' => $exception->getMessage(),
-                    'error_code' => $exception->getCode(),
                     'method' => __METHOD__,
                 ]
             );
@@ -57,19 +70,17 @@ class UserChangePasswordController extends BaseController
             if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
                 return $this->createApiResponse(
                     [
-                        'success' => false,
-                        'error_message' => 'Exception error trying to change password. ' . $exception->getMessage(),
+                        'errors' => 'Exception error trying to update user. ' . $exception->getMessage(),
                     ],
                     Response::HTTP_NOT_FOUND
                 );
             }
         }
 
-        if (!$changed) {
+        if (!$updated) {
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Password not changed',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -78,7 +89,6 @@ class UserChangePasswordController extends BaseController
         return $this->createApiResponse(
             [
                 'success' => true,
-                'message' => 'Password changed successfully',
             ],
             Response::HTTP_OK
         );

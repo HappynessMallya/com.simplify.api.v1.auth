@@ -34,6 +34,15 @@ class RegisterUserCommand
     /** @var string|null */
     private ?string $role = null;
 
+    /** @var string */
+    private string $firstName;
+
+    /** @var string */
+    private string $lastName;
+
+    /** @var string|null */
+    private ?string $mobileNumber;
+
     /**
      * @return string|null
      */
@@ -160,5 +169,53 @@ class RegisterUserCommand
     public function setRole(?string $role): void
     {
         $this->role = $role;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * @param string $firstName
+     */
+    public function setFirstName(string $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * @param string $lastName
+     */
+    public function setLastName(string $lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMobileNumber(): ?string
+    {
+        return empty($this->mobileNumber) ? null : $this->mobileNumber;
+    }
+
+    /**
+     * @param string|null $mobileNumber
+     */
+    public function setMobileNumber(?string $mobileNumber): void
+    {
+        $this->mobileNumber = $mobileNumber;
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
-use App\Application\User\Command\UserChangePasswordCommand;
-use App\Domain\Model\User\UserStatus;
+use App\Application\User\Command\UserChangePasswordByAdminCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
-use App\Infrastructure\Symfony\Api\User\Form\UserChangePasswordType;
+use App\Infrastructure\Symfony\Api\User\Form\UserChangePasswordByAdminType;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,27 +25,62 @@ class UserChangePasswordByAdminController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function userChangePasswordAction(Request $request)
+    public function userChangePasswordByAdminAction(Request $request): JsonResponse
     {
-        $registered = false;
-        $userChangePasswordCommand = new UserChangePasswordCommand();
-        $form = $this->createForm(UserChangePasswordType::class, $userChangePasswordCommand);
+        $command = new UserChangePasswordByAdminCommand();
+        $form = $this->createForm(UserChangePasswordByAdminType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
             return $this->createApiResponse(
-                ['errors' => $this->getValidationErrors($form)],
+                [
+                    'errors' => $this->getValidationErrors($form),
+                ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
+        $changed = false;
+
         try {
-            $userChangePasswordCommand->setStatus(UserStatus::CHANGE_PASSWORD()->toString());
-            $registered = $this->commandBus->handle($userChangePasswordCommand);
-        } catch (\Exception $e) {
-            $this->logger->critical($e->getMessage(), [__METHOD__]);
+            $changed = $this->commandBus->handle($command);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                'Exception error trying to change password',
+                [
+                    'error_message' => $exception->getMessage(),
+                    'error_code' => $exception->getCode(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
+                return $this->createApiResponse(
+                    [
+                        'success' => false,
+                        'error' => 'Exception error trying to change password. ' . $exception->getMessage(),
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
         }
 
-        return $this->createApiResponse(['success' => $registered], Response::HTTP_OK);
+        if (!$changed) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error' => 'Invalid current password',
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        return $this->createApiResponse(
+            [
+                'success' => true,
+                'message' => 'Password changed successfully',
+            ],
+            Response::HTTP_OK
+        );
     }
 }

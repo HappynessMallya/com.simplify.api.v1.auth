@@ -8,27 +8,27 @@ use App\Domain\Model\User\User;
 use App\Domain\Services\User\PasswordEncoder;
 use App\Infrastructure\Symfony\Security\UserEntity;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Class PasswordEncoderV1
  * @package App\Infrastructure\Domain\Services\ApiUser
  */
-final class PasswordEncoderV1 implements PasswordEncoder
+class PasswordEncoderV1 implements PasswordEncoder
 {
-    /**
-     * @var null|string
-     */
-    private $salt;
+    /** @var string|null */
+    private ?string $salt;
+
+    /** @var UserPasswordEncoderInterface */
+    private UserPasswordEncoderInterface $passwordEncoder;
 
     /**
-     * @var UserPasswordEncoderInterface
+     * @param UserPasswordEncoderInterface $passwordEncoder
      */
-    private $encoder;
-
     public function __construct(UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->salt = null;
-        $this->encoder = $passwordEncoder;
+        $this->passwordEncoder = $passwordEncoder;
     }
 
     /**
@@ -36,7 +36,7 @@ final class PasswordEncoderV1 implements PasswordEncoder
      */
     public function getSalt(): ?string
     {
-        return $this->salt;
+        return empty($this->salt) ? null : $this->salt;
     }
 
     /**
@@ -56,6 +56,16 @@ final class PasswordEncoderV1 implements PasswordEncoder
             $user->roles()
         );
 
-        return $this->encoder->encodePassword($user, $user->getPassword());
+        return $this->passwordEncoder->encodePassword($user, $user->getPassword());
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param string $raw
+     * @return bool
+     */
+    public function isPasswordValid(UserInterface $user, string $raw): bool
+    {
+        return $this->passwordEncoder->isPasswordValid($user, $raw);
     }
 }

@@ -17,10 +17,6 @@ use App\Domain\Services\SendCredentialsService;
 use App\Infrastructure\Repository\DoctrineCompanyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class RegisterUserHandler
@@ -62,19 +58,16 @@ class RegisterUserHandler
     /**
      * @param RegisterUserCommand $command
      * @return bool
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     public function handle(RegisterUserCommand $command): bool
     {
-        $userRole = !empty($command->getRole()) ? UserRole::byName($command->getRole()) : UserRole::USER();
+        $userRole = empty($command->getRole()) ? UserRole::USER() : UserRole::byName($command->getRole());
 
         try {
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
 
             $user = User::create(
+                $userRole,
                 UserId::generate(),
                 CompanyId::fromString($command->getCompanyId()),
                 $command->getEmail(),
@@ -82,7 +75,9 @@ class RegisterUserHandler
                 $password,
                 null,
                 UserStatus::CHANGE_PASSWORD(),
-                $userRole
+                $command->getFirstName(),
+                $command->getLastName(),
+                $command->getMobileNumber()
             );
 
             $user->setPassword($this->passwordEncoder->hashPassword($user));
@@ -91,10 +86,11 @@ class RegisterUserHandler
                 $this->logger->critical(
                     'Error trying to save user',
                     [
-                        'userId' => $user->userId(),
+                        'user_id' => $user->userId(),
                         'company_id' => $user->companyId(),
-                        'email' => $user->email(),
                         'username' => $user->username(),
+                        'email' => $user->email(),
+                        'method' => __METHOD__,
                     ]
                 );
 
@@ -117,21 +113,23 @@ class RegisterUserHandler
                 $this->logger->critical(
                     'Error trying to send credentials to client',
                     [
-                        'error_message' => $response->getErrorMessage(),
-                        'username' => $user->username(),
                         'company_id' => $company->companyId()->toString(),
+                        'username' => $user->username(),
+                        'error_message' => $response->getErrorMessage(),
                         'method' => __METHOD__,
                     ]
                 );
+
+                return false;
             }
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $this->logger->critical(
                 'An error has been occurred trying to create user',
                 [
-                    'error_message' => $e->getMessage(),
-                    'error_code' => $e->getCode(),
-                    'username' => $command->getUsername(),
                     'company_id' => $command->getCompanyId(),
+                    'username' => $command->getUsername(),
+                    'error_message' => $exception->getMessage(),
+                    'error_code' => $exception->getCode(),
                     'method' => __METHOD__,
                 ]
             );

@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Symfony\Api\User\Form;
 
-use App\Application\User\Command\UserChangePasswordCommand;
+use App\Application\User\Command\UpdateUserCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -10,10 +10,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class UserChangePasswordType
+ * Class UpdateUserType
  * @package App\Infrastructure\Symfony\Api\User\Form
  */
-class UserChangePasswordType extends AbstractType
+class UpdateUserType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -23,31 +23,53 @@ class UserChangePasswordType extends AbstractType
     {
         $builder
             ->add(
-                'username',
+                'firstName',
                 TextType::class,
                 [
                     'constraints' => [
-                        new Assert\NotBlank(),
-                        new Assert\Email(),
+                        new Assert\Length(
+                            [
+                                'min' => 2,
+                                'max' => 100,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
                     ],
                 ]
             )
             ->add(
-                'password',
+                'lastName',
                 TextType::class,
                 [
                     'constraints' => [
-                        new Assert\NotBlank(),
-                        new Assert\Regex([
-                            'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){6,20}$/',
-                            'message' => 'This value must comply with the terms.',
-                        ]),
                         new Assert\Length(
                             [
-                                'min' => 6,
+                                'min' => 2,
                                 'max' => 100,
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            ->add(
+                'email',
+                TextType::class,
+                [
+                    'constraints' => new Assert\Email(),
+                ]
+            )
+            ->add(
+                'mobileNumber',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\Regex(
+                            [
+                                'pattern' => '/^[0-9]*$/',
+                                'message' => 'This value should be numeric.',
                             ]
                         ),
                     ],
@@ -63,7 +85,7 @@ class UserChangePasswordType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => UserChangePasswordCommand::class,
+                'data_class' => UpdateUserCommand::class,
                 'csrf_protection' => false,
                 'is_edit' => false,
                 'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}',

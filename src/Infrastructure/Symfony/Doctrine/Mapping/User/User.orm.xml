@@ -17,5 +17,8 @@
         <field name="roles" type="array" />
         <field name="status" type="UserStatus" column="status" length="50" />
         <field name="createdAt" column="created_at" type="datetime" />
+        <field name="firstName" type="string" length="100" />
+        <field name="lastName" type="string" length="100" />
+        <field name="mobileNumber" type="string" length="100" nullable="true" />
     </entity>
 </doctrine-mapping>

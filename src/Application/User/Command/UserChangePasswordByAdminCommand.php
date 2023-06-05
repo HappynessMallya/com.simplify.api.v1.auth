@@ -7,10 +7,10 @@ namespace App\Application\User\Command;
 use App\Domain\Model\User\UserStatus;
 
 /**
- * Class UserChangePasswordCommand
+ * Class UserChangePasswordByAdminCommand
  * @package App\Application\User\Command
  */
-class UserChangePasswordCommand
+class UserChangePasswordByAdminCommand
 {
     /** @var string|null */
     private ?string $companyId;
@@ -19,7 +19,10 @@ class UserChangePasswordCommand
     private string $username;
 
     /** @var string */
-    private string $password;
+    private string $currentPassword;
+
+    /** @var string */
+    private string $newPassword;
 
     /** @var string */
     private string $status;
@@ -62,17 +65,33 @@ class UserChangePasswordCommand
     /**
      * @return string
      */
-    public function getPassword(): string
+    public function getCurrentPassword(): string
     {
-        return $this->password;
+        return $this->currentPassword;
     }
 
     /**
-     * @param string $password
+     * @param string $currentPassword
      */
-    public function setPassword(string $password): void
+    public function setCurrentPassword(string $currentPassword): void
     {
-        $this->password = $password;
+        $this->currentPassword = $currentPassword;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNewPassword(): string
+    {
+        return $this->newPassword;
+    }
+
+    /**
+     * @param string $newPassword
+     */
+    public function setNewPassword(string $newPassword): void
+    {
+        $this->newPassword = $newPassword;
     }
 
     /**

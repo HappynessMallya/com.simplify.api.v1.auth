@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Symfony\Api\User\Form;
 
-use App\Application\User\Command\UserChangePasswordCommand;
+use App\Application\User\Command\UserChangePasswordByAdminCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -10,10 +10,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class UserChangePasswordType
+ * Class UserChangePasswordByAdminType
  * @package App\Infrastructure\Symfony\Api\User\Form
  */
-class UserChangePasswordType extends AbstractType
+class UserChangePasswordByAdminType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -33,7 +33,24 @@ class UserChangePasswordType extends AbstractType
                 ]
             )
             ->add(
-                'password',
+                'currentPassword',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            [
+                                'min' => 5,
+                                'max' => 100,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            ->add(
+                'newPassword',
                 TextType::class,
                 [
                     'constraints' => [
@@ -63,7 +80,7 @@ class UserChangePasswordType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => UserChangePasswordCommand::class,
+                'data_class' => UserChangePasswordByAdminCommand::class,
                 'csrf_protection' => false,
                 'is_edit' => false,
                 'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}',
