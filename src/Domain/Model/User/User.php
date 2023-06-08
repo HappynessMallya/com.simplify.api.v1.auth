@@ -58,6 +58,15 @@ class User
     /** @var UserType  */
     protected UserType $userType;
 
+    /** @var string */
+    protected string $firstName;
+
+    /** @var string */
+    protected string $lastName;
+
+    /** @var string|null */
+    protected ?string $mobileNumber;
+
     /**
      * User constructor
      */
@@ -68,6 +77,7 @@ class User
     }
 
     public static function create(
+        UserRole $userRole,
         UserId $userId,
         CompanyId $companyId,
         string $email,
@@ -76,18 +86,24 @@ class User
         ?string $salt,
         UserStatus $userStatus,
         UserRole $rol,
-        UserType $userType
+        UserType $userType,
+        string $firstName,
+        string $lastName,
+        ?string $mobileNumber
     ): self {
         $self = new self();
+        $self->enabled = true;
+        $self->roles[] = $userRole->getName();
         $self->userId = $userId;
         $self->companyId = $companyId;
         $self->email = $email;
-        $self->enabled = true;
         $self->username = $username;
         $self->password = $password;
         $self->salt = $salt;
-        $self->roles[] = $rol->toString();
         $self->status = $userStatus;
+        $self->firstName = $firstName;
+        $self->lastName = $lastName;
+        $self->mobileNumber = $mobileNumber;
         $self->createdAt = new Datetime();
         $self->lastLogin = null;
         $self->confirmationToken = null;
@@ -347,5 +363,50 @@ class User
     public function getUserType(): UserType
     {
         return $this->userType;
+    }
+
+    /* @return string
+     */
+    public function firstName(): string
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * @return string
+     */
+    public function lastName(): string
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function mobileNumber(): ?string
+    {
+        return empty($this->mobileNumber) ? null : $this->mobileNumber;
+    }
+
+    /**
+     * @param array $toUpdate
+     */
+    public function update(array $toUpdate): void
+    {
+        $notNull = ['firstName', 'lastName', 'username', 'email', 'mobileNumber'];
+
+        foreach ($toUpdate as $attribute => $newValue) {
+            if (property_exists(self::class, $attribute)) {
+                if (empty($newValue)) {
+                    if (in_array($attribute, $notNull)) {
+                        continue;
+                    }
+
+                    $this->{$attribute} = null;
+                } else {
+                    $this->{$attribute} = $newValue;
+                }
+            }
+        }
     }
 }

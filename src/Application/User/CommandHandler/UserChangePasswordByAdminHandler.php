@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\User\CommandHandler;
 
-use App\Application\User\Command\UserChangePasswordCommand;
+use App\Application\User\Command\UserChangePasswordByAdminCommand;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\User\PasswordEncoder;
@@ -13,10 +13,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class UserChangePasswordHandler
+ * Class UserChangePasswordByAdminHandler
  * @package App\Application\User\CommandHandler
  */
-class UserChangePasswordHandler
+class UserChangePasswordByAdminHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -43,11 +43,11 @@ class UserChangePasswordHandler
     }
 
     /**
-     * @param UserChangePasswordCommand $command
+     * @param UserChangePasswordByAdminCommand $command
      * @return bool
      * @throws Exception
      */
-    public function handle(UserChangePasswordCommand $command): bool
+    public function handle(UserChangePasswordByAdminCommand $command): bool
     {
         $userEntity = $this->userRepository->findOneBy(
             [
@@ -70,14 +70,20 @@ class UserChangePasswordHandler
             );
         }
 
-        $user = $this->userRepository->get($userEntity->userId());
+        $isCurrentPassword = $this->passwordEncoder->isPasswordValid($userEntity, $command->getCurrentPassword());
 
-        $userEntity->setPassword($command->getPassword());
-        $passwordEncoded = $this->passwordEncoder->hashPassword($userEntity);
+        if ($isCurrentPassword) {
+            $user = $this->userRepository->get($userEntity->userId());
 
-        $user->setPassword($passwordEncoded);
-        $user->changeStatus(UserStatus::CHANGE_PASSWORD());
+            $userEntity->setPassword($command->getNewPassword());
+            $passwordEncoded = $this->passwordEncoder->hashPassword($userEntity);
 
-        return $this->userRepository->save($user);
+            $user->setPassword($passwordEncoded);
+            $user->changeStatus(UserStatus::ACTIVE());
+
+            return $this->userRepository->save($user);
+        }
+
+        return false;
     }
 }

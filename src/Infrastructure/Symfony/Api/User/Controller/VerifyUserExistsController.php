@@ -27,7 +27,7 @@ class VerifyUserExistsController extends BaseController
      * @param VerifyUserExistsHandler $handler
      * @return JsonResponse
      */
-    public function userChangePasswordAction(
+    public function verifyUserExistsAction(
         Request $request,
         VerifyUserExistsHandler $handler
     ): JsonResponse {
@@ -38,7 +38,7 @@ class VerifyUserExistsController extends BaseController
         if ($form->isValid() === false) {
             return $this->createApiResponse(
                 [
-                    'errors' => $this->getValidationErrors($form)
+                    'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -51,7 +51,7 @@ class VerifyUserExistsController extends BaseController
                 return $this->createApiResponse(
                     [
                         'success' => false,
-                        'error_message' => 'User could not be found'
+                        'error_message' => 'User could not be found',
                     ],
                     Response::HTTP_NOT_FOUND
                 );
@@ -69,7 +69,7 @@ class VerifyUserExistsController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'An internal error has been occurred. ' . $exception->getMessage()
+                    'error_message' => 'An internal error has been occurred. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -77,7 +77,7 @@ class VerifyUserExistsController extends BaseController
 
         return $this->createApiResponse(
             [
-                'success' => true
+                'success' => true,
             ],
             Response::HTTP_OK
         );
