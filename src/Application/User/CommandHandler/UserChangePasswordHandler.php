@@ -76,7 +76,9 @@ class UserChangePasswordHandler
         $passwordEncoded = $this->passwordEncoder->hashPassword($userEntity);
 
         $user->setPassword($passwordEncoded);
-        $user->changeStatus(UserStatus::CHANGE_PASSWORD());
+        if ($user->status()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
+            $user->changeStatus(UserStatus::ACTIVE());
+        }
 
         return $this->userRepository->save($user);
     }

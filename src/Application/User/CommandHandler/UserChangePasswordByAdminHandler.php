@@ -72,18 +72,29 @@ class UserChangePasswordByAdminHandler
 
         $isCurrentPassword = $this->passwordEncoder->isPasswordValid($userEntity, $command->getCurrentPassword());
 
-        if ($isCurrentPassword) {
-            $user = $this->userRepository->get($userEntity->userId());
+        if (!$isCurrentPassword) {
+            $this->logger->critical(
+                'The current password could not be validated',
+                [
+                    'username' => $command->getUsername(),
+                    'password' => $command->getCurrentPassword(),
+                    'method' => __METHOD__,
+                ]
+            );
 
-            $userEntity->setPassword($command->getNewPassword());
-            $passwordEncoded = $this->passwordEncoder->hashPassword($userEntity);
-
-            $user->setPassword($passwordEncoded);
-            $user->changeStatus(UserStatus::ACTIVE());
-
-            return $this->userRepository->save($user);
+            return false;
         }
 
-        return false;
+        $user = $this->userRepository->get($userEntity->userId());
+
+        $userEntity->setPassword($command->getNewPassword());
+        $passwordEncoded = $this->passwordEncoder->hashPassword($userEntity);
+
+        $user->setPassword($passwordEncoded);
+        if ($user->status()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
+            $user->changeStatus(UserStatus::ACTIVE());
+        }
+
+        return $this->userRepository->save($user);
     }
 }

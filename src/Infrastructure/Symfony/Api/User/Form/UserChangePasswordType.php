@@ -39,13 +39,13 @@ class UserChangePasswordType extends AbstractType
                     'constraints' => [
                         new Assert\NotBlank(),
                         new Assert\Regex([
-                            'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){6,20}$/',
+                            'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ])$/',
                             'message' => 'This value must comply with the terms.',
                         ]),
                         new Assert\Length(
                             [
                                 'min' => 6,
-                                'max' => 100,
+                                'max' => 20,
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
                             ]
