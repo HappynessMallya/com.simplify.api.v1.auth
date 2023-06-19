@@ -87,7 +87,8 @@ class JWTCreatedListener
             ]
         );
 
-        $payload['username'] = $user->getEmail();
+        $payload['username'] = $user->getUsername();
+        $payload['email'] = $user->getEmail();
         $payload['companyId'] = $user->getCompanyId();
 
         $start = microtime(true);
