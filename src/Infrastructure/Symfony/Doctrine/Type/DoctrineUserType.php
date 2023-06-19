@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Symfony\Doctrine\Type;
 
 use App\Domain\Model\User\UserType;
@@ -7,6 +9,10 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\StringType;
 
+/**
+ * Class DoctrineUserType
+ * @package App\Infrastructure\Symfony\Doctrine\Type
+ */
 class DoctrineUserType extends StringType
 {
     /**
@@ -14,7 +20,7 @@ class DoctrineUserType extends StringType
      */
     public function getName(): string
     {
-        return 'UserStatus';
+        return 'UserType';
     }
 
     /**

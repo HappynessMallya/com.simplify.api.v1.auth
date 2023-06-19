@@ -10,8 +10,8 @@ use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\GuidType;
 
 /**
- * Class DoctrineUserId
- * @package App\Infrastructure\Persistence\Doctrine\Type
+ * Class DoctrineOrganizationId
+ * @package App\Infrastructure\Symfony\Doctrine\Type
  */
 class DoctrineOrganizationId extends GuidType
 {
@@ -20,7 +20,7 @@ class DoctrineOrganizationId extends GuidType
      */
     public function getName(): string
     {
-        return 'CompanyId';
+        return 'OrganizationId';
     }
 
     /**
