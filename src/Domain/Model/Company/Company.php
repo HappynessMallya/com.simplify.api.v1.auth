@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\Company;
 
+use App\Domain\Model\Organization\OrganizationId;
 use DateTime;
 
 /**
@@ -45,6 +46,9 @@ class Company
     /** @var string|null */
     private ?string $serial;
 
+    /** @var OrganizationId|null  */
+    private ?OrganizationId $organizationId;
+
     /**
      * @param CompanyId $companyId
      * @param string $name
@@ -55,6 +59,7 @@ class Company
      * @param DateTime $createdAt
      * @param CompanyStatus $companyStatus
      * @param string|null $serial
+     * @param OrganizationId|null $organizationId
      * @return Company
      */
     public static function create(
@@ -66,7 +71,8 @@ class Company
         ?string $phone,
         DateTime $createdAt,
         CompanyStatus $companyStatus,
-        ?string $serial
+        ?string $serial,
+        ?OrganizationId $organizationId
     ): Company {
         $self = new self();
         $self->companyId = $companyId;
@@ -79,6 +85,7 @@ class Company
         $self->createdAt = $createdAt;
         $self->companyStatus = $companyStatus->getValue();
         $self->serial = $serial;
+        $self->organizationId = $organizationId;
 
         return $self;
     }
@@ -213,5 +220,10 @@ class Company
     public function serial(): ?string
     {
         return $this->serial;
+    }
+
+    public function organizationId(): ?OrganizationId
+    {
+        return $this->organizationId;
     }
 }

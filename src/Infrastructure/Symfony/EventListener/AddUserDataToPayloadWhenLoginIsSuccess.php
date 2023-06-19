@@ -39,49 +39,32 @@ class AddUserDataToPayloadWhenLoginIsSuccess
      */
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
-        $startTimeAddUserPayload = microtime(true);
-
         $data = $event->getData();
         $user = $event->getUser();
-
-        $start = microtime(true);
 
         if ($user instanceof UserEntity || $user instanceof User) {
             $this->userRepository->login($user->userId());
         } else {
+            $jwtUser = $user;
             $criteria = [
-                'email' => $user->getUsername(),
+                'email' => $jwtUser->getUsername(),
             ];
 
             $user = $this->userRepository->findOneBy($criteria);
+
+            if (empty($user)) {
+                $criteria = [
+                    'username' => $jwtUser->getUsername(),
+                ];
+
+                $user = $this->userRepository->findOneBy($criteria);
+            }
         }
-
-        $end = microtime(true);
-
-        $this->logger->debug(
-            'Time duration of login user process',
-            [
-                'time' => $end - $start,
-                'user' => $user->userId()->toString(),
-                'company' => $user->companyId()->toString(),
-                'method' => __METHOD__,
-            ]
-        );
 
         if ($user->getStatus()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
             $data['data']['change_password'] = 1;
         }
 
         $event->setData($data);
-
-        $endTimeAddUserPayload = microtime(true);
-
-        $this->logger->debug(
-            'Time duration of Add User data to Payload when login is success',
-            [
-                'time' => $endTimeAddUserPayload - $startTimeAddUserPayload,
-                'method' => __METHOD__,
-            ]
-        );
     }
 }

@@ -9,6 +9,7 @@ use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserRole;
 use App\Domain\Model\User\UserStatus;
+use App\Domain\Model\User\UserType;
 use App\Infrastructure\Repository\DoctrineUserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -30,7 +31,8 @@ class UserEntity extends User implements UserInterface
         string $password,
         ?string $salt,
         UserStatus $userStatus,
-        array $roles
+        array $roles,
+        UserType $userType
     ) {
         $this->userId = $userId;
         $this->companyId = $companyId;
@@ -41,6 +43,7 @@ class UserEntity extends User implements UserInterface
         $this->salt = $salt;
         $this->roles = $roles;
         $this->status = $userStatus ?? UserStatus::ACTIVE();
+        $this->userType = $userType;
     }
 
     /**
@@ -268,5 +271,21 @@ class UserEntity extends User implements UserInterface
     public function setCompanyId(string $companyId): void
     {
         $this->companyId = $companyId;
+    }
+
+    /**
+     * @return UserType
+     */
+    public function getUserType(): UserType
+    {
+        return $this->userType;
+    }
+
+    /**
+     * @param UserType $userType
+     */
+    public function setUserType(UserType $userType): void
+    {
+        $this->userType = $userType;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
 use App\Application\User\Query\GetProfileByUsernameQuery;
+use App\Domain\Model\User\User;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -35,8 +36,10 @@ class GetProfileByUsernameController extends BaseController
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
         $username = $tokenData['username'];
 
-        $query = new GetProfileByUsernameQuery($username);
+        /** @var User $user */
         $user = null;
+
+        $query = new GetProfileByUsernameQuery($username);
 
         try {
             $user = $this->commandBus->handle($query);
@@ -76,6 +79,7 @@ class GetProfileByUsernameController extends BaseController
                 'username' => $user->username(),
                 'email' => $user->email(),
                 'mobileNumber' => empty($user->mobileNumber()) ? '' : $user->mobileNumber(),
+                'userType' => $user->getUserType()->getValue(),
                 'status' => $user->status()->getValue(),
                 'createdAt' => $user->createdAt()->format('Y-m-d H:i:s'),
             ],

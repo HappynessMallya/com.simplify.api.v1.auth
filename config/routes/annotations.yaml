@@ -11,6 +11,11 @@ user:
     prefix: /api/v1/user
     type: annotation
 
+user_v2:
+    resource: ../../src/Infrastructure/Symfony/Api/User/Controller/V2
+    prefix: /api/v2/user
+    type: annotation
+
 company:
     resource: ../../src/Infrastructure/Symfony/Api/Company/Controller/
     prefix: /api/v1/company
