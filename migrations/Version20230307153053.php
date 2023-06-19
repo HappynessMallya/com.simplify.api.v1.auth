@@ -42,7 +42,7 @@ final class Version20230307153053 extends AbstractMigration
         );
 
         $this->addSql(/** @lang sql */
-            'ALTER TABLE auth_user ADD user_type VARCHAR(50) NOT NULL'
+            'ALTER TABLE auth_user ADD user_type VARCHAR(50) NOT NULL AFTER roles'
         );
 
         $this->addSql(/** @lang sql */

@@ -82,6 +82,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
 
         $companies = $this->companyByUserRepository->getCompaniesByUser($userId);
 
+        $organizationId = null;
         $companiesUser = [];
 
         foreach ($companies as $companyUser) {
@@ -100,7 +101,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
                 return new JsonResponse(
                     [
                         'success' => false,
-                        'error' => 'Company has not been registered in TRA'
+                        'error' => 'Company has not been registered in TRA',
                     ],
                     Response::HTTP_BAD_REQUEST
                 );
@@ -111,11 +112,16 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
                 'name' => $company->name(),
                 'vrn' => !(($company->traRegistration()['VRN'] == 'NOT REGISTERED')),
             ];
+
+            $organizationId = $company->organizationId()->toString();
         }
 
         $payload = [
             'userId' => $userId->toString(),
             'username' => $user->username(),
+            'firstName' => $user->firstName(),
+            'lastName' => $user->lastName(),
+            'organizationId' => $organizationId,
             'companies' => $companiesUser,
             'userType' => $user->getUserType()->toString(),
             'lastLogin' => (!empty($user->lastLogin()))

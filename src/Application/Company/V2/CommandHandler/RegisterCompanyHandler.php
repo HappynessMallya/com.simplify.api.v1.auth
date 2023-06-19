@@ -2,22 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Company\CommandHandler;
+namespace App\Application\Company\V2\CommandHandler;
 
-use App\Application\Company\Command\CreateCompanyCommand;
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Company\CompanyStatus;
+use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Repository\CompanyRepository;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class CreateCompanyHandler
- * @package App\Application\Company\CommandHandler
- */
-class CreateCompanyHandler
+class RegisterCompanyHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -39,11 +35,11 @@ class CreateCompanyHandler
     }
 
     /**
-     * @param CreateCompanyCommand $command
+     * @param RegisterCompanyCommand $command
      * @return string|null
      * @throws Exception
      */
-    public function handle(CreateCompanyCommand $command): ?string
+    public function handle(RegisterCompanyCommand $command): string
     {
         $companyId = CompanyId::generate();
 
@@ -57,26 +53,37 @@ class CreateCompanyHandler
             new DateTime(),
             CompanyStatus::STATUS_ACTIVE(),
             $command->getSerial(),
-            null
+            OrganizationId::fromString($command->getOrganizationId())
         );
 
+        $companyRegistered = $this->companyRepository->findOneBy(['tin' => $command->getTin()]);
+        if (!empty($companyRegistered)) {
+            $this->logger->critical(
+                'Company has been registered with TIN number',
+                [
+                    'tin' => $command->getTin(),
+                    'method' => __METHOD__
+                ]
+            );
+
+            throw new Exception('Company has been registered with TIN number');
+        }
+
         try {
-            $isSaved = $this->companyRepository->save($company);
+            $this->companyRepository->save($company);
+
+            return $companyId->toString();
         } catch (Exception $exception) {
             $this->logger->critical(
-                $exception->getMessage(),
+                'Company could not be registered',
                 [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception($exception->getMessage());
         }
-
-        if ($isSaved) {
-            return $companyId->toString();
-        }
-
-        return null;
     }
 }
