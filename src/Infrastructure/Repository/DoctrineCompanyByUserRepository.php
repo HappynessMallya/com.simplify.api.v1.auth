@@ -3,15 +3,21 @@
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Company\CompanyId;
-use App\Domain\Model\User\User;
+use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserId;
 use App\Domain\Repository\CompanyByUserRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 
+/**
+ * Class DoctrineCompanyByUserRepository
+ * @package App\Infrastructure\Repository
+ */
 class DoctrineCompanyByUserRepository implements CompanyByUserRepository
 {
-    public const ENTITY_TABLE_NAME = "company_by_user";
+    public const ORGANIZATION_TABLE = "organization";
+    public const COMPANY_TABLE = "company";
+    public const COMPANY_BY_USER_TABLE = "company_by_user";
 
     /** @var Connection */
     private Connection $connection;
@@ -28,27 +34,42 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
      * @param UserId $userId
      * @return array
      * @throws Exception
-     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function getCompaniesByUser(UserId $userId): array
     {
         $query = sprintf(/** @lang sql */
             'SELECT * FROM %s WHERE user_id = ? AND status = \'ACTIVE\'',
-            self::ENTITY_TABLE_NAME
+            self::COMPANY_BY_USER_TABLE
         );
 
-        $result = $this->connection->executeQuery(
+        return $this->connection->executeQuery(
             $query,
             [
-                $userId->toString()
+                $userId->toString(),
             ]
         )->fetchAllAssociative();
+    }
 
-        if (empty($result)) {
-            return [];
-        }
+    /**
+     * @param OrganizationId $organizationId
+     * @return array
+     * @throws Exception
+     */
+    public function getOperatorsByOrganization(OrganizationId $organizationId): array
+    {
+        $query = sprintf(/** @lang sql */
+            'SELECT cbu.user_id, cbu.status
+            FROM %s AS cbu
+            JOIN %s AS c
+                ON c.id = cbu.company_id
+            JOIN %s AS o
+                ON c.organization_id = o.organization_id',
+            self::COMPANY_BY_USER_TABLE,
+            self::COMPANY_TABLE,
+            self::ORGANIZATION_TABLE
+        );
 
-        return $result;
+        return $this->connection->executeQuery($query)->fetchAllAssociative();
     }
 
     /**
@@ -61,12 +82,12 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
     {
         $query = sprintf(/** @lang sql */
             'INSERT INTO %s (user_id, company_id, status) VALUES ',
-            self::ENTITY_TABLE_NAME
+            self::COMPANY_BY_USER_TABLE
         );
 
         foreach ($companies as $index => $company) {
             if ($index < count($companies) - 1) {
-                $query .= "('" . $userId->toString() . "', '" . $company . "', 'ACTIVE'),";
+                $query .= "('" . $userId->toString() . "', '" . $company . "', 'ACTIVE'), ";
             } else {
                 $query .= "('" . $userId->toString() . "', '" . $company . "', 'ACTIVE')";
             }
@@ -76,7 +97,8 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
     }
 
     /**
-     * @inheritDoc
+     * @param UserId $userId
+     * @param CompanyId $companyId
      */
     public function changeStatusUserOverCompany(UserId $userId, CompanyId $companyId): void
     {
@@ -84,7 +106,7 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
     }
 
     /**
-     * @inheritDoc
+     * @param UserId $userId
      */
     public function removeCompanyByUserId(UserId $userId): void
     {

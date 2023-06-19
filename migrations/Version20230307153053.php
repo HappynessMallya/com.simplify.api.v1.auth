@@ -23,7 +23,7 @@ final class Version20230307153053 extends AbstractMigration
             'CREATE TABLE IF NOT EXISTS company_by_user (
                 user_id VARCHAR(36) NOT NULL,
                 company_id VARCHAR(36) NOT NULL,
-                status VARChAR(20) NOT NULL,
+                status VARCHAR(20) NOT NULL,
                 created_at DATETIME DEFAULT NOW() NOT NULL,
                 updated_at DATETIME,
                 PRIMARY KEY (user_id, company_id)
@@ -42,7 +42,7 @@ final class Version20230307153053 extends AbstractMigration
         );
 
         $this->addSql(/** @lang sql */
-            'ALTER TABLE auth_user ADD user_type VARCHAR(50) NOT NULL'
+            'ALTER TABLE auth_user ADD user_type VARCHAR(50) NOT NULL AFTER roles'
         );
 
         $this->addSql(/** @lang sql */
@@ -53,7 +53,7 @@ final class Version20230307153053 extends AbstractMigration
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('DROP TABLE organization');
-        $this->addSql('DROP TABLE company_by_user');
+        $this->addSql(/** @lang sql */ 'DROP TABLE organization');
+        $this->addSql(/** @lang sql */ 'DROP TABLE company_by_user');
     }
 }

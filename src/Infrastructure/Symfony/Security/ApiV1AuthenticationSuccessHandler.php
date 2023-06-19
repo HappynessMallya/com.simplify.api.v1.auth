@@ -18,6 +18,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
+/**
+ * Class ApiV1AuthenticationSuccessHandler
+ * @package App\Infrastructure\Symfony\Security
+ */
 class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     /** @var UserRepository */
@@ -32,7 +36,7 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
     /** @var MessageBusInterface */
     private MessageBusInterface $messageBus;
 
-    /** @var JWTTokenManagerInterface  */
+    /** @var JWTTokenManagerInterface */
     private JWTTokenManagerInterface $JWTTokenManager;
 
     private RefreshTokenManagerInterface $refreshTokenManager;
@@ -111,8 +115,10 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $user = $this->userRepository->get($jwtUser->userId());
 
         $payload = [
-            'lastLogin' => (!empty($user->lastLogin())) ? $user->lastLogin()->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
-                ->format('Y-m-d H:i:s') : null,
+            'lastLogin' => (!empty($user->lastLogin()))
+                ? $user->lastLogin()->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
+                    ->format('Y-m-d H:i:s')
+                : null,
             'status' => $user->status()->toString(),
         ];
 

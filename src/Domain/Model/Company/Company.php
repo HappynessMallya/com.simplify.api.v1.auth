@@ -222,6 +222,9 @@ class Company
         return $this->serial;
     }
 
+    /**
+     * @return OrganizationId|null
+     */
     public function organizationId(): ?OrganizationId
     {
         return $this->organizationId;

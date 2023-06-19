@@ -223,7 +223,7 @@ class User
         $roles = [];
 
         foreach (array_unique($this->roles) as $rol) {
-                $roles[] = UserRole::byName($rol)->getName();
+            $roles[] = UserRole::byName($rol)->getName();
         }
 
         return $roles;
@@ -365,7 +365,8 @@ class User
         return $this->userType;
     }
 
-    /* @return string
+    /**
+     * @return string
      */
     public function firstName(): string
     {

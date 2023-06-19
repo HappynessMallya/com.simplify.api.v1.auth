@@ -8,33 +8,43 @@ use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use DateTime;
 use DateTimeZone;
+use Exception;
 use Gesdinet\JWTRefreshTokenBundle\Entity\RefreshToken;
 use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
+/**
+ * Class ApiV2AuthenticationSuccessHandler
+ * @package App\Infrastructure\Symfony\Security
+ */
 class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
-    /** @var JWTTokenManagerInterface  */
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
+    /** @var JWTTokenManagerInterface */
     private JWTTokenManagerInterface $JWTTokenManager;
 
-    /** @var CompanyByUserRepository  */
+    /** @var CompanyByUserRepository */
     private CompanyByUserRepository $companyByUserRepository;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /** @var UserRepository  */
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
-    /** @var RefreshTokenManagerInterface  */
+    /** @var RefreshTokenManagerInterface */
     private RefreshTokenManagerInterface $refreshTokenManager;
 
     /**
+     * @param LoggerInterface $logger
      * @param JWTTokenManagerInterface $JWTTokenManager
      * @param CompanyByUserRepository $companyByUserRepository
      * @param CompanyRepository $companyRepository
@@ -42,12 +52,14 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
      * @param RefreshTokenManagerInterface $refreshTokenManager
      */
     public function __construct(
+        LoggerInterface $logger,
         JWTTokenManagerInterface $JWTTokenManager,
         CompanyByUserRepository $companyByUserRepository,
         CompanyRepository $companyRepository,
         UserRepository $userRepository,
         RefreshTokenManagerInterface $refreshTokenManager
     ) {
+        $this->logger = $logger;
         $this->JWTTokenManager = $JWTTokenManager;
         $this->companyByUserRepository = $companyByUserRepository;
         $this->companyRepository = $companyRepository;
@@ -59,7 +71,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
      * @param Request $request
      * @param TokenInterface $token
      * @return JsonResponse
-     * @throws \Exception
+     * @throws Exception
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): JsonResponse
     {
@@ -70,7 +82,9 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
 
         $companies = $this->companyByUserRepository->getCompaniesByUser($userId);
 
+        $organizationId = null;
         $companiesUser = [];
+
         foreach ($companies as $companyUser) {
             $company = $this->companyRepository->get(CompanyId::fromString($companyUser['company_id']));
 
@@ -87,7 +101,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
                 return new JsonResponse(
                     [
                         'success' => false,
-                        'error' => 'Company has not been registered in TRA'
+                        'error' => 'Company has not been registered in TRA',
                     ],
                     Response::HTTP_BAD_REQUEST
                 );
@@ -98,15 +112,22 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
                 'name' => $company->name(),
                 'vrn' => !(($company->traRegistration()['VRN'] == 'NOT REGISTERED')),
             ];
+
+            $organizationId = $company->organizationId()->toString();
         }
 
         $payload = [
             'userId' => $userId->toString(),
             'username' => $user->username(),
+            'firstName' => $user->firstName(),
+            'lastName' => $user->lastName(),
+            'organizationId' => $organizationId,
             'companies' => $companiesUser,
             'userType' => $user->getUserType()->toString(),
-            'lastLogin' => (!empty($user->lastLogin())) ? $user->lastLogin()->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
-                ->format('Y-m-d H:i:s') : null,
+            'lastLogin' => (!empty($user->lastLogin()))
+                ? $user->lastLogin()->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
+                    ->format('Y-m-d H:i:s')
+                : null,
             'status' => $user->status()->toString(),
         ];
 
