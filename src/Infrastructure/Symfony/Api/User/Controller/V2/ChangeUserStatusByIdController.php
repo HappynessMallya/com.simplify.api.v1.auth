@@ -4,49 +4,54 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
 
-use App\Application\User\V2\QueryHandler\GetCompaniesByUserTypeHandler;
-use App\Application\User\V2\QueryHandler\GetCompaniesByUserTypeQuery;
+use App\Application\User\V2\QueryHandler\ChangeUserStatusByIdHandler;
+use App\Application\User\V2\QueryHandler\ChangeUserStatusByIdQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetCompaniesByUserTypeController
+ * Class ChangeUserStatusByIdController
  * @package App\Infrastructure\Symfony\Api\ApiUser\Controller\V2
  */
-class GetCompaniesByUserTypeController extends BaseController
+class ChangeUserStatusByIdController extends BaseController
 {
     /**
-     * @Route(path="/companies", methods={"GET"})
+     * @Route(path="/operator/{operatorId}", methods={"PUT"})
      *
+     * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
-     * @param GetCompaniesByUserTypeHandler $handler
+     * @param ChangeUserStatusByIdHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getCompaniesByUserTypeAction(
+    public function changeUserStatusByIdAction(
+        Request $request,
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
-        GetCompaniesByUserTypeHandler $handler
+        ChangeUserStatusByIdHandler $handler
     ): JsonResponse {
+        $operatorId = $request->get('operatorId');
+        $newStatus = $request->get('newStatus');
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
-        $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
-        $query = new GetCompaniesByUserTypeQuery($userId, $userType);
-        $companies = null;
+        $query = new ChangeUserStatusByIdQuery($operatorId, $userType, $newStatus);
+
+        $disabled = false;
 
         try {
-            $companies = $handler->__invoke($query);
+            $disabled = $handler->__invoke($query);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to get companies',
+                'Exception error trying to change status of operator',
                 [
                     'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
@@ -54,27 +59,29 @@ class GetCompaniesByUserTypeController extends BaseController
                 ]
             );
 
-            $this->createApiResponse(
+            return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to get companies. ' . $exception->getMessage(),
-                ]
+                    'error' => 'Exception error trying to change status of operator. ' . $exception->getMessage(),
+                ],
+                Response::HTTP_BAD_REQUEST
             );
         }
 
-        if (empty($companies)) {
+        if (!$disabled) {
             return $this->createApiResponse(
                 [
-                    'error' => 'Internal server error trying to get companies',
+                    'success' => false,
+                    'error' => 'User status not changed',
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                Response::HTTP_BAD_REQUEST
             );
         }
 
         return $this->createApiResponse(
             [
-                'user_id' => $userId,
-                'companies' => $companies,
+                'success' => true,
+                'message' => 'User status changed',
             ],
             Response::HTTP_OK
         );

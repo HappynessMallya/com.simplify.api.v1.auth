@@ -22,6 +22,11 @@ doctrine:
                 type: xml
                 dir: '%kernel.project_dir%/src/Infrastructure/Symfony/Doctrine/Mapping/User'
                 prefix: App\Domain\Model\User
+            Organization:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Infrastructure/Symfony/Doctrine/Mapping/Organization'
+                prefix: App\Domain\Model\Organization
             Company:
                 is_bundle: false
                 type: xml

@@ -20,10 +20,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class RegisterUserHandler
@@ -78,10 +75,6 @@ class RegisterUserHandler
     /**
      * @param RegisterUserCommand $command
      * @return array
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      * @throws Exception
      */
     public function __invoke(RegisterUserCommand $command): array
@@ -93,6 +86,7 @@ class RegisterUserHandler
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
 
             $user = User::create(
+                $userRole,
                 $userId,
                 CompanyId::fromString($command->getCompanies()[0]),
                 $command->getEmail(),
@@ -100,31 +94,30 @@ class RegisterUserHandler
                 $password,
                 null,
                 UserStatus::CHANGE_PASSWORD(),
-                $userRole,
-                UserType::byValue($command->getUserType())
+                UserType::byValue($command->getUserType()),
+                $command->getFirstName(),
+                $command->getLastName(),
+                $command->getMobileNumber()
             );
 
             $user->setPassword($this->passwordEncoder->hashPassword($user));
 
             if (!$this->userRepository->save($user)) {
                 $this->logger->critical(
-                    'Error trying to save user',
+                    'The user could not be registered',
                     [
-                        'userId' => $user->userId(),
+                        'user_id' => $user->userId(),
                         'company_id' => $user->companyId(),
                         'email' => $user->email(),
                         'username' => $user->username(),
                     ]
                 );
 
-                throw new Exception('The user could not be saved', 500);
+                throw new Exception(
+                    'The user could not be registered',
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
             }
-
-            $companies = [];
-            foreach ($command->getCompanies() as $company) {
-                $companies[] = CompanyId::fromString($company);
-            }
-
 
             $this->companyByUserRepository->saveCompaniesToUser($userId, $command->getCompanies());
 
@@ -144,32 +137,36 @@ class RegisterUserHandler
                 $this->logger->critical(
                     'Error trying to send credentials to client',
                     [
-                        'error_message' => $response->getErrorMessage(),
-                        'username' => $user->username(),
                         'company_id' => $company->companyId()->toString(),
+                        'username' => $user->username(),
+                        'error_message' => $response->getErrorMessage(),
                         'method' => __METHOD__,
                     ]
                 );
             }
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $this->logger->critical(
-                'An error has been occurred trying to create user',
+                'Exception error trying to register user',
                 [
-                    'error_message' => $e->getMessage(),
-                    'error_code' => $e->getCode(),
-                    'username' => $command->getUsername(),
                     'company_id' => $command->getCompanies()[0],
+                    'username' => $command->getUsername(),
+                    'error_message' => $exception->getMessage(),
+                    'error_code' => $exception->getCode(),
                     'method' => __METHOD__,
                 ]
             );
 
-            throw new Exception('An error has been occurred trying to create user', 500);
+            throw new Exception(
+                $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return [
             'userId' => $userId->toString(),
             'username' => $user->username(),
-            'createdAt' => (new DateTime())->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
+            'createdAt' => (new DateTime())
+                ->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
                 ->format(('Y-m-d H:i:s')),
         ];
     }
