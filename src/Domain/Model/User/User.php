@@ -85,6 +85,7 @@ class User
         ?string $password,
         ?string $salt,
         UserStatus $userStatus,
+        UserRole $rol,
         UserType $userType,
         string $firstName,
         string $lastName,
