@@ -10,23 +10,64 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Class RegisterUserType
+ * @package App\Infrastructure\Symfony\Api\User\Controller\V2\FormType
+ */
 class RegisterUserType extends AbstractType
 {
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add(
+                'firstName',
+                TextType::class,
+                [
+                    'constraints' => new Assert\NotBlank(),
+                ]
+            )
+            ->add(
+                'lastName',
+                TextType::class,
+                [
+                    'constraints' => new Assert\NotBlank(),
+                ]
+            )
+            ->add(
+                'username',
+                TextType::class,
+                [
+                    'constraints' => new Assert\NotBlank(),
+                ]
+            )
             ->add(
                 'email',
                 EmailType::class,
                 [
                     'constraints' => [
-                        new NotBlank(),
-                        new Email()
-                    ]
+                        new Assert\NotBlank(),
+                        new Assert\Email(),
+                    ],
+                ]
+            )
+            ->add(
+                'mobileNumber',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\Regex(
+                            [
+                                'pattern' => '/^[0-9]*$/',
+                                'message' => 'This value should be numeric.',
+                            ]
+                        ),
+                    ],
                 ]
             )
             ->add(
@@ -39,10 +80,12 @@ class RegisterUserType extends AbstractType
                 [
                     'entry_type' => TextType::class,
                     'constraints' => [
-                        new Assert\Count([
-                            'min' => 1,
-                            'max' => 5,
-                        ]),
+                        new Assert\Count(
+                            [
+                                'min' => 1,
+                                'max' => 5,
+                            ]
+                        ),
                     ],
                     'entry_options' => [
                         'constraints' => [
@@ -61,13 +104,6 @@ class RegisterUserType extends AbstractType
                 ]
             )
             ->add(
-                'username',
-                TextType::class,
-                [
-                    'constraints' => new NotBlank()
-                ]
-            )
-            ->add(
                 'role',
                 TextType::class
             )
@@ -77,19 +113,25 @@ class RegisterUserType extends AbstractType
                 [
                     'constraints' => [
                         new Assert\NotBlank(),
-                        new Assert\Choice(UserType::getValues())
-                    ]
+                        new Assert\Choice(UserType::getValues()),
+                    ],
                 ]
-            );
+            )
+        ;
     }
 
+    /**
+     * @param OptionsResolver $resolver
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => RegisterUserCommand::class,
-            'csrf_protection' => false,
-            'is_edit' => false,
-            'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}'
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => RegisterUserCommand::class,
+                'csrf_protection' => false,
+                'is_edit' => false,
+                'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}',
+            ]
+        );
     }
 }

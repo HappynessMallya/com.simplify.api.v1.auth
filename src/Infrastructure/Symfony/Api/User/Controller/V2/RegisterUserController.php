@@ -9,15 +9,10 @@ use App\Application\User\V2\CommandHandler\RegisterUserHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\User\Controller\V2\FormType\RegisterUserType;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 /**
  * Class RegisterUserController
@@ -30,22 +25,16 @@ class RegisterUserController extends BaseController
      *
      * @param Request $request
      * @param RegisterUserHandler $handler
-     * @param LoggerInterface $logger
      * @return JsonResponse
-     * @throws ClientExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws TransportExceptionInterface
      */
     public function registerUserAction(
         Request $request,
-        RegisterUserHandler $handler,
-        LoggerInterface $logger
+        RegisterUserHandler $handler
     ): JsonResponse {
-        $logger->debug(
-            'Register New User',
+        $this->logger->debug(
+            'Register new user',
             [
-                'data' => json_decode($request->getContent(), true)
+                'data' => json_decode($request->getContent(), true),
             ]
         );
 
@@ -57,36 +46,37 @@ class RegisterUserController extends BaseController
             $this->logger->critical(
                 'The data could not be validated',
                 [
-                    'errors' => $this->getValidationErrors($form)
+                    'errors' => $this->getValidationErrors($form),
                 ]
             );
 
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'errors' => $this->getValidationErrors($form)
+                    'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        $response = null;
         try {
             $response = $handler->__invoke($command);
         } catch (Exception $exception) {
-            $logger->critical(
-                'An internal error has been occurred',
+            $this->logger->critical(
+                'Exception error trying to register user',
                 [
-                    'code' => $exception->getCode(),
-                    'message' => $exception->getMessage(),
+                    'error_message' => $exception->getMessage(),
+                    'error_code' => $exception->getCode(),
+                    'method' => __METHOD__,
                 ]
             );
 
-            $this->createApiResponse(
+            return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => $exception->getMessage(),
-                ]
+                    'error_message' => 'Exception error trying to register user. ' . $exception->getMessage(),
+                ],
+                $exception->getCode()
             );
         }
 

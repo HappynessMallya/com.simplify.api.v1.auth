@@ -33,23 +33,12 @@ class GetCompaniesHandler
 
     public function handle(GetCompaniesQuery $command): array
     {
-        $startHandler = microtime(true);
         $companiesData = [];
 
-        $start = microtime(true);
         $companies = $this->companyRepository->getAll(
             $command->getPage(),
             $command->getPageSize(),
             $command->getOrderBy()
-        );
-        $end = microtime(true);
-
-        $this->logger->debug(
-            'Time duration for get all companies',
-            [
-                'time' => $end -  $start,
-                'method' => __METHOD__
-            ]
         );
 
         /** @var Company $company */
@@ -61,6 +50,7 @@ class GetCompaniesHandler
 
             $companiesData[] = [
                 'companyId' => $company['companyId']->toString(),
+                'organizationId' => $company['organizationId']->toString(),
                 'name' => $company['name'],
                 'tin' => $company['tin'],
                 'address' => $company['address'],
@@ -69,15 +59,6 @@ class GetCompaniesHandler
                 'traRegistration' => $traRegistration,
             ];
         }
-        $end = microtime(true);
-
-        $this->logger->debug(
-            'Time duration get companies handler',
-            [
-                'time' => $end - $start,
-                'method' => __METHOD__
-            ]
-        );
 
         return [
             'total' => $companies['total'],

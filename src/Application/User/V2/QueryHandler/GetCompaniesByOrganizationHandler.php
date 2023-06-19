@@ -14,10 +14,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetCompaniesByUserTypeHandler
+ * Class GetCompaniesByOrganizationHandler
  * @package App\Application\User\V2\QueryHandler
  */
-class GetCompaniesByUserTypeHandler
+class GetCompaniesByOrganizationHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -44,11 +44,11 @@ class GetCompaniesByUserTypeHandler
     }
 
     /**
-     * @param GetCompaniesByUserTypeQuery $query
+     * @param GetCompaniesByOrganizationQuery $query
      * @return array
      * @throws Exception
      */
-    public function __invoke(GetCompaniesByUserTypeQuery $query): array
+    public function __invoke(GetCompaniesByOrganizationQuery $query): array
     {
         $userId = UserId::fromString($query->getUserId());
         $userType = UserType::byName($query->getUserType());
@@ -97,8 +97,8 @@ class GetCompaniesByUserTypeHandler
                 'email' => $company->email(),
                 'address' => $company->address(),
                 'traRegistration' => $company->traRegistration(),
-                'createdAt' => $company->createdAt()->format(DATE_ATOM),
                 'status' => $company->companyStatus(),
+                'createdAt' => $company->createdAt()->format(DATE_ATOM),
             ];
         }
 

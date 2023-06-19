@@ -10,6 +10,7 @@ use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserRole;
 use App\Domain\Model\User\UserStatus;
+use App\Domain\Model\User\UserType;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\SendCredentialsRequest;
 use App\Domain\Services\User\PasswordEncoder;
@@ -17,6 +18,7 @@ use App\Domain\Services\SendCredentialsService;
 use App\Infrastructure\Repository\DoctrineCompanyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class RegisterUserHandler
@@ -41,6 +43,13 @@ class RegisterUserHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
+    /**
+     * @param UserRepository $userRepository
+     * @param DoctrineCompanyRepository $companyRepository
+     * @param PasswordEncoder $passwordEncoder
+     * @param SendCredentialsService $sendCredentials
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         UserRepository $userRepository,
         DoctrineCompanyRepository $companyRepository,
@@ -58,23 +67,26 @@ class RegisterUserHandler
     /**
      * @param RegisterUserCommand $command
      * @return bool
+     * @throws Exception
      */
     public function handle(RegisterUserCommand $command): bool
     {
         $userRole = empty($command->getRole()) ? UserRole::USER() : UserRole::byName($command->getRole());
 
         try {
+            $userId = UserId::generate();
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
 
             $user = User::create(
                 $userRole,
-                UserId::generate(),
+                $userId,
                 CompanyId::fromString($command->getCompanyId()),
                 $command->getEmail(),
                 $command->getUsername(),
                 $password,
                 null,
                 UserStatus::CHANGE_PASSWORD(),
+                UserType::TYPE_OPERATOR(),
                 $command->getFirstName(),
                 $command->getLastName(),
                 $command->getMobileNumber()
@@ -86,8 +98,8 @@ class RegisterUserHandler
                 $this->logger->critical(
                     'Error trying to save user',
                     [
-                        'user_id' => $user->userId(),
                         'company_id' => $user->companyId(),
+                        'user_id' => $user->userId(),
                         'username' => $user->username(),
                         'email' => $user->email(),
                         'method' => __METHOD__,
@@ -124,7 +136,7 @@ class RegisterUserHandler
             }
         } catch (Exception $exception) {
             $this->logger->critical(
-                'An error has been occurred trying to create user',
+                'Exception error trying to register user',
                 [
                     'company_id' => $command->getCompanyId(),
                     'username' => $command->getUsername(),
@@ -134,7 +146,10 @@ class RegisterUserHandler
                 ]
             );
 
-            return false;
+            throw new Exception(
+                'Exception error trying to register user: ' . $exception->getMessage(),
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         return true;

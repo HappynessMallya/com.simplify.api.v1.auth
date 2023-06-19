@@ -10,14 +10,23 @@ namespace App\Application\User\V2\CommandHandler;
  */
 class RegisterUserCommand
 {
-    /** @var string */
-    private string $username;
-
     /** @var array */
     private array $companies;
 
     /** @var string */
+    private string $firstName;
+
+    /** @var string */
+    private string $lastName;
+
+    /** @var string */
+    private string $username;
+
+    /** @var string */
     private string $email;
+
+    /** @var string|null */
+    private ?string $mobileNumber;
 
     /** @var string */
     private string $salt;
@@ -28,11 +37,11 @@ class RegisterUserCommand
     /** @var string|null */
     private ?string $confirmationToken;
 
-    /** @var string */
-    private string $status;
-
     /** @var string|null */
     private ?string $role = null;
+
+    /** @var string */
+    private string $status;
 
     /** @var string  */
     private string $userType;
@@ -106,7 +115,7 @@ class RegisterUserCommand
      */
     public function getPassword(): ?string
     {
-        return $this->password;
+        return empty($this->password) ? null : $this->password;
     }
 
     /**
@@ -122,7 +131,7 @@ class RegisterUserCommand
      */
     public function getConfirmationToken(): ?string
     {
-        return $this->confirmationToken;
+        return empty($this->confirmationToken) ? null : $this->confirmationToken;
     }
 
     /**
@@ -154,7 +163,7 @@ class RegisterUserCommand
      */
     public function getRole(): ?string
     {
-        return $this->role;
+        return empty($this->role) ? null : $this->role;
     }
 
     /**
@@ -179,5 +188,53 @@ class RegisterUserCommand
     public function setUserType(string $userType): void
     {
         $this->userType = $userType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * @param string $firstName
+     */
+    public function setFirstName(string $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * @param string $lastName
+     */
+    public function setLastName(string $lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getMobileNumber(): ?string
+    {
+        return empty($this->mobileNumber) ? null : $this->mobileNumber;
+    }
+
+    /**
+     * @param string|null $mobileNumber
+     */
+    public function setMobileNumber(?string $mobileNumber): void
+    {
+        $this->mobileNumber = $mobileNumber;
     }
 }

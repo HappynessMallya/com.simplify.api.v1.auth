@@ -44,6 +44,7 @@ class GetCompanyByTinHandler
 
         return [
             'companyId' => $company->companyId()->toString(),
+            'organizationId' => $company->organizationId()->toString(),
             'name' => $company->name(),
             'tin' => $company->tin(),
             'email' => $company->email(),

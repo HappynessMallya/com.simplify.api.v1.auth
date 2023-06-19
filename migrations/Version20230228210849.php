@@ -24,15 +24,15 @@ class Version20230228210849 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql(/** @lang sql */
-            'ALTER TABLE auth_user ADD first_name VARCHAR(100) NOT NULL;'
+            'ALTER TABLE auth_user ADD first_name VARCHAR(100) NOT NULL AFTER company_id;'
         );
 
         $this->addSql(/** @lang sql */
-            'ALTER TABLE auth_user ADD last_name VARCHAR(100) NOT NULL;'
+            'ALTER TABLE auth_user ADD last_name VARCHAR(100) NOT NULL AFTER first_name;'
         );
 
         $this->addSql(/** @lang sql */
-            'ALTER TABLE auth_user ADD mobile_number VARCHAR(20) NULL;'
+            'ALTER TABLE auth_user ADD mobile_number VARCHAR(20) NULL AFTER email;'
         );
     }
 
