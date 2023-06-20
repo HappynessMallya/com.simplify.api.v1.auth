@@ -6,9 +6,9 @@
     <entity name="App\Domain\Model\Organization\Organization" table="organization">
         <id name="organizationId" column="organization_id" type="OrganizationId" />
         <field name="name" column="name" type="string" unique="true" />
-        <field name="owner_name" column="owner_name" type="string" />
-        <field name="owner_email" column="owner_email" type="string" />
-        <field name="owner_phone_number" column="owner_phone_number" type="string" />
+        <field name="ownerName" column="owner_name" type="string" />
+        <field name="ownerEmail" column="owner_email" type="string" />
+        <field name="ownerPhoneNumber" column="owner_phone_number" type="string" />
         <field name="status" column="status" type="string" />
         <field name="createdAt" column="created_at" type="datetime" />
         <field name="updatedAt" column="updated_at" type="datetime" />

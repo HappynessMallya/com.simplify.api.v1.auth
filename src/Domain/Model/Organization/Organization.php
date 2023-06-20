@@ -19,32 +19,50 @@ class Organization
     private string $name;
 
     /** @var string */
+    private string $ownerName;
+
+    /** @var string */
+    private string $ownerEmail;
+
+    /** @var string|null */
+    private ?string $ownerPhoneNumber;
+
+    /** @var string */
     private string $status;
 
     /** @var DateTime */
     private DateTime $createdAt;
 
-    /** @var DateTime */
-    private DateTime $updatedAt;
+    /** @var DateTime|null */
+    private ?DateTime $updatedAt;
 
     /**
      * @param OrganizationId $organizationId
      * @param string $name
+     * @param string $ownerName
+     * @param string $ownerEmail
+     * @param string|null $ownerPhoneNumber
      * @param OrganizationStatus $status
      * @param DateTime $createdAt
-     * @param DateTime $updatedAt
+     * @param DateTime|null $updatedAt
      * @return Organization
      */
     public static function create(
         OrganizationId $organizationId,
         string $name,
+        string $ownerName,
+        string $ownerEmail,
+        ?string $ownerPhoneNumber,
         OrganizationStatus $status,
         DateTime $createdAt,
-        DateTime $updatedAt
+        ?DateTime $updatedAt
     ): Organization {
         $self = new self();
         $self->organizationId = $organizationId;
         $self->name = $name;
+        $self->ownerName = $ownerName;
+        $self->ownerEmail = $ownerEmail;
+        $self->ownerPhoneNumber = $ownerPhoneNumber;
         $self->status = $status->getValue();
         $self->createdAt = $createdAt;
         $self->updatedAt = $updatedAt;
@@ -69,11 +87,35 @@ class Organization
     }
 
     /**
+     * @return string
+     */
+    public function getOwnerName(): string
+    {
+        return $this->ownerName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOwnerEmail(): string
+    {
+        return $this->ownerEmail;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getOwnerPhoneNumber(): ?string
+    {
+        return empty($this->ownerPhoneNumber) ? '' : $this->ownerPhoneNumber;
+    }
+
+    /**
      * @return OrganizationStatus
      */
     public function getStatus(): OrganizationStatus
     {
-        return $this->status;
+        return OrganizationStatus::byName($this->status);
     }
 
     /**
@@ -85,10 +127,10 @@ class Organization
     }
 
     /**
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getUpdatedAt(): DateTime
+    public function getUpdatedAt(): ?DateTime
     {
-        return $this->updatedAt;
+        return empty($this->updatedAt) ? null : $this->updatedAt;
     }
 }
