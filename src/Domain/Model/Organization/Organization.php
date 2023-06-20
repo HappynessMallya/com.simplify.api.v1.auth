@@ -115,7 +115,7 @@ class Organization
      */
     public function getStatus(): OrganizationStatus
     {
-        return OrganizationStatus::byName($this->status);
+        return OrganizationStatus::byValue($this->status);
     }
 
     /**
