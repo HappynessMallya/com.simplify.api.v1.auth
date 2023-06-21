@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\Organization\QueryHandler;
 
 /**
  * Class GetCompaniesByOrganizationQuery
@@ -10,6 +10,9 @@ namespace App\Application\User\V2\QueryHandler;
  */
 class GetCompaniesByOrganizationQuery
 {
+    /** @var string  */
+    protected string $organizationId;
+
     /** @var string */
     protected string $userId;
 
@@ -17,13 +20,15 @@ class GetCompaniesByOrganizationQuery
     protected string $userType;
 
     /**
+     * @param string $organizationId
      * @param string $userId
      * @param string $userType
      */
-    public function __construct(string $userId, string $userType)
+    public function __construct(string $organizationId, string $userId, string $userType)
     {
         $this->userId = $userId;
         $this->userType = $userType;
+        $this->organizationId = $organizationId;
     }
 
     /**
@@ -40,5 +45,13 @@ class GetCompaniesByOrganizationQuery
     public function getUserType(): string
     {
         return $this->userType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrganizationId(): string
+    {
+        return $this->organizationId;
     }
 }

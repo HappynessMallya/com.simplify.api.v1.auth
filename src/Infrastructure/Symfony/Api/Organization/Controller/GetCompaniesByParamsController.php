@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
+namespace App\Infrastructure\Symfony\Api\Organization\Controller;
 
-use App\Application\User\V2\QueryHandler\GetOperatorsByParamsHandler;
-use App\Application\User\V2\QueryHandler\GetOperatorsByParamsQuery;
+
+use App\Application\Organization\QueryHandler\GetCompaniesByParamsHandler;
+use App\Application\Organization\QueryHandler\GetCompaniesByParamsQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -18,63 +19,71 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetOperatorsByParamsController
+ * Class GetCompaniesByParamsController
  * @package App\Infrastructure\Symfony\Api\User\Controller\V2
  */
-class GetOperatorsByParamsController extends BaseController
+class GetCompaniesByParamsController extends BaseController
 {
     /**
-     * @Route(path="/operators/query", methods={"GET"})
+     * @Route(path="/companies/query", methods={"GET"})
      *
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
      * @param Request $request
      * @param LoggerInterface $logger
-     * @param GetOperatorsByParamsHandler $handler
+     * @param GetCompaniesByParamsHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getOperatorsByParamsAction(
+    public function getCompaniesByParamsAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
         Request $request,
         LoggerInterface $logger,
-        GetOperatorsByParamsHandler $handler
+        GetCompaniesByParamsHandler $handler
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $organizationId = $tokenData['organizationId'];
         $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
-        $firstName = $request->query->get('firstName');
-        $lastName = $request->query->get('lastName');
+        $companyName = $request->query->get('companyName');
+        $tin = $request->query->get('tin');
+        $vrn = $request->query->get('vrn');
         $email = $request->query->get('email');
         $mobileNumber = $request->query->get('mobileNumber');
+        $serial = $request->query->get('serial');
         $status = $request->query->get('status');
 
-        $query = new GetOperatorsByParamsQuery(
+        $query = new GetCompaniesByParamsQuery(
+            $organizationId,
             $userId,
             $userType,
-            $firstName ?? '',
-            $lastName ?? '',
+            $companyName ?? '',
+            $tin ?? '',
+            $vrn ?? '',
             $email ?? '',
             $mobileNumber ?? '',
+            $serial ?? '',
             $status,
         );
 
         try {
-            $operators = $handler->__invoke($query);
+            $companies = $handler->__invoke($query);
 
-            if (!$operators) {
+            if (!$companies) {
                 $this->logger->debug(
-                    'No operators found by the search criteria',
+                    'No companies found by the search criteria',
                     [
                         'criteria' => [
                             'userId' => $userId,
                             'userType' => $userType,
-                            'firstName' => $firstName,
-                            'lastName' => $lastName,
+                            'companyName' => $companyName,
+                            'tin' => $tin,
+                            'vrn' => $vrn,
                             'email' => $email,
                             'mobileNumber' => $mobileNumber,
+                            'serial' => $serial,
                             'status' => $status,
                         ],
                     ]
@@ -83,14 +92,14 @@ class GetOperatorsByParamsController extends BaseController
                 return $this->createApiResponse(
                     [
                         'success' => false,
-                        'message' => 'No operators found by the search criteria',
+                        'error' => 'No companies found by the search criteria',
                     ],
                     Response::HTTP_NOT_FOUND
                 );
             }
         } catch (Exception $exception) {
             $logger->critical(
-                'Error trying to find the set of operators',
+                'Error trying to find the set of companies',
                 [
                     'user_id' => $userId,
                     'user_type' => $userType,
@@ -103,14 +112,14 @@ class GetOperatorsByParamsController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Error trying to find the set of operators: ' . $exception->getMessage(),
+                    'error' => 'Error trying to find the set of companies. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
         return $this->createApiResponse(
-            $operators,
+            $companies,
             Response::HTTP_OK
         );
     }

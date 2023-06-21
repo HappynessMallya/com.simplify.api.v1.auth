@@ -19,10 +19,10 @@ interface CompanyByUserRepository
     public function getCompaniesByUser(UserId $userId): array;
 
     /**
-     * @param OrganizationId $organizationId
+     * @param CompanyId $companyId
      * @return array
      */
-    public function getOperatorsByOrganization(OrganizationId $organizationId): array;
+    public function getOperatorsByCompany(CompanyId $companyId): array;
 
     /**
      * @param UserId $userId

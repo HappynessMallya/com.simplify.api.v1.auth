@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
+namespace App\Infrastructure\Symfony\Api\User\Controller;
 
-use App\Application\User\V2\QueryHandler\GetCompaniesByOrganizationHandler;
-use App\Application\User\V2\QueryHandler\GetCompaniesByOrganizationQuery;
+use App\Application\User\Query\GetOperatorsByOrganizationQuery;
+use App\Application\User\QueryHandler\GetOperatorsByOrganizationHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -16,37 +16,36 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetCompaniesByOrganizationController
+ * Class GetOperatorsByOrganizationController
  * @package App\Infrastructure\Symfony\Api\ApiUser\Controller\V2
  */
-class GetCompaniesByOrganizationController extends BaseController
+class GetOperatorsByOrganizationController extends BaseController
 {
     /**
-     * @Route(path="/companies", methods={"GET"})
+     * @Route(path="/operators", methods={"GET"})
      *
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
-     * @param GetCompaniesByOrganizationHandler $handler
+     * @param GetOperatorsByOrganizationHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getCompaniesByUserTypeAction(
+    public function getUsersByOrganizationAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
-        GetCompaniesByOrganizationHandler $handler
+        GetOperatorsByOrganizationHandler $handler
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
         $organizationId = $tokenData['organizationId'];
-        $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
-        $query = new GetCompaniesByOrganizationQuery($userId, $userType);
+        $query = new GetOperatorsByOrganizationQuery($organizationId, $userType);
 
         try {
-            $companies = $handler->__invoke($query);
+            $operators = $handler->__invoke($query);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to get companies',
+                'Exception error trying to get operators',
                 [
                     'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
@@ -57,17 +56,17 @@ class GetCompaniesByOrganizationController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to get companies. ' . $exception->getMessage(),
+                    'error' => 'Exception error trying to get operators. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        if (empty($companies)) {
+        if (empty($operators)) {
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Internal server error trying to get companies',
+                    'error' => 'Internal server error trying to get operators',
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -75,9 +74,8 @@ class GetCompaniesByOrganizationController extends BaseController
 
         return $this->createApiResponse(
             [
-                'userId' => $userId,
                 'organizationId' => $organizationId,
-                'companies' => $companies,
+                'operators' => $operators,
             ],
             Response::HTTP_OK
         );

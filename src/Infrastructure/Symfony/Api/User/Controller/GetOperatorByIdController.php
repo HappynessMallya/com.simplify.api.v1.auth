@@ -2,50 +2,53 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
+namespace App\Infrastructure\Symfony\Api\User\Controller;
 
-use App\Application\User\V2\QueryHandler\GetOperatorsByOrganizationHandler;
-use App\Application\User\V2\QueryHandler\GetOperatorsByOrganizationQuery;
+use App\Application\User\Query\GetOperatorByIdQuery;
+use App\Application\User\QueryHandler\GetOperatorByIdHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetOperatorsByOrganizationController
+ * Class GetOperatorByIdController
  * @package App\Infrastructure\Symfony\Api\ApiUser\Controller\V2
  */
-class GetOperatorsByOrganizationController extends BaseController
+class GetOperatorByIdController extends BaseController
 {
     /**
-     * @Route(path="/operators", methods={"GET"})
+     * @Route(path="/operator/{operatorId}", methods={"GET"})
      *
+     * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
-     * @param GetOperatorsByOrganizationHandler $handler
+     * @param GetOperatorByIdHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getUsersByOrganizationAction(
+    public function getOperatorByIdAction(
+        Request $request,
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
-        GetOperatorsByOrganizationHandler $handler
+        GetOperatorByIdHandler $handler
     ): JsonResponse {
+        $operatorId = $request->get('operatorId');
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
-        $organizationId = $tokenData['organizationId'];
         $userType = $tokenData['userType'];
 
-        $query = new GetOperatorsByOrganizationQuery($organizationId, $userType);
+        $query = new GetOperatorByIdQuery($operatorId, $userType);
 
         try {
-            $operators = $handler->__invoke($query);
+            $operator = $handler->__invoke($query);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to get operators',
+                'Exception error trying to get operator details',
                 [
                     'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
@@ -56,27 +59,24 @@ class GetOperatorsByOrganizationController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to get operators. ' . $exception->getMessage(),
+                    'error' => 'Exception error trying to get operator details. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        if (empty($operators)) {
+        if (empty($operator)) {
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Internal server error trying to get operators',
+                    'error' => 'Internal server error trying to get operator details',
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
         return $this->createApiResponse(
-            [
-                'organizationId' => $organizationId,
-                'operators' => $operators,
-            ],
+            $operator,
             Response::HTTP_OK
         );
     }
