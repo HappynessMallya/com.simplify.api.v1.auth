@@ -133,4 +133,26 @@ class Organization
     {
         return empty($this->updatedAt) ? null : $this->updatedAt;
     }
+
+    /**
+     * @param array $toUpdate
+     */
+    public function update(array $toUpdate): void
+    {
+        $notNull = ['name', 'ownerName', 'ownerEmail', 'status'];
+
+        foreach ($toUpdate as $attribute => $newValue) {
+            if (property_exists(self::class, $attribute)) {
+                if (empty($newValue)) {
+                    if (in_array($attribute, $notNull)) {
+                        continue;
+                    }
+
+                    $this->{$attribute} = null;
+                } else {
+                    $this->{$attribute} = $newValue;
+                }
+            }
+        }
+    }
 }

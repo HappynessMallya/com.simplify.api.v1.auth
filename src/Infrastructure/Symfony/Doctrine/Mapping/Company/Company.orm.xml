@@ -1,20 +1,20 @@
 <?xml version="1.0" ?>
     <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
-    https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+            https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
     <entity name="App\Domain\Model\Company\Company" table="company">
-        <id name="companyId" type="CompanyId" column="id" />
-        <field name="organizationId" type="OrganizationId" column="organization_id" nullable="true" />
-        <field name="name" type="string" unique="true" />
-        <field name="tin" type="string" unique="true" />
-        <field name="address" type="string" nullable="true" />
-        <field name="email" type="string" nullable="true" />
-        <field name="phone" type="string" nullable="true" />
-        <field name="enable" type="boolean" nullable="true" />
-        <field name="traRegistration" type="json" column="tra_registration" nullable="true" />
-        <field name="createdAt" column="created_at" type="datetime" />
-        <field name="companyStatus" column="status" type="string"/>
-        <field name="serial" type="string" nullable="true" />
+        <id name="companyId"            column="id" type="CompanyId" />
+        <field name="organizationId"    column="organization_id" type="OrganizationId" nullable="true" />
+        <field name="name"              column="name" type="string" unique="true" />
+        <field name="address"           column="address" type="string" nullable="true" />
+        <field name="email"             column="email" type="string" nullable="true" />
+        <field name="createdAt"         column="created_at" type="datetime" />
+        <field name="tin"               column="tin" type="string" unique="true" />
+        <field name="traRegistration"   column="tra_registration" type="json" nullable="true" />
+        <field name="phone"             column="phone" type="string" nullable="true" />
+        <field name="enable"            column="enable" type="boolean" nullable="true" />
+        <field name="companyStatus"     column="status" type="string"/>
+        <field name="serial"            column="serial" type="string" nullable="true" />
     </entity>
 </doctrine-mapping>

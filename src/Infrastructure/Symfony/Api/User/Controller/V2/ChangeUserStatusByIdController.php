@@ -45,13 +45,11 @@ class ChangeUserStatusByIdController extends BaseController
 
         $query = new ChangeUserStatusByIdQuery($operatorId, $userType, $newStatus);
 
-        $disabled = false;
-
         try {
-            $disabled = $handler->__invoke($query);
+            $isStatusChanged = $handler->__invoke($query);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to change status of operator',
+                'Exception error trying to change user status',
                 [
                     'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
@@ -62,13 +60,13 @@ class ChangeUserStatusByIdController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to change status of operator. ' . $exception->getMessage(),
+                    'error' => 'Exception error trying to change user status. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        if (!$disabled) {
+        if (!$isStatusChanged) {
             return $this->createApiResponse(
                 [
                     'success' => false,
