@@ -62,7 +62,7 @@ class GetCompaniesByParamsController extends BaseController
             $email ?? '',
             $mobileNumber ?? '',
             $serial ?? '',
-            $status,
+            $status ?? 'ALL',
         );
 
         try {

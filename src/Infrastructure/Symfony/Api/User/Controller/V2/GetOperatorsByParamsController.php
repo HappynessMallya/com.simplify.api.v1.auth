@@ -58,7 +58,7 @@ class GetOperatorsByParamsController extends BaseController
             $lastName ?? '',
             $email ?? '',
             $mobileNumber ?? '',
-            $status,
+            $status ?? 'ALL',
         );
 
         try {
