@@ -49,7 +49,7 @@ class ChangeOrganizationStatusByIdHandler
 
         if (empty($organization)) {
             $this->logger->critical(
-                'Organization not found by id',
+                'Organization not found by ID',
                 [
                     'organization_id' => $organizationId->toString(),
                     'method' => __METHOD__,
@@ -57,7 +57,7 @@ class ChangeOrganizationStatusByIdHandler
             );
 
             throw new Exception(
-                'Organization not found by id: ' . $organizationId->toString(),
+                'Organization not found by ID: ' . $organizationId->toString(),
                 Response::HTTP_NOT_FOUND
             );
         }

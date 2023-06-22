@@ -33,6 +33,16 @@ class ChangeOrganizationStatusByIdController extends BaseController
         $organizationId = $request->get('organizationId');
         $newStatus = $request->get('newStatus');
 
+        if (empty($newStatus)) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error' => 'New status is mandatory',
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         $query = new ChangeOrganizationStatusByIdQuery($organizationId, $newStatus);
 
         try {

@@ -66,7 +66,7 @@ class ChangeUserStatusByIdHandler
 
         if (empty($operator)) {
             $this->logger->critical(
-                'Operator not found by id',
+                'Operator not found by ID',
                 [
                     'operator_id' => $operatorId->toString(),
                     'method' => __METHOD__,
@@ -74,8 +74,24 @@ class ChangeUserStatusByIdHandler
             );
 
             throw new Exception(
-                'Operator not found by id: ' . $operatorId->toString(),
+                'Operator not found by ID: ' . $operatorId->toString(),
                 Response::HTTP_NOT_FOUND
+            );
+        }
+
+        if ($operator->status()->is($newStatus)) {
+            $this->logger->critical(
+                'Operator status is the same one',
+                [
+                    'organization_status' => $operator->status()->toString(),
+                    'new_status' => $newStatus->toString(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'Operator status is the same one: ' . $operator->status()->toString(),
+                Response::HTTP_BAD_REQUEST
             );
         }
 

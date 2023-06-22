@@ -43,6 +43,16 @@ class ChangeUserStatusByIdController extends BaseController
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
         $userType = $tokenData['userType'];
 
+        if (empty($newStatus)) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error' => 'New status is mandatory',
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         $query = new ChangeUserStatusByIdQuery($operatorId, $userType, $newStatus);
 
         try {
