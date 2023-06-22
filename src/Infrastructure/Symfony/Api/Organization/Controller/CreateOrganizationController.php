@@ -30,8 +30,10 @@ class CreateOrganizationController extends BaseController
      * @return JsonResponse
      * @throws Exception
      */
-    public function createOrganizationAction(Request $request, LoggerInterface $logger): JsonResponse
-    {
+    public function createOrganizationAction(
+        Request $request,
+        LoggerInterface $logger
+    ): JsonResponse {
         try {
             $command = new CreateOrganizationCommand();
             $form = $this->createForm(CreateOrganizationType::class, $command);

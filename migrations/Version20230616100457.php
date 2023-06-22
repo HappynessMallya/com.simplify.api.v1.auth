@@ -37,6 +37,10 @@ class Version20230616100457 extends AbstractMigration
         $this->addSql(/** @lang sql */
             'ALTER TABLE organization ADD owner_phone_number VARCHAR(50) NOT NULL AFTER owner_email'
         );
+
+        $this->addSql(/** @lang sql */
+            'ALTER TABLE organization ADD CONSTRAINT unique_name UNIQUE (name)
+        ');
     }
 
     /**

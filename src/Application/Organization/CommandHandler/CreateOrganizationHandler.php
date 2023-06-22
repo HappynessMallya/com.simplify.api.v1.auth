@@ -51,7 +51,7 @@ class CreateOrganizationHandler
             $command->getName(),
             $command->getOwnerName(),
             $command->getOwnerEmail(),
-            $command->getOwnerPhoneNumber() ?? '',
+            $command->getOwnerPhoneNumber() ?? null,
             OrganizationStatus::ACTIVE(),
             new DateTime('now'),
             null,

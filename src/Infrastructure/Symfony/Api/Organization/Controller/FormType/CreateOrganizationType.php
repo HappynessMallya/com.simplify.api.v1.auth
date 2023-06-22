@@ -28,23 +28,67 @@ class CreateOrganizationType extends AbstractType
                 'name',
                 TextType::class,
                 [
-                    'constraints' => new Assert\NotBlank(),
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            [
+                                'min' => 2,
+                                'max' => 200,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
                 ]
-            )->add(
+            )
+            ->add(
                 'ownerName',
                 TextType::class,
                 [
-                    'constraints' => new Assert\NotBlank(),
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            [
+                                'min' => 2,
+                                'max' => 200,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
                 ]
-            )->add(
+            )
+            ->add(
                 'ownerEmail',
                 TextType::class,
                 [
-                    'constraints' => new Assert\Email(),
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Email()
+                    ],
                 ]
-            )->add(
+            )
+            ->add(
                 'ownerPhoneNumber',
-                TextType::class
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\Regex(
+                            [
+                                'pattern' => '/^[0-9]*$/',
+                                'message' => 'This value should be numeric.',
+                            ]
+                        ),
+                        new Assert\Length(
+                            [
+                                'min' => 9,
+                                'max' => 9,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+                ]
             )
         ;
     }
