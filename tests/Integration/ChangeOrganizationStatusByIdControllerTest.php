@@ -9,6 +9,7 @@ use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\Organization\OrganizationStatus;
 use App\Domain\Repository\OrganizationRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ChangeOrganizationStatusByIdControllerTest
@@ -18,7 +19,15 @@ class ChangeOrganizationStatusByIdControllerTest extends WebTestCase
 {
     public function testChangeOrganizationStatusByIdToInactiveWhenStatusIsActiveShouldBeSuccess()
     {
+        // Given
         $client = static::createClient();
+        $organizationId = '71e64a9d-8ac6-4dab-bee7-99bfbf4e190a';
+        $newStatus = 'INACTIVE';
+
+        /** @var OrganizationRepository $companyRepository */
+        $organizationRepository = $client->getContainer()->get(OrganizationRepository::class);
+        /** @var Organization $organization */
+        $organization = $organizationRepository->get(OrganizationId::fromString($organizationId));
 
         // Must be changed every so often
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
@@ -35,14 +44,10 @@ class ChangeOrganizationStatusByIdControllerTest extends WebTestCase
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
-        /** @var OrganizationRepository $companyRepository */
-        $organizationRepository = $client->getContainer()->get(OrganizationRepository::class);
-
-        $organizationId = '71e64a9d-8ac6-4dab-bee7-99bfbf4e190a';
-
+        // When
         $client->request(
             'PUT',
-            '/api/v2/organization/' . $organizationId . '?newStatus=INACTIVE',
+            '/api/v2/organization/' . $organizationId . '?newStatus=' . $newStatus,
             [],
             [],
             [
@@ -50,19 +55,21 @@ class ChangeOrganizationStatusByIdControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-        $this->assertTrue(json_decode($client->getResponse()->getContent(), true)['success']);
+        $response = json_decode($client->getResponse()->getContent(), true);
 
-        /** @var Organization $organization */
-        $organization = $organizationRepository->get(OrganizationId::fromString($organizationId));
-
+        // Then
+        $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        $this->assertTrue($response['success']);
         $this->assertNotNull($organization);
-        $this->assertEquals(OrganizationStatus::INACTIVE()->getValue(), $organization->getStatus());
+        $this->assertEquals(OrganizationStatus::INACTIVE(), $organization->getStatus());
     }
 
     public function testChangeOrganizationStatusByIdToInactiveWhenStatusIsInactiveShouldBeError()
     {
+        // Given
         $client = static::createClient();
+        $organizationId = '71e64a9d-8ac6-4dab-bee7-99bfbf4e190a';
+        $newStatus = 'INACTIVE';
 
         // Must be changed every so often
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
@@ -79,14 +86,13 @@ class ChangeOrganizationStatusByIdControllerTest extends WebTestCase
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
-        $organizationId = '71e64a9d-8ac6-4dab-bee7-99bfbf4e190a';
+        $expectedMessage = 'Exception error trying to change organization status. ' .
+            'Organization status is the same one: INACTIVE';
 
-        $expectedMessage = 'Exception error trying to change organization status. '
-            . 'Organization status is the same one: INACTIVE';
-
+        // When
         $client->request(
             'PUT',
-            '/api/v2/organization/' . $organizationId . '?newStatus=INACTIVE',
+            '/api/v2/organization/' . $organizationId . '?newStatus=' . $newStatus,
             [],
             [],
             [
@@ -94,17 +100,20 @@ class ChangeOrganizationStatusByIdControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertFalse(json_decode($client->getResponse()->getContent(), true)['success']);
-        $this->assertEquals(
-            $expectedMessage,
-            json_decode($client->getResponse()->getContent(), true)['error']
-        );
+        $response = json_decode($client->getResponse()->getContent(), true);
+
+        // Then
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertFalse($response['success']);
+        $this->assertEquals($expectedMessage, $response['error']);
     }
 
     public function testChangeOrganizationStatusByIdWhenStatusIsInvalidShouldBeError()
     {
+        // Given
         $client = static::createClient();
+        $organizationId = '71e64a9d-8ac6-4dab-bee7-99bfbf4e190a';
+        $newStatus = 'ANYTHING';
 
         // Must be changed every so often
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
@@ -121,14 +130,13 @@ class ChangeOrganizationStatusByIdControllerTest extends WebTestCase
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
-        $organizationId = '71e64a9d-8ac6-4dab-bee7-99bfbf4e190a';
+        $expectedMessage = 'Exception error trying to change organization status. ' .
+            'App\\Domain\\Model\\Organization\\OrganizationStatus::' . $newStatus . ' not defined';
 
-        $expectedMessage = 'Exception error trying to change organization status. '
-            . 'App\\Domain\\Model\\Organization\\OrganizationStatus::ANYTHING not defined';
-
+        // When
         $client->request(
             'PUT',
-            '/api/v2/organization/' . $organizationId . '?newStatus=ANYTHING',
+            '/api/v2/organization/' . $organizationId . '?newStatus=' . $newStatus,
             [],
             [],
             [
@@ -136,13 +144,14 @@ class ChangeOrganizationStatusByIdControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertEquals(400, $client->getResponse()->getStatusCode());
-        $this->assertFalse(json_decode($client->getResponse()->getContent(), true)['success']);
-        $this->assertEquals(
-            $expectedMessage,
-            json_decode($client->getResponse()->getContent(), true)['error']
-        );
+        $response = json_decode($client->getResponse()->getContent(), true);
 
+        // Then
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
+        $this->assertFalse($response['success']);
+        $this->assertEquals($expectedMessage, $response['error']);
+
+        // To go back to the previous DB status
         $this->fixAll($client, $organizationId);
     }
 
@@ -154,7 +163,7 @@ class ChangeOrganizationStatusByIdControllerTest extends WebTestCase
     {
         $client->request(
             'PUT',
-            '/api/v2/organization/' . $organizationId . '?newStatus=ACTIVE',
+            '/api/v2/organization/' . $organizationId . '?newStatus=' . OrganizationStatus::ACTIVE,
             [],
             [],
             [
