@@ -8,16 +8,16 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetOperatorByIdControllerTest
- * @package App\Tests\Integration\Controller
+ * Class GetOrganizationByIdControllerTest
+ * @package App\Tests\Integration
  */
-class GetOperatorByIdControllerTest extends WebTestCase
+class GetOrganizationByIdControllerTest extends WebTestCase
 {
-    public function testGetOperatorByIdShouldBeSuccess()
+    public function testGetOrganizationsByIdWhenDataIsValidShouldBeSuccess()
     {
         // Given
-        $client = self::createClient();
-        $operatorId = '7ebe33c9-6f98-4131-b627-0a6d9730e7c9';
+        $client = static::createClient();
+        $organizationId = '71e64a9d-8ac6-4dab-bee7-99bfbf4e190a';
 
         // Must be changed every so often
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
@@ -37,7 +37,7 @@ class GetOperatorByIdControllerTest extends WebTestCase
         // When
         $client->request(
             'GET',
-            '/api/v2/user/operator/' . $operatorId,
+            '/api/v2/organization/' . $organizationId,
             [],
             [],
             [
@@ -49,14 +49,14 @@ class GetOperatorByIdControllerTest extends WebTestCase
 
         // Then
         $this->assertEquals(Response::HTTP_OK, $client->getResponse()->getStatusCode());
-        $this->assertNotNull($response['operator']);
+        $this->assertNotNull($response['organization']);
     }
 
-    public function testGetOperatorByIdWithWrongOperatorIdShouldBeError()
+    public function testGetOrganizationsByIdWhenOrganizationIdIsInvalidShouldBeError()
     {
         // Given
-        $client = self::createClient();
-        $operatorId = '7ebe33c9-6f98-4131-b627-0a6d9730e7c2';
+        $client = static::createClient();
+        $organizationId = '71e64a9d-8ac6-4dab-bee7-99bfbf4e190b';
 
         // Must be changed every so often
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
@@ -73,13 +73,13 @@ class GetOperatorByIdControllerTest extends WebTestCase
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
-        $expectedMessage = 'Exception error trying to get operator details. ' .
-            'Operator not found: ' . $operatorId;
+        $expectedMessage = 'Exception error trying to get organization details. ' .
+            'Organization not found: ' . $organizationId;
 
         // When
         $client->request(
             'GET',
-            '/api/v2/user/operator/' . $operatorId,
+            '/api/v2/organization/' . $organizationId,
             [],
             [],
             [
@@ -95,11 +95,11 @@ class GetOperatorByIdControllerTest extends WebTestCase
         $this->assertEquals($expectedMessage, $response['error']);
     }
 
-    public function testGetOperatorByIdWithWrongUuidShouldBeError()
+    public function testGetOrganizationsByParamsWhenStatusIsInvalidShouldBeError()
     {
         // Given
-        $client = self::createClient();
-        $operatorId = '7ebe33c9-6f98-4131';
+        $client = static::createClient();
+        $organizationId = '71e64a9d-8ac6-4dab-bee7';
 
         // Must be changed every so often
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
@@ -116,13 +116,13 @@ class GetOperatorByIdControllerTest extends WebTestCase
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
-        $expectedMessage = 'Exception error trying to get operator details. ' .
-            'Invalid UUID string: ' . $operatorId;
+        $expectedMessage = 'Exception error trying to get organization details. ' .
+            'Invalid UUID string: ' . $organizationId;
 
         // When
         $client->request(
             'GET',
-            '/api/v2/user/operator/' . $operatorId,
+            '/api/v2/organization/' . $organizationId,
             [],
             [],
             [
