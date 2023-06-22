@@ -7,6 +7,7 @@ namespace App\Application\Organization\QueryHandler;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\Organization\OrganizationStatus;
 use App\Domain\Repository\OrganizationRepository;
+use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,6 +81,7 @@ class ChangeOrganizationStatusByIdHandler
         $organization->update(
             [
                 'status' => $newStatus->toString(),
+                'updatedAt' => new DateTime('now'),
             ]
         );
 

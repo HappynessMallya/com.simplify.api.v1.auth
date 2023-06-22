@@ -6,6 +6,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Organization\Organization;
 use App\Domain\Model\Organization\OrganizationId;
+use App\Domain\Model\Organization\OrganizationStatus;
 use App\Domain\Repository\OrganizationRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -122,5 +123,22 @@ class DoctrineOrganizationRepository implements OrganizationRepository
         }
 
         return $this->repository->findOneBy($criteria);
+    }
+
+    /**
+     * @param array $criteria
+     * @return array|null
+     */
+    public function findByCriteria(array $criteria): ?array
+    {
+        if (empty($criteria['status'])) {
+            $criteria['status'] = [
+                OrganizationStatus::ACTIVE(),
+                OrganizationStatus::INACTIVE(),
+                OrganizationStatus::BLOCKED(),
+            ];
+        }
+
+        return $this->repository->findBy($criteria);
     }
 }

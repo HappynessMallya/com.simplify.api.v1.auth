@@ -26,7 +26,7 @@ class ChangeOrganizationStatusByIdController extends BaseController
      * @param ChangeOrganizationStatusByIdHandler $handler
      * @return JsonResponse
      */
-    public function changeUserStatusByIdAction(
+    public function changeOrganizationStatusByIdAction(
         Request $request,
         ChangeOrganizationStatusByIdHandler $handler
     ): JsonResponse {

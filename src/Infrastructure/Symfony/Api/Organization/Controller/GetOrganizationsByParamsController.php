@@ -1,0 +1,99 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Symfony\Api\Organization\Controller;
+
+use App\Application\Organization\QueryHandler\GetOrganizationsByParamsHandler;
+use App\Application\Organization\QueryHandler\GetOrganizationsByParamsQuery;
+use App\Infrastructure\Symfony\Api\BaseController;
+use Exception;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * Class GetCompaniesByParamsController
+ * @package App\Infrastructure\Symfony\Api\Organization\Controller
+ */
+class GetOrganizationsByParamsController extends BaseController
+{
+    /**
+     * @Route(path="/getOrganizationsBy/query", methods={"GET"})
+     *
+     * @param Request $request
+     * @param LoggerInterface $logger
+     * @param GetOrganizationsByParamsHandler $handler
+     * @return JsonResponse
+     */
+    public function getOrganizationByParamsAction(
+        Request $request,
+        LoggerInterface $logger,
+        GetOrganizationsByParamsHandler $handler
+    ): JsonResponse {
+        $name = $request->query->get('name');
+        $ownerName = $request->query->get('ownerName');
+        $ownerEmail = $request->query->get('ownerEmail');
+        $ownerPhoneNumber = $request->query->get('ownerPhoneNumber');
+        $status = $request->query->get('status');
+
+        $query = new GetOrganizationsByParamsQuery(
+            $name ?? '',
+            $ownerName ?? '',
+            $ownerEmail ?? '',
+            $ownerPhoneNumber ?? '',
+            $status ?? 'ALL',
+        );
+
+        try {
+            $organizations = $handler->__invoke($query);
+
+            if (!$organizations) {
+                $this->logger->debug(
+                    'No organizations found by the search criteria',
+                    [
+                        'criteria' => [
+                            'name' => $name,
+                            'ownerName' => $ownerName,
+                            'ownerEmail' => $ownerEmail,
+                            'ownerPhoneNumber' => $ownerPhoneNumber,
+                            'status' => $status,
+                        ],
+                    ]
+                );
+
+                return $this->createApiResponse(
+                    [
+                        'success' => false,
+                        'error' => 'No organizations found by the search criteria',
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+        } catch (Exception $exception) {
+            $logger->critical(
+                'Error trying to find the set of organizations',
+                [
+                    'code' => $exception->getCode(),
+                    'error_message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error' => 'Error trying to find the set of organizations. ' . $exception->getMessage(),
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        return $this->createApiResponse(
+            $organizations,
+            Response::HTTP_OK
+        );
+    }
+}
