@@ -21,7 +21,7 @@ class GetOperatorsByParamsHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var UserRepository  */
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
     /**

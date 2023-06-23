@@ -22,10 +22,10 @@ class GetCompaniesByOrganizationHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /** @var CompanyByUserRepository  */
+    /** @var CompanyByUserRepository */
     private CompanyByUserRepository $companyByUserRepository;
 
     /**

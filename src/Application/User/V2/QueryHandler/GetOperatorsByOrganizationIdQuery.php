@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Application\User\V2\QueryHandler;
 
 /**
- * Class GetOperatorsByOrganizationQuery
+ * Class GetOperatorsByOrganizationIdQuery
  * @package App\Application\User\V2\QueryHandler
  */
-class GetOperatorsByOrganizationQuery
+class GetOperatorsByOrganizationIdQuery
 {
     /** @var string */
     protected string $organizationId;

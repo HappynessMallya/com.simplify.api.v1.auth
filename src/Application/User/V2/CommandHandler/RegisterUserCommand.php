@@ -43,7 +43,7 @@ class RegisterUserCommand
     /** @var string */
     private string $status;
 
-    /** @var string  */
+    /** @var string */
     private string $userType;
 
     /**

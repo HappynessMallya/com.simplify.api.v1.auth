@@ -45,7 +45,7 @@ class RegisterUserHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var CompanyByUserRepository  */
+    /** @var CompanyByUserRepository */
     private CompanyByUserRepository $companyByUserRepository;
 
     /**

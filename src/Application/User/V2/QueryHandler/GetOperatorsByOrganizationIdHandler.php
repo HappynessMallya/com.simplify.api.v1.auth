@@ -16,21 +16,21 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetOperatorsByOrganizationHandler
+ * Class GetOperatorsByOrganizationIdHandler
  * @package App\Application\User\V2\QueryHandler
  */
-class GetOperatorsByOrganizationHandler
+class GetOperatorsByOrganizationIdHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /** @var CompanyByUserRepository  */
+    /** @var CompanyByUserRepository */
     private CompanyByUserRepository $companyByUserRepository;
 
-    /** @var UserRepository  */
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
     /**
@@ -52,20 +52,20 @@ class GetOperatorsByOrganizationHandler
     }
 
     /**
-     * @param GetOperatorsByOrganizationQuery $query
+     * @param GetOperatorsByOrganizationIdQuery $query
      * @return array
      * @throws Exception
      */
-    public function __invoke(GetOperatorsByOrganizationQuery $query): array
+    public function __invoke(GetOperatorsByOrganizationIdQuery $query): array
     {
         $organizationId = OrganizationId::fromString($query->getOrganizationId());
         $userType = UserType::byName($query->getUserType());
 
-        if ($userType->sameValueAs(UserType::TYPE_OWNER())) {
+        if ($userType->sameValueAs(UserType::TYPE_OWNER()) || $userType->sameValueAs(UserType::TYPE_ADMIN())) {
             $operatorsByOrganization = $this->companyByUserRepository->getOperatorsByOrganization($organizationId);
         } else {
             $this->logger->critical(
-                'User is not an owner',
+                'User who is making the change is neither owner nor admin',
                 [
                     'user_type' => $userType->getValue(),
                     'method' => __METHOD__,
@@ -73,14 +73,14 @@ class GetOperatorsByOrganizationHandler
             );
 
             throw new Exception(
-                'User is not an owner: ' . $userType->getValue(),
+                'User who is making the change is neither owner nor admin: ' . $userType->getValue(),
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         if (empty($operatorsByOrganization)) {
             $this->logger->critical(
-                'Operators not found by organization',
+                'Operators not found by organization ID',
                 [
                     'user_id' => $organizationId->toString(),
                     'method' => __METHOD__,
@@ -88,7 +88,7 @@ class GetOperatorsByOrganizationHandler
             );
 
             throw new Exception(
-                'Operators not found by organization: ' . $organizationId->toString(),
+                'Operators not found by organization ID: ' . $organizationId->toString(),
                 Response::HTTP_NOT_FOUND
             );
         }
