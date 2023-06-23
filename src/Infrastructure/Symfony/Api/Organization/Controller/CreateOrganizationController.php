@@ -72,7 +72,7 @@ class CreateOrganizationController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'errors' => 'Organization has not been created: ' . $exception->getMessage(),
+                    'errors' => 'Organization has not created: ' . $exception->getMessage(),
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -80,11 +80,10 @@ class CreateOrganizationController extends BaseController
 
         return $this->createApiResponse(
             [
-                'success' => true,
-                'organization_id' => $organizationId,
-                'created_at' => (
+                'organizationId' => $organizationId,
+                'createdAt' => (
                     new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
-                )->format('Y-m-d H:i:s')
+                )->format('Y-m-d H:i:s'),
             ],
             Response::HTTP_CREATED
         );

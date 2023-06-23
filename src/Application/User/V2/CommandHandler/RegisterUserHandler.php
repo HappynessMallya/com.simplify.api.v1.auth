@@ -77,23 +77,25 @@ class RegisterUserHandler
      * @return array
      * @throws Exception
      */
-    public function __invoke(RegisterUserCommand $command): array
+    public function handle(RegisterUserCommand $command): array
     {
         $userRole = !empty($command->getRole()) ? UserRole::byName($command->getRole()) : UserRole::USER();
 
         try {
             $userId = UserId::generate();
+            $companyId = CompanyId::fromString($command->getCompanies()[0]);
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
 
             $user = User::create(
                 $userRole,
                 $userId,
-                CompanyId::fromString($command->getCompanies()[0]),
+                $companyId,
                 $command->getEmail(),
                 $command->getUsername(),
                 $password,
                 null,
                 UserStatus::CHANGE_PASSWORD(),
+                UserRole::USER(),
                 UserType::byValue($command->getUserType()),
                 $command->getFirstName(),
                 $command->getLastName(),
@@ -102,14 +104,17 @@ class RegisterUserHandler
 
             $user->setPassword($this->passwordEncoder->hashPassword($user));
 
-            if (!$this->userRepository->save($user)) {
+            $isSaved = $this->userRepository->save($user);
+
+            if (!$isSaved) {
                 $this->logger->critical(
                     'The user could not be registered',
                     [
-                        'user_id' => $user->userId(),
                         'company_id' => $user->companyId(),
-                        'email' => $user->email(),
+                        'user_id' => $user->userId(),
                         'username' => $user->username(),
+                        'email' => $user->email(),
+                        'method' => __METHOD__,
                     ]
                 );
 
@@ -121,7 +126,22 @@ class RegisterUserHandler
 
             $this->companyByUserRepository->saveCompaniesToUser($userId, $command->getCompanies());
 
-            $company = $this->companyRepository->get($user->companyId());
+            $company = $this->companyRepository->get($companyId);
+
+            if (empty($company)) {
+                $this->logger->critical(
+                    'Company not found by ID',
+                    [
+                        'user_id' => $companyId->toString(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'Company not found by ID: ' . $companyId->toString(),
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             $request = new SendCredentialsRequest(
                 'NEW_CREDENTIALS',
@@ -146,7 +166,7 @@ class RegisterUserHandler
             }
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to register user',
+                'An internal server error has been occurred',
                 [
                     'company_id' => $command->getCompanies()[0],
                     'username' => $command->getUsername(),
@@ -165,9 +185,9 @@ class RegisterUserHandler
         return [
             'userId' => $userId->toString(),
             'username' => $user->username(),
-            'createdAt' => (new DateTime())
-                ->setTimezone(new DateTimeZone('Africa/Dar_es_Salaam'))
-                ->format(('Y-m-d H:i:s')),
+            'createdAt' => (
+                new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
+            )->format(('Y-m-d H:i:s')),
         ];
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
 
 use App\Application\User\V2\CommandHandler\RegisterUserCommand;
-use App\Application\User\V2\CommandHandler\RegisterUserHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\User\Controller\V2\FormType\RegisterUserType;
 use Exception;
@@ -24,12 +23,10 @@ class RegisterUserController extends BaseController
      * @Route(path="/register", methods={"POST"})
      *
      * @param Request $request
-     * @param RegisterUserHandler $handler
      * @return JsonResponse
      */
     public function registerUserAction(
-        Request $request,
-        RegisterUserHandler $handler
+        Request $request
     ): JsonResponse {
         $this->logger->debug(
             'Register new user',
@@ -44,7 +41,7 @@ class RegisterUserController extends BaseController
 
         if ($form->isValid() === false) {
             $this->logger->critical(
-                'The data could not be validated',
+                'Invalid data',
                 [
                     'errors' => $this->getValidationErrors($form),
                 ]
@@ -60,7 +57,7 @@ class RegisterUserController extends BaseController
         }
 
         try {
-            $response = $handler->__invoke($command);
+            $response = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to register user',
@@ -81,12 +78,7 @@ class RegisterUserController extends BaseController
         }
 
         return $this->createApiResponse(
-            [
-                'success' => true,
-                'userId' => $response['userId'],
-                'username' => $response['username'],
-                'createdAt' => $response['createdAt']
-            ],
+            $response,
             Response::HTTP_CREATED
         );
     }

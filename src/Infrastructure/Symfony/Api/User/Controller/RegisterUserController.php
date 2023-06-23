@@ -25,15 +25,31 @@ class RegisterUserController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function registerUserAction(Request $request): JsonResponse
-    {
+    public function registerUserAction(
+        Request $request
+    ): JsonResponse {
+        $this->logger->debug(
+            'Register new user',
+            [
+                'data' => json_decode($request->getContent(), true),
+            ]
+        );
+
         $command = new RegisterUserCommand();
         $form = $this->createForm(RegisterUserType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid data',
+                [
+                    'errors' => $this->getValidationErrors($form),
+                ]
+            );
+
             return $this->createApiResponse(
                 [
+                    'success' => false,
                     'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
@@ -41,7 +57,7 @@ class RegisterUserController extends BaseController
         }
 
         try {
-            $registered = $this->commandBus->handle($command);
+            $isRegistered = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to register user',
@@ -61,7 +77,7 @@ class RegisterUserController extends BaseController
             );
         }
 
-        if (!$registered) {
+        if (!$isRegistered) {
             return $this->createApiResponse(
                 [
                     'success' => false,

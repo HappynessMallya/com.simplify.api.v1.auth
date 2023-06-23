@@ -22,10 +22,43 @@ class RegisterUserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('companyId', TextType::class, ['constraints' => new Assert\NotBlank()])
-            ->add('firstName', TextType::class, ['constraints' => new Assert\NotBlank()])
-            ->add('lastName', TextType::class, ['constraints' => new Assert\NotBlank()])
-            ->add('username', TextType::class, ['constraints' => new Assert\NotBlank()])
+            ->add(
+                'companyId',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            [
+                                'min' => 36,
+                                'max' => 36,
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            ->add(
+                'firstName',
+                TextType::class,
+                [
+                    'constraints' => new Assert\NotBlank(),
+                ]
+            )
+            ->add(
+                'lastName',
+                TextType::class,
+                [
+                    'constraints' => new Assert\NotBlank(),
+                ]
+            )
+            ->add(
+                'username',
+                TextType::class,
+                [
+                    'constraints' => new Assert\NotBlank(),
+                ]
+            )
             ->add(
                 'email',
                 TextType::class,
@@ -50,8 +83,15 @@ class RegisterUserType extends AbstractType
                     ],
                 ]
             )
-            ->add('password', TextType::class)
-            ->add('role', TextType::class);
+            ->add(
+                'password',
+                TextType::class
+            )
+            ->add(
+                'role',
+                TextType::class
+            )
+        ;
     }
 
     /**

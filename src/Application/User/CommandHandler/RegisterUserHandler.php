@@ -75,17 +75,19 @@ class RegisterUserHandler
 
         try {
             $userId = UserId::generate();
+            $companyId = CompanyId::fromString($command->getCompanyId());
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
 
             $user = User::create(
                 $userRole,
                 $userId,
-                CompanyId::fromString($command->getCompanyId()),
+                $companyId,
                 $command->getEmail(),
                 $command->getUsername(),
                 $password,
                 null,
                 UserStatus::CHANGE_PASSWORD(),
+                UserRole::USER(),
                 UserType::TYPE_OPERATOR(),
                 $command->getFirstName(),
                 $command->getLastName(),
@@ -94,9 +96,11 @@ class RegisterUserHandler
 
             $user->setPassword($this->passwordEncoder->hashPassword($user));
 
-            if (!$this->userRepository->save($user)) {
+            $isSaved = $this->userRepository->save($user);
+
+            if (!$isSaved) {
                 $this->logger->critical(
-                    'Error trying to save user',
+                    'The user could not be registered',
                     [
                         'company_id' => $user->companyId(),
                         'user_id' => $user->userId(),
@@ -109,7 +113,22 @@ class RegisterUserHandler
                 return false;
             }
 
-            $company = $this->companyRepository->get($user->companyId());
+            $company = $this->companyRepository->get($companyId);
+
+            if (empty($company)) {
+                $this->logger->critical(
+                    'Company not found by ID',
+                    [
+                        'user_id' => $companyId->toString(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'Company not found by ID: ' . $companyId->toString(),
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             $request = new SendCredentialsRequest(
                 'NEW_CREDENTIALS',
@@ -136,7 +155,7 @@ class RegisterUserHandler
             }
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to register user',
+                'An internal server error has been occurred',
                 [
                     'company_id' => $command->getCompanyId(),
                     'username' => $command->getUsername(),
@@ -147,8 +166,8 @@ class RegisterUserHandler
             );
 
             throw new Exception(
-                'Exception error trying to register user: ' . $exception->getMessage(),
-                Response::HTTP_BAD_REQUEST
+                $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
