@@ -8,10 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetOperatorsByOrganizationControllerTest
+ * Class GetOperatorsByOrganizationIdControllerTest
  * @package App\Tests\Integration\Controller
  */
-class GetOperatorsByOrganizationControllerTest extends WebTestCase
+class GetOperatorsByOrganizationIdControllerTest extends WebTestCase
 {
     public function testGetOperatorsByOrganizationShouldBeSuccess()
     {
