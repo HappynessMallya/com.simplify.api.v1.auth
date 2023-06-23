@@ -57,7 +57,7 @@ class RegisterUserController extends BaseController
         }
 
         try {
-            $isRegistered = $this->commandBus->handle($command);
+            $response = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to register user',
@@ -77,21 +77,8 @@ class RegisterUserController extends BaseController
             );
         }
 
-        if (!$isRegistered) {
-            return $this->createApiResponse(
-                [
-                    'success' => false,
-                    'error_message' => 'User has not been registered',
-                ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
         return $this->createApiResponse(
-            [
-                'success' => true,
-                'message' => 'User registered successfully',
-            ],
+            $response,
             Response::HTTP_CREATED
         );
     }

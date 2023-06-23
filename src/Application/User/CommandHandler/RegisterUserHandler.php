@@ -16,6 +16,8 @@ use App\Domain\Services\SendCredentialsRequest;
 use App\Domain\Services\User\PasswordEncoder;
 use App\Domain\Services\SendCredentialsService;
 use App\Infrastructure\Repository\DoctrineCompanyRepository;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,17 +68,33 @@ class RegisterUserHandler
 
     /**
      * @param RegisterUserCommand $command
-     * @return bool
+     * @return array
      * @throws Exception
      */
-    public function handle(RegisterUserCommand $command): bool
+    public function handle(RegisterUserCommand $command): array
     {
-        $userRole = empty($command->getRole()) ? UserRole::USER() : UserRole::byName($command->getRole());
-
         try {
             $userId = UserId::generate();
             $companyId = CompanyId::fromString($command->getCompanyId());
+            $userRole = empty($command->getRole()) ? UserRole::USER() : UserRole::byName($command->getRole());
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
+
+            $company = $this->companyRepository->get($companyId);
+
+            if (empty($company)) {
+                $this->logger->critical(
+                    'Company not found by ID',
+                    [
+                        'company_id' => $companyId->toString(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'Company not found by ID: ' . $companyId->toString(),
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             $user = User::create(
                 $userRole,
@@ -110,23 +128,9 @@ class RegisterUserHandler
                     ]
                 );
 
-                return false;
-            }
-
-            $company = $this->companyRepository->get($companyId);
-
-            if (empty($company)) {
-                $this->logger->critical(
-                    'Company not found by ID',
-                    [
-                        'user_id' => $companyId->toString(),
-                        'method' => __METHOD__,
-                    ]
-                );
-
                 throw new Exception(
-                    'Company not found by ID: ' . $companyId->toString(),
-                    Response::HTTP_NOT_FOUND
+                    'The user could not be registered',
+                    Response::HTTP_INTERNAL_SERVER_ERROR
                 );
             }
 
@@ -150,8 +154,6 @@ class RegisterUserHandler
                         'method' => __METHOD__,
                     ]
                 );
-
-                return false;
             }
         } catch (Exception $exception) {
             $this->logger->critical(
@@ -171,6 +173,12 @@ class RegisterUserHandler
             );
         }
 
-        return true;
+        return [
+            'userId' => $userId->toString(),
+            'username' => $user->username(),
+            'createdAt' => (
+                new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
+            )->format(('Y-m-d H:i:s')),
+        ];
     }
 }

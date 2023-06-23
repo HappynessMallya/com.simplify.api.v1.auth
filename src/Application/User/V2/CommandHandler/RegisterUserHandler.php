@@ -79,12 +79,34 @@ class RegisterUserHandler
      */
     public function handle(RegisterUserCommand $command): array
     {
-        $userRole = !empty($command->getRole()) ? UserRole::byName($command->getRole()) : UserRole::USER();
-
         try {
             $userId = UserId::generate();
-            $companyId = CompanyId::fromString($command->getCompanies()[0]);
+            $companies = $command->getCompanies();
+            $userRole = !empty($command->getRole()) ? UserRole::byName($command->getRole()) : UserRole::USER();
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
+
+            foreach ($companies as $providedCompanyId) {
+                $companyId = CompanyId::fromString($providedCompanyId);
+                $company = $this->companyRepository->get($companyId);
+
+                if (empty($company)) {
+                    $this->logger->critical(
+                        'Company not found by ID',
+                        [
+                            'company_id' => $providedCompanyId,
+                            'method' => __METHOD__,
+                        ]
+                    );
+
+                    throw new Exception(
+                        'At least one company not found by ID: ' . $providedCompanyId,
+                        Response::HTTP_NOT_FOUND
+                    );
+                }
+            }
+
+            $companyId = CompanyId::fromString($companies[0]);
+            $company = $this->companyRepository->get($companyId);
 
             $user = User::create(
                 $userRole,
@@ -124,24 +146,7 @@ class RegisterUserHandler
                 );
             }
 
-            $this->companyByUserRepository->saveCompaniesToUser($userId, $command->getCompanies());
-
-            $company = $this->companyRepository->get($companyId);
-
-            if (empty($company)) {
-                $this->logger->critical(
-                    'Company not found by ID',
-                    [
-                        'user_id' => $companyId->toString(),
-                        'method' => __METHOD__,
-                    ]
-                );
-
-                throw new Exception(
-                    'Company not found by ID: ' . $companyId->toString(),
-                    Response::HTTP_NOT_FOUND
-                );
-            }
+            $this->companyByUserRepository->saveCompaniesToUser($userId, $companies);
 
             $request = new SendCredentialsRequest(
                 'NEW_CREDENTIALS',
