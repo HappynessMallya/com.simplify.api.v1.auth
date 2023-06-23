@@ -11,7 +11,7 @@ namespace App\Application\User\V2\QueryHandler;
 class ChangeUserStatusByIdQuery
 {
     /** @var string */
-    private string $operatorId;
+    private string $userId;
 
     /** @var string */
     private string $userType;
@@ -20,13 +20,13 @@ class ChangeUserStatusByIdQuery
     private string $newStatus;
 
     /**
-     * @param string $operatorId
+     * @param string $userId
      * @param string $userType
      * @param string $newStatus
      */
-    public function __construct(string $operatorId, string $userType, string $newStatus)
+    public function __construct(string $userId, string $userType, string $newStatus)
     {
-        $this->operatorId = $operatorId;
+        $this->userId = $userId;
         $this->userType = $userType;
         $this->newStatus = $newStatus;
     }
@@ -34,9 +34,9 @@ class ChangeUserStatusByIdQuery
     /**
      * @return string
      */
-    public function getOperatorId(): string
+    public function getUserId(): string
     {
-        return $this->operatorId;
+        return $this->userId;
     }
 
     /**

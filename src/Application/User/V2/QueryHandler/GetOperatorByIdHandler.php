@@ -60,7 +60,7 @@ class GetOperatorByIdHandler
         $operatorId = UserId::fromString($query->getOperatorId());
         $userType = UserType::byName($query->getUserType());
 
-        if ($userType->sameValueAs(UserType::TYPE_OWNER())) {
+        if ($userType->sameValueAs(UserType::TYPE_OWNER()) || $userType->sameValueAs(UserType::TYPE_ADMIN())) {
             $operator = $this->userRepository->get($operatorId);
             $companiesByOperator = $this->companyByUserRepository->getCompaniesByUser($operatorId);
         } else {

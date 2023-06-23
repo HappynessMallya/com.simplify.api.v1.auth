@@ -70,7 +70,7 @@ class ChangeOrganizationStatusByIdController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Organization status not changed',
+                    'error' => 'Organization status has not changed',
                 ],
                 Response::HTTP_BAD_REQUEST
             );

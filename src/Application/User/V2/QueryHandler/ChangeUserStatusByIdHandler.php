@@ -43,15 +43,15 @@ class ChangeUserStatusByIdHandler
      */
     public function __invoke(ChangeUserStatusByIdQuery $query): bool
     {
-        $operatorId = UserId::fromString($query->getOperatorId());
+        $userId = UserId::fromString($query->getUserId());
         $userType = UserType::byName($query->getUserType());
         $newStatus = UserStatus::byName($query->getNewStatus());
 
-        if ($userType->sameValueAs(UserType::TYPE_OWNER())) {
-            $operator = $this->userRepository->get($operatorId);
+        if ($userType->sameValueAs(UserType::TYPE_OWNER()) || $userType->sameValueAs(UserType::TYPE_ADMIN())) {
+            $user = $this->userRepository->get($userId);
         } else {
             $this->logger->critical(
-                'User is not an owner',
+                'User who is making the change is neither owner nor admin',
                 [
                     'user_type' => $userType->getValue(),
                     'method' => __METHOD__,
@@ -59,48 +59,48 @@ class ChangeUserStatusByIdHandler
             );
 
             throw new Exception(
-                'User is not an owner: ' . $userType->getValue(),
+                'User who is making the change is neither owner nor admin: ' . $userType->getValue(),
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        if (empty($operator)) {
+        if (empty($user)) {
             $this->logger->critical(
-                'Operator not found by ID',
+                'User not found by ID',
                 [
-                    'operator_id' => $operatorId->toString(),
+                    'user_id' => $userId->toString(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'Operator not found by ID: ' . $operatorId->toString(),
+                'User not found by ID: ' . $userId->toString(),
                 Response::HTTP_NOT_FOUND
             );
         }
 
-        if ($operator->status()->is($newStatus)) {
+        if ($user->status()->is($newStatus)) {
             $this->logger->critical(
-                'Operator status is the same one',
+                'User status is the same one',
                 [
-                    'organization_status' => $operator->status()->toString(),
+                    'organization_status' => $user->status()->toString(),
                     'new_status' => $newStatus->toString(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'Operator status is the same one: ' . $operator->status()->toString(),
+                'User status is the same one: ' . $user->status()->toString(),
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        $operator->update(
+        $user->update(
             [
                 'status' => $newStatus,
             ]
         );
 
-        return $this->userRepository->save($operator);
+        return $this->userRepository->save($user);
     }
 }

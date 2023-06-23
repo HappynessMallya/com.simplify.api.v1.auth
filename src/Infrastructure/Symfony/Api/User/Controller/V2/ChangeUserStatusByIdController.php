@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class ChangeUserStatusByIdController extends BaseController
 {
     /**
-     * @Route(path="/operator/{operatorId}", methods={"PUT"})
+     * @Route(path="/operator/{userId}", methods={"PUT"})
      *
      * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
@@ -38,7 +38,7 @@ class ChangeUserStatusByIdController extends BaseController
         TokenStorageInterface $jwtStorage,
         ChangeUserStatusByIdHandler $handler
     ): JsonResponse {
-        $operatorId = $request->get('operatorId');
+        $userId = $request->get('userId');
         $newStatus = $request->get('newStatus');
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
         $userType = $tokenData['userType'];
@@ -53,7 +53,7 @@ class ChangeUserStatusByIdController extends BaseController
             );
         }
 
-        $query = new ChangeUserStatusByIdQuery($operatorId, $userType, $newStatus);
+        $query = new ChangeUserStatusByIdQuery($userId, $userType, $newStatus);
 
         try {
             $isStatusChanged = $handler->__invoke($query);
@@ -80,7 +80,7 @@ class ChangeUserStatusByIdController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'User status not changed',
+                    'error' => 'User status has not changed',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
