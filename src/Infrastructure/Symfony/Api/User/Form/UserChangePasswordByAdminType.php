@@ -41,7 +41,7 @@ class UserChangePasswordByAdminType extends AbstractType
                         new Assert\Length(
                             [
                                 'min' => 5,
-                                'max' => 100,
+                                'max' => 50,
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
                             ]
