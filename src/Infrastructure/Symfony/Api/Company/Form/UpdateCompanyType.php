@@ -11,6 +11,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class UpdateCompanyType
@@ -21,13 +23,28 @@ final class UpdateCompanyType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class)
-            ->add('tin', TextType::class)
-            ->add('email', EmailType::class, ['constraints' => new Email()])
-            ->add('phone', TextType::class)
-            ->add('enable', TextType::class)
-            ->add('traRegistration', TextType::class)
-            ->add('address', TextType::class);
+            ->add(
+                'organizationId',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new NotBlank(),
+                    ]
+                ]
+            )
+            ->add(
+                'name',
+                TextType::class,
+            )
+             ->add('email', EmailType::class, ['constraints' => new Email()])
+            ->add(
+                'phone',
+                TextType::class
+            )
+            ->add(
+                'address',
+                TextType::class
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)

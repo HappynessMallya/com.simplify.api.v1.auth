@@ -7,6 +7,7 @@ namespace App\Application\Company\CommandHandler;
 use App\Application\Company\Command\CompanyTraRegistrationCommand;
 use App\Application\Company\Command\VerifyReceiptCodeCommand;
 use App\Domain\Repository\CompanyRepository;
+use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -65,6 +66,7 @@ class CompanyTraRegistrationHandler
         }
 
         $company->updateTraRegistration(json_decode($command->getTraRegistration(), true));
+        $company->setUpdatedAt(new DateTime('now'));
 
         $isSaved = $this->companyRepository->save($company);
 
