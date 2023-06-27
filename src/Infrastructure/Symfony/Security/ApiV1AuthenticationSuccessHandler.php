@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Symfony\Security;
 
 use App\Application\Company\Command\RequestAuthenticationTraCommand;
+use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use DateTime;
@@ -127,6 +128,8 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
             $payload['vrn'] = $company->traRegistration()['VRN'] !== 'NOT REGISTERED';
         }
 
+
+
         $this->userRepository->login($user->userId());
 
         $token = $this->JWTTokenManager->createFromPayload($jwtUser, $payload);
@@ -138,11 +141,17 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
 
         $this->refreshTokenManager->save($refreshToken);
 
+        $response = [
+            'token' => $token,
+            'refresh_token' => $refreshToken->getRefreshToken(),
+        ];
+
+        if ($user->status()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
+            $response['data']['change_password'] = 1;
+        }
+
         return new JsonResponse(
-            [
-                'token' => $token,
-                'refresh_token' => $refreshToken->getRefreshToken(),
-            ],
+            $response,
             Response::HTTP_OK
         );
     }

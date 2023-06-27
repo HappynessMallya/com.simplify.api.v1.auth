@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Symfony\Security;
 
 use App\Domain\Model\Company\CompanyId;
+use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\CompanyByUserRepository;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
@@ -145,11 +146,17 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $refreshToken->setValid($datetime);
         $this->refreshTokenManager->save($refreshToken);
 
+        $response = [
+            'token' => $token,
+            'refresh_token' => $refreshToken->getRefreshToken(),
+        ];
+
+        if ($user->status()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
+            $response['data']['change_password'] = 1;
+        }
+
         return new JsonResponse(
-            [
-                'token' => $token,
-                'refresh_token' => $refreshToken->getRefreshToken(),
-            ],
+            $response,
             Response::HTTP_OK
         );
     }
