@@ -9,28 +9,39 @@ use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Company\CompanyStatus;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Repository\CompanyRepository;
+use App\Domain\Repository\OrganizationRepository;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class RegisterCompanyHandler
+ * @package App\Application\Company\V2\CommandHandler
+ */
 class RegisterCompanyHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
+    /** @var OrganizationRepository */
+    private OrganizationRepository $organizationRepository;
+
     /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
     /**
-     * CreateCompanyHandler constructor
      * @param LoggerInterface $logger
+     * @param OrganizationRepository $organizationRepository
      * @param CompanyRepository $companyRepository
      */
     public function __construct(
         LoggerInterface $logger,
+        OrganizationRepository $organizationRepository,
         CompanyRepository $companyRepository
     ) {
         $this->logger = $logger;
+        $this->organizationRepository = $organizationRepository;
         $this->companyRepository = $companyRepository;
     }
 
@@ -41,6 +52,42 @@ class RegisterCompanyHandler
      */
     public function handle(RegisterCompanyCommand $command): string
     {
+        $organizationId = OrganizationId::fromString($command->getOrganizationId());
+        $organization = $this->organizationRepository->get($organizationId);
+
+        if (empty($organization)) {
+            $this->logger->critical(
+                'Organization could not be found',
+                [
+                    'organization_id' => $organizationId,
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'Organization could not be found',
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        $companyRegistered = $this->companyRepository->findOneBy(
+            [
+                'tin' => $command->getTin(),
+            ]
+        );
+
+        if (!empty($companyRegistered)) {
+            $this->logger->critical(
+                'Company has pre-registered with the TIN number provided',
+                [
+                    'tin' => $command->getTin(),
+                    'method' => __METHOD__
+                ]
+            );
+
+            throw new Exception('Company has pre-registered with the TIN number provided');
+        }
+
         $companyId = CompanyId::generate();
 
         $company = Company::create(
@@ -53,26 +100,24 @@ class RegisterCompanyHandler
             new DateTime(),
             CompanyStatus::STATUS_ACTIVE(),
             $command->getSerial(),
-            OrganizationId::fromString($command->getOrganizationId())
+            $organizationId
         );
 
-        $companyRegistered = $this->companyRepository->findOneBy(['tin' => $command->getTin()]);
-        if (!empty($companyRegistered)) {
-            $this->logger->critical(
-                'Company has been registered with TIN number',
-                [
-                    'tin' => $command->getTin(),
-                    'method' => __METHOD__
-                ]
-            );
-
-            throw new Exception('Company has been registered with TIN number');
-        }
-
         try {
-            $this->companyRepository->save($company);
+            $isSaved = $this->companyRepository->save($company);
 
-            return $companyId->toString();
+            if ($isSaved) {
+                $this->logger->debug(
+                    'Company registered successfully',
+                    [
+                        'company_id' => $companyId->toString(),
+                        'name' => $company->name(),
+                        'tin' => $company->tin(),
+                    ]
+                );
+
+                return $companyId->toString();
+            }
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Company could not be registered',
@@ -83,7 +128,12 @@ class RegisterCompanyHandler
                 ]
             );
 
-            throw new Exception($exception->getMessage());
+            throw new Exception(
+                $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
+
+        return '';
     }
 }

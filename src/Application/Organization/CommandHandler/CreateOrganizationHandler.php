@@ -89,7 +89,6 @@ class CreateOrganizationHandler
                         'name' => $organization->getName(),
                         'owner_name' => $organization->getOwnerName(),
                         'owner_email' => $organization->getOwnerEmail(),
-                        'method' => __METHOD__,
                     ]
                 );
 
