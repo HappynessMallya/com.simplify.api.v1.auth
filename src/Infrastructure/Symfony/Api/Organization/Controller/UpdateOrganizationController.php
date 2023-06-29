@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UpdateOrganizationController extends BaseController
 {
     /**
-     * @Route(path="/update/{organizationId}", methods={"PUT"})
+     * @Route(path="/update/", methods={"PUT"})
      *
      * @param Request $request
      * @param LoggerInterface $logger
@@ -31,7 +31,6 @@ class UpdateOrganizationController extends BaseController
         Request $request,
         LoggerInterface $logger
     ): JsonResponse {
-        $organizationId = $request->get('organizationId');
         $command = new UpdateOrganizationCommand();
         $form = $this->createForm(UpdateOrganizationType::class, $command);
         $this->processForm($request, $form);
@@ -55,7 +54,6 @@ class UpdateOrganizationController extends BaseController
             );
         }
 
-        $command->setOrganizationId($organizationId);
         $updated = false;
 
         try {

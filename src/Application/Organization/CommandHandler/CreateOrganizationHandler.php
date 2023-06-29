@@ -8,8 +8,6 @@ use App\Domain\Model\Organization\Organization;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\Organization\OrganizationStatus;
 use App\Domain\Repository\OrganizationRepository;
-use App\Domain\Services\SendCredentialsRequest;
-use App\Domain\Services\SendCredentialsService;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -21,30 +19,22 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class CreateOrganizationHandler
 {
-    public const NEW_PASSWORD = 'tanzaniaSimplify123*';
-
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
     /** @var OrganizationRepository */
     private OrganizationRepository $organizationRepository;
 
-    /** @var SendCredentialsService */
-    private SendCredentialsService $sendCredentials;
-
     /**
      * @param LoggerInterface $logger
      * @param OrganizationRepository $organizationRepository
-     * @param SendCredentialsService $sendCredentials
      */
     public function __construct(
         LoggerInterface $logger,
-        OrganizationRepository $organizationRepository,
-        SendCredentialsService $sendCredentials
+        OrganizationRepository $organizationRepository
     ) {
         $this->logger = $logger;
         $this->organizationRepository = $organizationRepository;
-        $this->sendCredentials = $sendCredentials;
     }
 
     /**
@@ -102,20 +92,6 @@ class CreateOrganizationHandler
                         'method' => __METHOD__,
                     ]
                 );
-
-                $password = base64_encode($this::NEW_PASSWORD);
-
-                $request = new SendCredentialsRequest(
-                    'NEW_CREDENTIALS',
-                    $organization->getOwnerName(),
-                    $password,
-                    $organization->getOwnerEmail(),
-                    $company->name()
-                );
-
-                $response = $this->sendCredentials->onSendCredentials($request);
-
-
 
                 return $organizationId->toString();
             }

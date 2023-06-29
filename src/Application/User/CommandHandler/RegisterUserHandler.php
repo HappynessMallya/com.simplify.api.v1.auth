@@ -83,7 +83,7 @@ class RegisterUserHandler
 
             if (empty($company)) {
                 $this->logger->critical(
-                    'Company not found by ID',
+                    'Company could not be found',
                     [
                         'company_id' => $companyId->toString(),
                         'method' => __METHOD__,
@@ -91,7 +91,7 @@ class RegisterUserHandler
                 );
 
                 throw new Exception(
-                    'Company not found by ID: ' . $companyId->toString(),
+                    'Company could not be found',
                     Response::HTTP_NOT_FOUND
                 );
             }

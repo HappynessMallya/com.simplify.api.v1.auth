@@ -12,11 +12,9 @@ use App\Domain\Model\Enum;
  *
  * @method static OrganizationStatus ACTIVE()
  * @method static OrganizationStatus INACTIVE()
- * @method static OrganizationStatus BLOCKED()
  */
 class OrganizationStatus extends Enum
 {
     public const ACTIVE = 'ACTIVE';
     public const INACTIVE = 'INACTIVE';
-    public const BLOCKED = 'BLOCKED';
 }

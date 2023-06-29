@@ -4,49 +4,71 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Organization\Controller;
 
-use App\Application\Organization\QueryHandler\ChangeOrganizationStatusByIdHandler;
-use App\Application\Organization\QueryHandler\ChangeOrganizationStatusByIdQuery;
+use App\Application\Organization\CommandHandler\ChangeOrganizationStatusCommand;
+use App\Application\Organization\CommandHandler\ChangeOrganizationStatusHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
+use App\Infrastructure\Symfony\Api\Organization\Controller\FormType\ChangeOrganizationStatusType;
 use Exception;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class ChangeOrganizationStatusByIdController
+ * Class ChangeOrganizationStatusController
  * @package App\Infrastructure\Symfony\Api\Organization\Controller
  */
-class ChangeOrganizationStatusByIdController extends BaseController
+class ChangeOrganizationStatusController extends BaseController
 {
     /**
-     * @Route(path="/{organizationId}", methods={"PUT"})
+     * @Route(path="/", methods={"PUT"})
      *
      * @param Request $request
-     * @param ChangeOrganizationStatusByIdHandler $handler
+     * @param JWTTokenManagerInterface $jwtManager
+     * @param TokenStorageInterface $jwtStorage
+     * @param ChangeOrganizationStatusHandler $handler
      * @return JsonResponse
+     * @throws JWTDecodeFailureException
      */
-    public function changeOrganizationStatusByIdAction(
+    public function changeOrganizationStatusAction(
         Request $request,
-        ChangeOrganizationStatusByIdHandler $handler
+        JWTTokenManagerInterface $jwtManager,
+        TokenStorageInterface $jwtStorage,
+        ChangeOrganizationStatusHandler $handler
     ): JsonResponse {
-        $organizationId = $request->get('organizationId');
-        $newStatus = $request->get('newStatus');
+        $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $userTypeWhoChangeStatus = $tokenData['userType'];
 
-        if (empty($newStatus)) {
+        $command = new ChangeOrganizationStatusCommand();
+        $form = $this->createForm(ChangeOrganizationStatusType::class, $command);
+        $this->processForm($request, $form);
+
+        if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid form',
+                [
+                    'data' => $form->getData(),
+                    'errors' => $this->getValidationErrors($form),
+                    'method' => __METHOD__,
+                ]
+            );
+
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'New status is mandatory',
+                    'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        $query = new ChangeOrganizationStatusByIdQuery($organizationId, $newStatus);
+        $command->setUserType($userTypeWhoChangeStatus);
 
         try {
-            $isStatusChanged = $handler->__invoke($query);
+            $isStatusChanged = $handler->__invoke($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to change organization status',

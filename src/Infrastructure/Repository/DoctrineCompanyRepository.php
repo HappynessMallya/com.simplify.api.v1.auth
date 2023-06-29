@@ -10,6 +10,7 @@ use App\Domain\Repository\CompanyRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Exception;
@@ -31,9 +32,9 @@ class DoctrineCompanyRepository implements CompanyRepository
     private EntityRepository $repository;
 
     /**
-     * DoctrineCompanyRepository constructor
      * @param LoggerInterface $logger
      * @param EntityManager $em
+     * @throws NotSupported
      */
     public function __construct(
         LoggerInterface $logger,

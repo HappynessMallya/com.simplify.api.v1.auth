@@ -135,7 +135,6 @@ class DoctrineOrganizationRepository implements OrganizationRepository
             $criteria['status'] = [
                 OrganizationStatus::ACTIVE(),
                 OrganizationStatus::INACTIVE(),
-                OrganizationStatus::BLOCKED(),
             ];
         }
 

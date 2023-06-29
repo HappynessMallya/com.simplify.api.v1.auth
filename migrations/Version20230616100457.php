@@ -39,8 +39,12 @@ class Version20230616100457 extends AbstractMigration
         );
 
         $this->addSql(/** @lang sql */
-            'ALTER TABLE organization ADD CONSTRAINT unique_name UNIQUE (name)
-        ');
+            'ALTER TABLE organization ADD CONSTRAINT unique_name UNIQUE (name)'
+        );
+
+        $this->addSql(/** @lang sql */
+            'ALTER TABLE auth_user ADD updated_at DATETIME AFTER created_at'
+        );
     }
 
     /**

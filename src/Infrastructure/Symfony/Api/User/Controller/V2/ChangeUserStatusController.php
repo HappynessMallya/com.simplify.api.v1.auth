@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
 
-use App\Application\User\V2\QueryHandler\ChangeUserStatusByIdHandler;
-use App\Application\User\V2\QueryHandler\ChangeUserStatusByIdQuery;
+use App\Application\User\V2\CommandHandler\ChangeUserStatusCommand;
+use App\Application\User\V2\CommandHandler\ChangeUserStatusHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
+use App\Infrastructure\Symfony\Api\User\Controller\V2\FormType\ChangeUserStatusType;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -17,46 +18,57 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class ChangeUserStatusByIdController
- * @package App\Infrastructure\Symfony\Api\ApiUser\Controller\V2
+ * Class ChangeUserStatusController
+ * @package App\Infrastructure\Symfony\Api\User\Controller\V2
  */
-class ChangeUserStatusByIdController extends BaseController
+class ChangeUserStatusController extends BaseController
 {
     /**
-     * @Route(path="/operator/{userId}", methods={"PUT"})
+     * @Route(path="/operator/", methods={"PUT"})
      *
      * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
-     * @param ChangeUserStatusByIdHandler $handler
+     * @param ChangeUserStatusHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function changeUserStatusByIdAction(
+    public function changeUserStatusAction(
         Request $request,
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
-        ChangeUserStatusByIdHandler $handler
+        ChangeUserStatusHandler $handler
     ): JsonResponse {
-        $userId = $request->get('userId');
-        $newStatus = $request->get('newStatus');
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
-        $userType = $tokenData['userType'];
+        $userTypeWhoChangeStatus = $tokenData['userType'];
 
-        if (empty($newStatus)) {
+        $command = new ChangeUserStatusCommand();
+        $form = $this->createForm(ChangeUserStatusType::class, $command);
+        $this->processForm($request, $form);
+
+        if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid form',
+                [
+                    'data' => $form->getData(),
+                    'errors' => $this->getValidationErrors($form),
+                    'method' => __METHOD__,
+                ]
+            );
+
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'New status is mandatory',
+                    'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        $query = new ChangeUserStatusByIdQuery($userId, $userType, $newStatus);
+        $command->setUserType($userTypeWhoChangeStatus);
 
         try {
-            $isStatusChanged = $handler->__invoke($query);
+            $isStatusChanged = $handler->__invoke($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to change user status',

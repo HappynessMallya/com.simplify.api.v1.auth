@@ -25,6 +25,22 @@ class UpdateOrganizationType extends AbstractType
     {
         $builder
             ->add(
+                'organizationId',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            [
+                                'min' => 36,
+                                'max' => 36,
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            ->add(
                 'name',
                 TextType::class,
                 [

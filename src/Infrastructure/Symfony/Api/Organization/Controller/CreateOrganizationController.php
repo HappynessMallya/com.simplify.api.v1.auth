@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CreateOrganizationController extends BaseController
 {
     /**
-     * @Route(path="/register", methods={"POST"})
+     * @Route(path="/", methods={"POST"})
      *
      * @param Request $request
      * @param LoggerInterface $logger

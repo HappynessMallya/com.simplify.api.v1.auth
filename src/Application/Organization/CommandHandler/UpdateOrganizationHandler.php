@@ -47,7 +47,7 @@ class UpdateOrganizationHandler
 
         if (empty($organization)) {
             $this->logger->critical(
-                'Organization not found by ID',
+                'Organization could not be found',
                 [
                     'organization_id' => $command->getOrganizationId(),
                     'method' => __METHOD__,
@@ -55,7 +55,7 @@ class UpdateOrganizationHandler
             );
 
             throw new Exception(
-                'Organization not found by ID: ' . $command->getOrganizationId(),
+                'Organization could not be found',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -95,6 +95,24 @@ class UpdateOrganizationHandler
 
         $organization->update($criteria);
 
-        return $this->organizationRepository->save($organization);
+        try {
+            $response = $this->organizationRepository->save($organization);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                'Organization could not be updated',
+                [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        return $response;
     }
 }

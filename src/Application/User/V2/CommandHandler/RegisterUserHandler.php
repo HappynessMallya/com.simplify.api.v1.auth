@@ -80,6 +80,44 @@ class RegisterUserHandler
     public function handle(RegisterUserCommand $command): array
     {
         try {
+            $userIdWhoRegister = UserId::fromString($command->getUserIdWhoRegister());
+            $userTypeWhoRegister = UserType::byName($command->getUserTypeWhoRegister());
+
+            if (
+                $userTypeWhoRegister->sameValueAs(UserType::TYPE_OWNER()) ||
+                $userTypeWhoRegister->sameValueAs(UserType::TYPE_ADMIN())
+            ) {
+                $user = $this->userRepository->get($userIdWhoRegister);
+            } else {
+                $this->logger->critical(
+                    'User who is making the registration is neither owner nor admin',
+                    [
+                        'user_type' => $userTypeWhoRegister->getValue(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'User who is making the registration is neither owner nor admin: ' . $userTypeWhoRegister->getValue(),
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
+            if (empty($user)) {
+                $this->logger->critical(
+                    'User who register not found by ID',
+                    [
+                        'user_id' => $userIdWhoRegister->toString(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'User who register not found by ID: ' . $userIdWhoRegister->toString(),
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+
             $userId = UserId::generate();
             $companies = $command->getCompanies();
             $userRole = !empty($command->getRole()) ? UserRole::byName($command->getRole()) : UserRole::USER();
@@ -91,7 +129,7 @@ class RegisterUserHandler
 
                 if (empty($company)) {
                     $this->logger->critical(
-                        'Company not found by ID',
+                        'Company could not be found',
                         [
                             'company_id' => $providedCompanyId,
                             'method' => __METHOD__,
@@ -99,7 +137,7 @@ class RegisterUserHandler
                     );
 
                     throw new Exception(
-                        'At least one company not found by ID: ' . $providedCompanyId,
+                        'At least one company could not be found',
                         Response::HTTP_NOT_FOUND
                     );
                 }

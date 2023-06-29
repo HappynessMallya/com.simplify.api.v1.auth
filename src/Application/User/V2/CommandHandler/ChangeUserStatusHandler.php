@@ -2,21 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\User\V2\CommandHandler;
 
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Model\User\UserType;
 use App\Domain\Repository\UserRepository;
+use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class ChangeUserStatusByIdHandler
- * @package App\Application\User\V2\QueryHandler
+ * Class ChangeUserStatusHandler
+ * @package App\Application\User\V2\CommandHandler
  */
-class ChangeUserStatusByIdHandler
+class ChangeUserStatusHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -37,36 +38,39 @@ class ChangeUserStatusByIdHandler
     }
 
     /**
-     * @param ChangeUserStatusByIdQuery $query
+     * @param ChangeUserStatusCommand $command
      * @return bool
      * @throws Exception
      */
-    public function __invoke(ChangeUserStatusByIdQuery $query): bool
+    public function __invoke(ChangeUserStatusCommand $command): bool
     {
-        $userId = UserId::fromString($query->getUserId());
-        $userType = UserType::byName($query->getUserType());
-        $newStatus = UserStatus::byName($query->getNewStatus());
+        $userId = UserId::fromString($command->getUserId());
+        $userTypeWhoChangeStatus = UserType::byName($command->getUserType());
+        $newStatus = UserStatus::byName($command->getNewStatus());
 
-        if ($userType->sameValueAs(UserType::TYPE_OWNER()) || $userType->sameValueAs(UserType::TYPE_ADMIN())) {
+        if (
+            $userTypeWhoChangeStatus->sameValueAs(UserType::TYPE_OWNER()) ||
+            $userTypeWhoChangeStatus->sameValueAs(UserType::TYPE_ADMIN())
+        ) {
             $user = $this->userRepository->get($userId);
         } else {
             $this->logger->critical(
                 'User who is making the change is neither owner nor admin',
                 [
-                    'user_type' => $userType->getValue(),
+                    'user_type' => $userTypeWhoChangeStatus->getValue(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'User who is making the change is neither owner nor admin: ' . $userType->getValue(),
+                'User who is making the change is neither owner nor admin: ' . $userTypeWhoChangeStatus->getValue(),
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         if (empty($user)) {
             $this->logger->critical(
-                'User not found by ID',
+                'User could not be found',
                 [
                     'user_id' => $userId->toString(),
                     'method' => __METHOD__,
@@ -74,7 +78,7 @@ class ChangeUserStatusByIdHandler
             );
 
             throw new Exception(
-                'User not found by ID: ' . $userId->toString(),
+                'User could not be found',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -98,6 +102,7 @@ class ChangeUserStatusByIdHandler
         $user->update(
             [
                 'status' => $newStatus,
+                'updatedAt' => new DateTime('now'),
             ]
         );
 
