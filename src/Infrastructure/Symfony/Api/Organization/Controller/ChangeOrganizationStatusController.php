@@ -24,7 +24,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class ChangeOrganizationStatusController extends BaseController
 {
     /**
-     * @Route(path="/", methods={"PUT"})
+     * @Route(path="/changeStatus", methods={"PUT"})
      *
      * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
