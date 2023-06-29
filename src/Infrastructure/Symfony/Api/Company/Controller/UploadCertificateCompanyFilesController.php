@@ -71,8 +71,7 @@ class UploadCertificateCompanyFilesController extends BaseController
             $fileMimeType = $file->getClientMimeType();
 
             if (
-                $fileMimeType != 'application/pkcs12' && $fileMimeType != 'application/x-pkcs12' &&
-                $fileMimeType != 'application/octet-stream'
+                $fileMimeType != 'application/pkcs12' && $fileMimeType != 'application/x-pkcs12'
             ) {
                 $logger->critical(
                     'Company files with extension not valid',

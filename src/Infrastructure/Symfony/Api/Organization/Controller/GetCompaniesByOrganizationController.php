@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
+namespace App\Infrastructure\Symfony\Api\Organization\Controller;
 
-use App\Application\User\V2\QueryHandler\GetCompaniesByOrganizationHandler;
-use App\Application\User\V2\QueryHandler\GetCompaniesByOrganizationQuery;
+use App\Application\Organization\QueryHandler\GetCompaniesByOrganizationHandler;
+use App\Application\Organization\QueryHandler\GetCompaniesByOrganizationQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -30,7 +30,7 @@ class GetCompaniesByOrganizationController extends BaseController
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getCompaniesByUserTypeAction(
+    public function getCompaniesByOrganizationAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
         GetCompaniesByOrganizationHandler $handler
@@ -40,7 +40,7 @@ class GetCompaniesByOrganizationController extends BaseController
         $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
-        $query = new GetCompaniesByOrganizationQuery($userId, $userType);
+        $query = new GetCompaniesByOrganizationQuery($organizationId, $userId, $userType);
 
         try {
             $companies = $handler->__invoke($query);
@@ -76,6 +76,7 @@ class GetCompaniesByOrganizationController extends BaseController
         return $this->createApiResponse(
             [
                 'userId' => $userId,
+                'userType' => $userType,
                 'organizationId' => $organizationId,
                 'companies' => $companies,
             ],

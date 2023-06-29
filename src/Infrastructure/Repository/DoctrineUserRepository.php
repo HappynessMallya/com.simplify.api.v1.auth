@@ -9,6 +9,7 @@ use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Infrastructure\Symfony\Security\UserEntity;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -112,15 +113,28 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
      */
     public function findByCriteria(array $criteria): ?array
     {
-        if (empty($criteria['status'])) {
-            $criteria['status'] = [
-                UserStatus::ACTIVE(),
-                UserStatus::CHANGE_PASSWORD(),
-                UserStatus::SUSPENDED(),
-            ];
+        $sql = sprintf(/** @lang sql */
+            'SELECT u FROM \App\Domain\Model\User\User u
+            WHERE u.status in (\'%s\', \'%s\', \'%s\')',
+            UserStatus::ACTIVE, UserStatus::CHANGE_PASSWORD, UserStatus::SUSPENDED
+        );
+
+        if (!empty($criteria)) {
+            foreach ($criteria as $column => $filter) {
+                if ($column === 'userType') {
+                    $sql .= " and u.userType = '" . $filter ->getValue() . "'";
+                    continue;
+                }
+
+                $sql .= " and u.$column LIKE '%$filter%'";
+            }
         }
 
-        return $this->repository->findBy($criteria);
+        $result = $this->em->createQuery($sql);
+
+        if (empty($result)) return [];
+
+        return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }
 
     /**
@@ -193,7 +207,7 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
 
     /**
      * @param string $username
-     * @return UserEntity|UserInterface|null
+     * @return User|null
      */
     public function loadUserByUsername(string $username): ?UserEntity
     {

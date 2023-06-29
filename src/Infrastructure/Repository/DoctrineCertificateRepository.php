@@ -117,7 +117,7 @@ class DoctrineCertificateRepository implements CertificateRepository
 
         return new Certificate(
             CertificateId::fromString($result['certificate_id']),
-            new TaxIdentificationNumber($result['customer_id']),
+            new TaxIdentificationNumber($result['tin']),
             $result['filepath']
         );
     }

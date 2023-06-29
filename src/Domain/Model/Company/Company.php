@@ -259,4 +259,9 @@ class Company
     {
         $this->organizationId = $organizationId;
     }
+
+    public function enable(): void
+    {
+        $this->enable = true;
+    }
 }

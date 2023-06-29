@@ -15,8 +15,6 @@ use Doctrine\DBAL\Exception;
  */
 class DoctrineCompanyByUserRepository implements CompanyByUserRepository
 {
-    public const ORGANIZATION_TABLE = "organization";
-    public const COMPANY_TABLE = "company";
     public const COMPANY_BY_USER_TABLE = "company_by_user";
 
     /** @var Connection */
@@ -34,6 +32,7 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
      * @param UserId $userId
      * @return array
      * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function getCompaniesByUser(UserId $userId): array
     {
@@ -42,34 +41,44 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
             self::COMPANY_BY_USER_TABLE
         );
 
-        return $this->connection->executeQuery(
+        $result = $this->connection->executeQuery(
             $query,
             [
                 $userId->toString(),
             ]
         )->fetchAllAssociative();
+
+        if (empty($result)) return [];
+
+        return $result;
     }
 
     /**
-     * @param OrganizationId $organizationId
+     * @param CompanyId $companyId
      * @return array
      * @throws Exception
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
-    public function getOperatorsByOrganization(OrganizationId $organizationId): array
+    public function getOperatorsByCompany(CompanyId $companyId): array
     {
         $query = sprintf(/** @lang sql */
-            'SELECT cbu.user_id, cbu.status
-            FROM %s AS cbu
-            JOIN %s AS c
-                ON c.id = cbu.company_id
-            JOIN %s AS o
-                ON c.organization_id = o.organization_id',
-            self::COMPANY_BY_USER_TABLE,
-            self::COMPANY_TABLE,
-            self::ORGANIZATION_TABLE
+            'SELECT *
+                FROM %s AS cbu
+                WHERE company_id = ?',
+            self::COMPANY_BY_USER_TABLE
         );
 
-        return $this->connection->executeQuery($query)->fetchAllAssociative();
+
+        $result = $this->connection->executeQuery(
+            $query,
+            [
+                $companyId->toString(),
+            ]
+        )->fetchAllAssociative();
+
+        if (empty($result)) return [];
+
+        return $result;
     }
 
     /**

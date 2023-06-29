@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\Controller;
 
+use App\Application\User\Query\GetOperatorsByParamsQuery;
 use App\Application\User\QueryHandler\GetOperatorsByParamsHandler;
-use App\Application\User\V2\QueryHandler\GetOperatorsByParamsQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
@@ -41,6 +42,7 @@ class GetOperatorsByParamsController extends BaseController
         GetOperatorsByParamsHandler $handler
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $organizationId = $tokenData['organizationId'];
         $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
@@ -51,6 +53,7 @@ class GetOperatorsByParamsController extends BaseController
         $status = $request->query->get('status');
 
         $query = new GetOperatorsByParamsQuery(
+            $organizationId,
             $userId,
             $userType,
             $firstName ?? '',

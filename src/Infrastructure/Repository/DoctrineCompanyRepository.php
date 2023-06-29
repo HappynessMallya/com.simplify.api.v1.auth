@@ -6,7 +6,9 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
+use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Repository\CompanyRepository;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -102,7 +104,7 @@ class DoctrineCompanyRepository implements CompanyRepository
         $paginator = new Paginator($query);
         $totalItems = count($paginator);
         $pagesCount = ceil($totalItems / $pageSize);
-        $companies = $query->getResult(Query::HYDRATE_ARRAY);
+        $companies = $query->getResult(AbstractQuery::HYDRATE_ARRAY);
 
         return [
             'total' => $totalItems,
@@ -122,5 +124,48 @@ class DoctrineCompanyRepository implements CompanyRepository
         }
 
         return $this->repository->findOneBy($criteria);
+    }
+
+    public function getCompaniesByOrganizationId(OrganizationId $organizationId): array
+    {
+        $result = $this->em->createQuery(
+            "SELECT c FROM \App\Domain\Model\Company\Company c
+            WHERE c.organizationId = '$organizationId'",
+        );
+
+        if (empty($result)) return [];
+
+        return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
+    }
+
+    /**
+     * @param OrganizationId $organizationId
+     * @param array $criteria
+     * @return array
+     */
+    public function getByOrganizationIdAndParams(OrganizationId $organizationId, array $criteria): array
+    {
+        $sql = sprintf(/** @lang sql */
+            "SELECT c FROM \App\Domain\Model\Company\Company c
+            WHERE c.organizationId = '%s'",
+            $organizationId->toString()
+        );
+
+        if (!empty($criteria)) {
+            foreach ($criteria as $column => $filter) {
+                if ($column === 'status') {
+                    $sql .= " and c.status = '$filter'";
+                    continue;
+                }
+
+                $sql .= " and c.$column LIKE '%$filter%'";
+            }
+        }
+
+        $result = $this->em->createQuery($sql);
+
+        if (empty($result)) return [];
+
+        return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }
 }

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\Query;
+namespace App\Application\Organization\QueryHandler;
 
 /**
- * Class GetOperatorsByOrganizationIdQuery
+ * Class GetCompaniesByOrganizationQuery
  * @package App\Application\User\V2\QueryHandler
  */
-class GetOperatorsByOrganizationQuery
+class GetCompaniesByOrganizationIdQuery
 {
-    /** @var string */
+    /** @var string  */
     protected string $organizationId;
 
     /** @var string */
@@ -22,16 +22,8 @@ class GetOperatorsByOrganizationQuery
      */
     public function __construct(string $organizationId, string $userType)
     {
-        $this->organizationId = $organizationId;
         $this->userType = $userType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getOrganizationId(): string
-    {
-        return $this->organizationId;
+        $this->organizationId = $organizationId;
     }
 
     /**
@@ -40,5 +32,13 @@ class GetOperatorsByOrganizationQuery
     public function getUserType(): string
     {
         return $this->userType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrganizationId(): string
+    {
+        return $this->organizationId;
     }
 }

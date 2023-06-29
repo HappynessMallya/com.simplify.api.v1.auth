@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\Organization\QueryHandler;
 
-use App\Domain\Model\Company\CompanyId;
-use App\Domain\Model\User\UserId;
+use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserType;
 use App\Domain\Repository\CompanyByUserRepository;
 use App\Domain\Repository\CompanyRepository;
@@ -15,83 +14,76 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class GetCompaniesByOrganizationHandler
- * @package App\Application\User\V2\QueryHandler
+ * @package App\Application\Organization\QueryHandler
  */
-class GetCompaniesByOrganizationHandler
+class GetCompaniesByOrganizationIdHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var CompanyRepository */
+    /** @var CompanyRepository  */
     private CompanyRepository $companyRepository;
-
-    /** @var CompanyByUserRepository */
-    private CompanyByUserRepository $companyByUserRepository;
 
     /**
      * @param LoggerInterface $logger
      * @param CompanyRepository $companyRepository
-     * @param CompanyByUserRepository $companyByUserRepository
      */
     public function __construct(
         LoggerInterface $logger,
-        CompanyRepository $companyRepository,
-        CompanyByUserRepository $companyByUserRepository
+        CompanyRepository $companyRepository
     ) {
         $this->logger = $logger;
         $this->companyRepository = $companyRepository;
-        $this->companyByUserRepository = $companyByUserRepository;
     }
 
     /**
-     * @param GetCompaniesByOrganizationQuery $query
+     * @param GetCompaniesByOrganizationIdQuery $query
      * @return array
      * @throws Exception
      */
-    public function __invoke(GetCompaniesByOrganizationQuery $query): array
+    public function __invoke(GetCompaniesByOrganizationIdQuery $query): array
     {
-        $userId = UserId::fromString($query->getUserId());
+        $organizationId = OrganizationId::fromString($query->getOrganizationId());
         $userType = UserType::byName($query->getUserType());
 
-        if ($userType->sameValueAs(UserType::TYPE_OWNER())) {
-            $companiesByUser = $this->companyByUserRepository->getCompaniesByUser($userId);
+        if ($userType->sameValueAs(UserType::TYPE_ADMIN())) {
+            $companies = $this->companyRepository->getCompaniesByOrganizationId($organizationId);
         } else {
             $this->logger->critical(
-                'User is not an owner',
+                'User is not an admin',
                 [
+                    'organization_id' => $organizationId->toString(),
                     'user_type' => $userType->getValue(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'User is not an owner: ' . $userType->getValue(),
+                'User is not an admin: ' . $userType->getValue(),
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        if (empty($companiesByUser)) {
+        if (empty($companies)) {
             $this->logger->critical(
-                'Companies not found by user',
+                'Companies not found by organization',
                 [
-                    'user_id' => $userId->toString(),
+                    'organization_id' => $organizationId->toString(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'Companies not found by user: ' . $userId->toString(),
+                'Companies not found by organization: ' . $organizationId->toString(),
                 Response::HTTP_NOT_FOUND
             );
         }
 
-        $companies = [];
-
-        foreach ($companiesByUser as $company) {
-            $company = $this->companyRepository->get(CompanyId::fromString($company['company_id']));
-
-            $companies[] = [
+        $companiesResult = [];
+        foreach ($companies as $company) {
+            $companiesResult[] = [
                 'companyId' => $company->companyId()->toString(),
+                'organizationId' => $company->organizationId()->toString(),
                 'name' => $company->name(),
                 'tin' => $company->tin(),
                 'email' => $company->email(),
@@ -102,6 +94,6 @@ class GetCompaniesByOrganizationHandler
             ];
         }
 
-        return $companies;
+        return $companiesResult;
     }
 }

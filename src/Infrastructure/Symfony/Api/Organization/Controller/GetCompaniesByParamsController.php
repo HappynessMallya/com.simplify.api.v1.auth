@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
+namespace App\Infrastructure\Symfony\Api\Organization\Controller;
 
-use App\Application\User\V2\QueryHandler\GetCompaniesByParamsHandler;
-use App\Application\User\V2\QueryHandler\GetCompaniesByParamsQuery;
+
+use App\Application\Organization\QueryHandler\GetCompaniesByParamsHandler;
+use App\Application\Organization\QueryHandler\GetCompaniesByParamsQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -42,6 +43,7 @@ class GetCompaniesByParamsController extends BaseController
         GetCompaniesByParamsHandler $handler
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $organizationId = $tokenData['organizationId'];
         $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
@@ -54,6 +56,7 @@ class GetCompaniesByParamsController extends BaseController
         $status = $request->query->get('status');
 
         $query = new GetCompaniesByParamsQuery(
+            $organizationId,
             $userId,
             $userType,
             $companyName ?? '',
