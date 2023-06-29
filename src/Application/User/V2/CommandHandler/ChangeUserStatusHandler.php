@@ -46,7 +46,7 @@ class ChangeUserStatusHandler
     {
         $userId = UserId::fromString($command->getUserId());
         $userTypeWhoChangeStatus = UserType::byName($command->getUserType());
-        $newStatus = UserStatus::byName($command->getNewStatus());
+        $newStatus = UserStatus::byName($command->getStatus());
 
         if (
             $userTypeWhoChangeStatus->sameValueAs(UserType::TYPE_OWNER()) ||
