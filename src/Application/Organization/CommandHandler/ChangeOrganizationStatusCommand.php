@@ -14,7 +14,7 @@ class ChangeOrganizationStatusCommand
     private string $organizationId;
 
     /** @var string */
-    private string $newStatus;
+    private string $status;
 
     /** @var string|null */
     private ?string $userType;
@@ -38,17 +38,17 @@ class ChangeOrganizationStatusCommand
     /**
      * @return string
      */
-    public function getNewStatus(): string
+    public function getStatus(): string
     {
-        return $this->newStatus;
+        return $this->status;
     }
 
     /**
-     * @param string $newStatus
+     * @param string $status
      */
-    public function setNewStatus(string $newStatus): void
+    public function setStatus(string $status): void
     {
-        $this->newStatus = $newStatus;
+        $this->status = $status;
     }
 
     /**

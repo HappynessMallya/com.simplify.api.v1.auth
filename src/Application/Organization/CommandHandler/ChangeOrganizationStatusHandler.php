@@ -46,7 +46,7 @@ class ChangeOrganizationStatusHandler
     {
         $organizationId = OrganizationId::fromString($command->getOrganizationId());
         $userTypeWhoChangeStatus = UserType::byName($command->getUserType());
-        $newStatus = OrganizationStatus::byName($command->getNewStatus());
+        $newStatus = OrganizationStatus::byName($command->getStatus());
 
         if (
             $userTypeWhoChangeStatus->sameValueAs(UserType::TYPE_OWNER()) ||

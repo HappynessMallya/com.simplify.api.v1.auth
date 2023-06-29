@@ -43,7 +43,7 @@ class ChangeOrganizationStatusType extends AbstractType
                 ]
             )
             ->add(
-                'newStatus',
+                'status',
                 TextType::class,
                 [
                     'constraints' => [
