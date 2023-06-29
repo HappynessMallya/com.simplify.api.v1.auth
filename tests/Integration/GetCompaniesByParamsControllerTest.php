@@ -19,18 +19,17 @@ class GetCompaniesByParamsControllerTest extends WebTestCase
         $client = self::createClient();
 
         // Must be changed every so often
-        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODEyOTcwNTEsImV4cCI6MTY4MTMyNTg1MSwicm9sZXMi' .
-            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzkiLCJ1c2VybmFtZS' .
-            'I6ImRldkBkZXYuY29tIiwiZmlyc3ROYW1lIjoiTWFyaWFuYSIsImxhc3ROYW1lIjoiVmllbG1hIiwib3JnYW5pemF0aW9uSWQi' .
-            'OiIwMDAwMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMDAwMDAiLCJjb21wYW5pZXMiOlt7ImNvbXBhbnlfaWQiOiI2YWNjYj' .
-            'hjMy0yZmY0LTQ3ZTMtOWQ1My1kMWU1NjZhMjg5ODgiLCJuYW1lIjoiRGV2IDEiLCJ2cm4iOnRydWV9LHsiY29tcGFueV9pZCI6' .
-            'ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1NmVkMjJjYmU4YyIsIm5hbWUiOiJTaW1wbGlmeSIsInZybiI6dHJ1ZX1dLCJ1c2' .
-            'VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA0LTEyIDA3OjA0OjI0Iiwic3RhdHVzIjoiQUNUSVZFIiwi' .
-            'ZW1haWwiOiJkZXZAZGV2LmNvbSIsImNvbXBhbnlJZCI6IjZhY2NiOGMzLTJmZjQtNDdlMy05ZDUzLWQxZTU2NmEyODk4OCJ9.p' .
-            'Fd_PCFKJX-gq6TKzC1dXa_hgM75z9RpaQJ1lESC399OxdvRfdIVUqsKgWmW9RneXMYWc2fORPZf4JyOj-gbN4H8T7HDUE2hRq2' .
-            'eFE92Z3TzxDUI-voAR055zENkcus_HU-61SFzGP3ylSKWPd1hC0l0nB0ak7GicBYJLeoZT2SyBvWHBSbhnsLRUSeIQblHE22h5' .
-            'iFF0DrJt-cRVJTRvgj38git7fyi0ZkhQH2p_3XS-zoYpt2vi31dLyj8j1qp_ethQhay11EoSsQc2kZJPmzMpFPypTjUctpr4bf' .
-            'oVgFGRjLQ2w0WmmPfMk7cBHNizO2dQEIofv2-ih6eevjfsA';
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
+            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzgiLCJ1c2VybmFtZS' .
+            'I6ImFuZ2xvem1AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiQW5nZWwiLCJsYXN0TmFtZSI6IkxvemFkYSIsIm9yZ2FuaXphdGlv' .
+            'bklkIjoiMDAwMDMzYzktNmY5OC00MTMxLWI2MjctMGE2ZDk3MzAwMDAwIiwiY29tcGFuaWVzIjpbeyJjb21wYW55X2lkIjoiOG' .
+            'RlMTEwYjQtN2VhMC00MWFjLTg5ZjQtMjliNTU5NjQyNmRiIiwibmFtZSI6IlNpbXBsaXRlY2ggTGltaXRlZCIsInZybiI6dHJ1' .
+            'ZX1dLCJ1c2VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA2LTIyIDE1OjE3OjI3Iiwic3RhdHVzIjoiQU' .
+            'NUSVZFIiwiZW1haWwiOiJhbmdsb3ptQGdtYWlsLmNvbSIsImNvbXBhbnlJZCI6ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1' .
+            'NmVkMjJjYmU4YyJ9.iau6wCB-UWno5UvcbNc3gN9AkUG4fNMJBV7HsrXhtoPRmzU728BveGjn95AbzX62ialAGZ7lxoEwC45Ui' .
+            'KIzFBYczrf3qFCTr8R4DnbUKfo_3cgqnt4YEPs_Gko7YxXLHQ-6y1_9nCxK8SfNvHBQxo96-p-yaZoGZB_cbyMkQF-D0LZLWiu' .
+            '2zvIt_vhg2AukMmwamaemgd8utIrLl_EALeK4xzHOQMSFJkhL7saa5005C7IcGowO9cIZpIi9KqOYd9zOpuEbd41Gqf9jO8T_6' .
+            'RKdsqeFUz9ma45p6H-F75kljdgEvFtoCHCbvjeFXJTLlykLk4ovWFxGAp0hX5SoRQ';
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
@@ -58,19 +57,21 @@ class GetCompaniesByParamsControllerTest extends WebTestCase
         $client = self::createClient();
 
         // Must be changed every so often
-        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODEyOTkwMTUsImV4cCI6MTY4MTMyNzgxNSwicm9sZXMi' .
-            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzgiLCJ1c2VybmFtZS' .
-            'I6ImFuZ2xvem1AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiQW5nZWwiLCJsYXN0TmFtZSI6IkxvemFkYSIsIm9yZ2FuaXphdGlv' .
-            'bklkIjoiMDAwMDMzYzktNmY5OC00MTMxLWI2MjctMGE2ZDk3MzAwMDAwIiwiY29tcGFuaWVzIjpbeyJjb21wYW55X2lkIjoiOG' .
-            'RlMTEwYjQtN2VhMC00MWFjLTg5ZjQtMjliNTU5NjQyNmRiIiwibmFtZSI6IlNpbXBsaXRlY2ggTGltaXRlZCIsInZybiI6dHJ1' .
-            'ZX1dLCJ1c2VyVHlwZSI6IlRZUEVfT1BFUkFUT1IiLCJsYXN0TG9naW4iOiIyMDIzLTAzLTIxIDIwOjUxOjQxIiwic3RhdHVzIj' .
-            'oiQUNUSVZFIiwiZW1haWwiOiJhbmdsb3ptQGdtYWlsLmNvbSIsImNvbXBhbnlJZCI6ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2Ew' .
-            'LTk1NmVkMjJjYmU4YyJ9.r7Nn28wmQPmzUI74IiQbOdzRE6Ipe2ZD2IB36UBItk8MtSHQZi65pEOI1kopgW5QU19QAGM2XA0zA' .
-            'jQuF_Efs28ueoBRCwiwHopKYKKWmwN2COn22NbpU5jc3SSSL3Bar4cbgTITuxso9xbm91EaMxU9zx_QReqB7Ei1SFxjHLB95Br' .
-            'ZGDDzcJiDIBSBsLcuh9FXYkcJHRL0KEJMq94oCiMWEZXx_AvgKKtNwUtH0_7owZ_SX1ic1HzGzS-NgUixNm4fNXMuKEdx7cpXO' .
-            'DpiypEdY4p7a8IE7P5k9xI2XAz93blP7MNPFECbITpG7_KbAr7K5X2KT95I6NVZ2zcWEw';
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NjYwNzksImV4cCI6MTY4NzQ5NDg3OSwicm9sZXMi' .
+            'OlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3ZD' .
+            'AiLCJ1c2VybmFtZSI6Im1hcmlhbmFAcG8uY29tIiwiZmlyc3ROYW1lIjoiS2F0ZSIsImxhc3ROYW1lIjoiVmllbG1hIiwib3Jn' .
+            'YW5pemF0aW9uSWQiOm51bGwsImNvbXBhbmllcyI6W10sInVzZXJUeXBlIjoiVFlQRV9PUEVSQVRPUiIsImxhc3RMb2dpbiI6Ij' .
+            'IwMjMtMDQtMjQgMTU6NTk6MjciLCJzdGF0dXMiOiJBQ1RJVkUiLCJlbWFpbCI6Im1hcmlhbmFAcG8uY29tIiwiY29tcGFueUlk' .
+            'IjoiNmFjY2I4YzMtMmZmNC00N2UzLTlkNTMtZDFlNTY2YTI4OTg5In0.P0j0BR7P3oGvKgBi1uyHFQRV8fcV_r7v8goESfA6hB' .
+            'VkgRoi3z0XRgRnVy0DWUponlBlUj0aO4SfmvIa64EDM4ZQPqTu-7NUqkthONjOt4z03bMudl35TlMmY9eNgjtiY_1VkmoaWMi3' .
+            'vhnntwsv5yrtsCRTcS623YR-DXR4MeS6XpDbZQfaMKC_6U4ImcJyX1S19B6Ev0P58qRYmCQHvGpKaGCXDEpA30O2C8KpJ4QsF6' .
+            'xj-tQAAiIr1WqsVH12BMbCQsXHroscH5WG6DHPC-KCuNHolAWmTYQpo21Qj-zUlCY_fuE9RgX66hR6VEj-JUBU_k_ckfNhWYAg' .
+            'dItozA';
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
+
+        $expectedMessage = 'Error trying to find the set of companies. ' .
+            'User is not an owner: OPERATOR';
 
         // When
         $client->request(
@@ -89,8 +90,7 @@ class GetCompaniesByParamsControllerTest extends WebTestCase
         $this->assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $client->getResponse()->getStatusCode());
         $this->assertFalse($response['success']);
         $this->assertEquals(
-            'Error trying to find the set of companies. ' .
-            'User is not an owner: OPERATOR',
+            $expectedMessage,
             $response['error']
         );
     }
@@ -101,20 +101,21 @@ class GetCompaniesByParamsControllerTest extends WebTestCase
         $client = self::createClient();
 
         // Must be changed every so often
-        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODEyOTcwNTEsImV4cCI6MTY4MTMyNTg1MSwicm9sZXMi' .
-            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzkiLCJ1c2VybmFtZS' .
-            'I6ImRldkBkZXYuY29tIiwiZmlyc3ROYW1lIjoiTWFyaWFuYSIsImxhc3ROYW1lIjoiVmllbG1hIiwib3JnYW5pemF0aW9uSWQi' .
-            'OiIwMDAwMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMDAwMDAiLCJjb21wYW5pZXMiOlt7ImNvbXBhbnlfaWQiOiI2YWNjYj' .
-            'hjMy0yZmY0LTQ3ZTMtOWQ1My1kMWU1NjZhMjg5ODgiLCJuYW1lIjoiRGV2IDEiLCJ2cm4iOnRydWV9LHsiY29tcGFueV9pZCI6' .
-            'ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1NmVkMjJjYmU4YyIsIm5hbWUiOiJTaW1wbGlmeSIsInZybiI6dHJ1ZX1dLCJ1c2' .
-            'VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA0LTEyIDA3OjA0OjI0Iiwic3RhdHVzIjoiQUNUSVZFIiwi' .
-            'ZW1haWwiOiJkZXZAZGV2LmNvbSIsImNvbXBhbnlJZCI6IjZhY2NiOGMzLTJmZjQtNDdlMy05ZDUzLWQxZTU2NmEyODk4OCJ9.p' .
-            'Fd_PCFKJX-gq6TKzC1dXa_hgM75z9RpaQJ1lESC399OxdvRfdIVUqsKgWmW9RneXMYWc2fORPZf4JyOj-gbN4H8T7HDUE2hRq2' .
-            'eFE92Z3TzxDUI-voAR055zENkcus_HU-61SFzGP3ylSKWPd1hC0l0nB0ak7GicBYJLeoZT2SyBvWHBSbhnsLRUSeIQblHE22h5' .
-            'iFF0DrJt-cRVJTRvgj38git7fyi0ZkhQH2p_3XS-zoYpt2vi31dLyj8j1qp_ethQhay11EoSsQc2kZJPmzMpFPypTjUctpr4bf' .
-            'oVgFGRjLQ2w0WmmPfMk7cBHNizO2dQEIofv2-ih6eevjfsA';
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
+            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzgiLCJ1c2VybmFtZS' .
+            'I6ImFuZ2xvem1AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiQW5nZWwiLCJsYXN0TmFtZSI6IkxvemFkYSIsIm9yZ2FuaXphdGlv' .
+            'bklkIjoiMDAwMDMzYzktNmY5OC00MTMxLWI2MjctMGE2ZDk3MzAwMDAwIiwiY29tcGFuaWVzIjpbeyJjb21wYW55X2lkIjoiOG' .
+            'RlMTEwYjQtN2VhMC00MWFjLTg5ZjQtMjliNTU5NjQyNmRiIiwibmFtZSI6IlNpbXBsaXRlY2ggTGltaXRlZCIsInZybiI6dHJ1' .
+            'ZX1dLCJ1c2VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA2LTIyIDE1OjE3OjI3Iiwic3RhdHVzIjoiQU' .
+            'NUSVZFIiwiZW1haWwiOiJhbmdsb3ptQGdtYWlsLmNvbSIsImNvbXBhbnlJZCI6ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1' .
+            'NmVkMjJjYmU4YyJ9.iau6wCB-UWno5UvcbNc3gN9AkUG4fNMJBV7HsrXhtoPRmzU728BveGjn95AbzX62ialAGZ7lxoEwC45Ui' .
+            'KIzFBYczrf3qFCTr8R4DnbUKfo_3cgqnt4YEPs_Gko7YxXLHQ-6y1_9nCxK8SfNvHBQxo96-p-yaZoGZB_cbyMkQF-D0LZLWiu' .
+            '2zvIt_vhg2AukMmwamaemgd8utIrLl_EALeK4xzHOQMSFJkhL7saa5005C7IcGowO9cIZpIi9KqOYd9zOpuEbd41Gqf9jO8T_6' .
+            'RKdsqeFUz9ma45p6H-F75kljdgEvFtoCHCbvjeFXJTLlykLk4ovWFxGAp0hX5SoRQ';
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
+
+        $expectedMessage = 'No companies found by the search criteria';
 
         // When
         $client->request(
@@ -132,9 +133,6 @@ class GetCompaniesByParamsControllerTest extends WebTestCase
         // Then
         $this->assertEquals(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
         $this->assertFalse($response['success']);
-        $this->assertEquals(
-            'No companies found by the search criteria',
-            $response['error']
-        );
+        $this->assertEquals($expectedMessage, $response['error']);
     }
 }

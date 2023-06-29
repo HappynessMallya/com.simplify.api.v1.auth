@@ -17,31 +17,27 @@ class GetOperatorByIdControllerTest extends WebTestCase
     {
         // Given
         $client = self::createClient();
+        $operatorId = '7ebe33c9-6f98-4131-b627-0a6d9730e7c9';
 
         // Must be changed every so often
-        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODEyOTcwNTEsImV4cCI6MTY4MTMyNTg1MSwicm9sZXMi' .
-            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzkiLCJ1c2VybmFtZS' .
-            'I6ImRldkBkZXYuY29tIiwiZmlyc3ROYW1lIjoiTWFyaWFuYSIsImxhc3ROYW1lIjoiVmllbG1hIiwib3JnYW5pemF0aW9uSWQi' .
-            'OiIwMDAwMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMDAwMDAiLCJjb21wYW5pZXMiOlt7ImNvbXBhbnlfaWQiOiI2YWNjYj' .
-            'hjMy0yZmY0LTQ3ZTMtOWQ1My1kMWU1NjZhMjg5ODgiLCJuYW1lIjoiRGV2IDEiLCJ2cm4iOnRydWV9LHsiY29tcGFueV9pZCI6' .
-            'ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1NmVkMjJjYmU4YyIsIm5hbWUiOiJTaW1wbGlmeSIsInZybiI6dHJ1ZX1dLCJ1c2' .
-            'VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA0LTEyIDA3OjA0OjI0Iiwic3RhdHVzIjoiQUNUSVZFIiwi' .
-            'ZW1haWwiOiJkZXZAZGV2LmNvbSIsImNvbXBhbnlJZCI6IjZhY2NiOGMzLTJmZjQtNDdlMy05ZDUzLWQxZTU2NmEyODk4OCJ9.p' .
-            'Fd_PCFKJX-gq6TKzC1dXa_hgM75z9RpaQJ1lESC399OxdvRfdIVUqsKgWmW9RneXMYWc2fORPZf4JyOj-gbN4H8T7HDUE2hRq2' .
-            'eFE92Z3TzxDUI-voAR055zENkcus_HU-61SFzGP3ylSKWPd1hC0l0nB0ak7GicBYJLeoZT2SyBvWHBSbhnsLRUSeIQblHE22h5' .
-            'iFF0DrJt-cRVJTRvgj38git7fyi0ZkhQH2p_3XS-zoYpt2vi31dLyj8j1qp_ethQhay11EoSsQc2kZJPmzMpFPypTjUctpr4bf' .
-            'oVgFGRjLQ2w0WmmPfMk7cBHNizO2dQEIofv2-ih6eevjfsA';
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
+            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzgiLCJ1c2VybmFtZS' .
+            'I6ImFuZ2xvem1AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiQW5nZWwiLCJsYXN0TmFtZSI6IkxvemFkYSIsIm9yZ2FuaXphdGlv' .
+            'bklkIjoiMDAwMDMzYzktNmY5OC00MTMxLWI2MjctMGE2ZDk3MzAwMDAwIiwiY29tcGFuaWVzIjpbeyJjb21wYW55X2lkIjoiOG' .
+            'RlMTEwYjQtN2VhMC00MWFjLTg5ZjQtMjliNTU5NjQyNmRiIiwibmFtZSI6IlNpbXBsaXRlY2ggTGltaXRlZCIsInZybiI6dHJ1' .
+            'ZX1dLCJ1c2VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA2LTIyIDE1OjE3OjI3Iiwic3RhdHVzIjoiQU' .
+            'NUSVZFIiwiZW1haWwiOiJhbmdsb3ptQGdtYWlsLmNvbSIsImNvbXBhbnlJZCI6ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1' .
+            'NmVkMjJjYmU4YyJ9.iau6wCB-UWno5UvcbNc3gN9AkUG4fNMJBV7HsrXhtoPRmzU728BveGjn95AbzX62ialAGZ7lxoEwC45Ui' .
+            'KIzFBYczrf3qFCTr8R4DnbUKfo_3cgqnt4YEPs_Gko7YxXLHQ-6y1_9nCxK8SfNvHBQxo96-p-yaZoGZB_cbyMkQF-D0LZLWiu' .
+            '2zvIt_vhg2AukMmwamaemgd8utIrLl_EALeK4xzHOQMSFJkhL7saa5005C7IcGowO9cIZpIi9KqOYd9zOpuEbd41Gqf9jO8T_6' .
+            'RKdsqeFUz9ma45p6H-F75kljdgEvFtoCHCbvjeFXJTLlykLk4ovWFxGAp0hX5SoRQ';
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
-
-        $parameters = [
-            'operatorId' => '7ebe33c9-6f98-4131-b627-0a6d9730e7c9',
-        ];
 
         // When
         $client->request(
             'GET',
-            '/api/v2/user/operator/' . $parameters['operatorId'],
+            '/api/v2/user/operator/' . $operatorId,
             [],
             [],
             [
@@ -60,31 +56,30 @@ class GetOperatorByIdControllerTest extends WebTestCase
     {
         // Given
         $client = self::createClient();
+        $operatorId = '7ebe33c9-6f98-4131-b627-0a6d9730e7c2';
 
         // Must be changed every so often
-        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODEyOTcwNTEsImV4cCI6MTY4MTMyNTg1MSwicm9sZXMi' .
-            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzkiLCJ1c2VybmFtZS' .
-            'I6ImRldkBkZXYuY29tIiwiZmlyc3ROYW1lIjoiTWFyaWFuYSIsImxhc3ROYW1lIjoiVmllbG1hIiwib3JnYW5pemF0aW9uSWQi' .
-            'OiIwMDAwMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMDAwMDAiLCJjb21wYW5pZXMiOlt7ImNvbXBhbnlfaWQiOiI2YWNjYj' .
-            'hjMy0yZmY0LTQ3ZTMtOWQ1My1kMWU1NjZhMjg5ODgiLCJuYW1lIjoiRGV2IDEiLCJ2cm4iOnRydWV9LHsiY29tcGFueV9pZCI6' .
-            'ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1NmVkMjJjYmU4YyIsIm5hbWUiOiJTaW1wbGlmeSIsInZybiI6dHJ1ZX1dLCJ1c2' .
-            'VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA0LTEyIDA3OjA0OjI0Iiwic3RhdHVzIjoiQUNUSVZFIiwi' .
-            'ZW1haWwiOiJkZXZAZGV2LmNvbSIsImNvbXBhbnlJZCI6IjZhY2NiOGMzLTJmZjQtNDdlMy05ZDUzLWQxZTU2NmEyODk4OCJ9.p' .
-            'Fd_PCFKJX-gq6TKzC1dXa_hgM75z9RpaQJ1lESC399OxdvRfdIVUqsKgWmW9RneXMYWc2fORPZf4JyOj-gbN4H8T7HDUE2hRq2' .
-            'eFE92Z3TzxDUI-voAR055zENkcus_HU-61SFzGP3ylSKWPd1hC0l0nB0ak7GicBYJLeoZT2SyBvWHBSbhnsLRUSeIQblHE22h5' .
-            'iFF0DrJt-cRVJTRvgj38git7fyi0ZkhQH2p_3XS-zoYpt2vi31dLyj8j1qp_ethQhay11EoSsQc2kZJPmzMpFPypTjUctpr4bf' .
-            'oVgFGRjLQ2w0WmmPfMk7cBHNizO2dQEIofv2-ih6eevjfsA';
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
+            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzgiLCJ1c2VybmFtZS' .
+            'I6ImFuZ2xvem1AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiQW5nZWwiLCJsYXN0TmFtZSI6IkxvemFkYSIsIm9yZ2FuaXphdGlv' .
+            'bklkIjoiMDAwMDMzYzktNmY5OC00MTMxLWI2MjctMGE2ZDk3MzAwMDAwIiwiY29tcGFuaWVzIjpbeyJjb21wYW55X2lkIjoiOG' .
+            'RlMTEwYjQtN2VhMC00MWFjLTg5ZjQtMjliNTU5NjQyNmRiIiwibmFtZSI6IlNpbXBsaXRlY2ggTGltaXRlZCIsInZybiI6dHJ1' .
+            'ZX1dLCJ1c2VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA2LTIyIDE1OjE3OjI3Iiwic3RhdHVzIjoiQU' .
+            'NUSVZFIiwiZW1haWwiOiJhbmdsb3ptQGdtYWlsLmNvbSIsImNvbXBhbnlJZCI6ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1' .
+            'NmVkMjJjYmU4YyJ9.iau6wCB-UWno5UvcbNc3gN9AkUG4fNMJBV7HsrXhtoPRmzU728BveGjn95AbzX62ialAGZ7lxoEwC45Ui' .
+            'KIzFBYczrf3qFCTr8R4DnbUKfo_3cgqnt4YEPs_Gko7YxXLHQ-6y1_9nCxK8SfNvHBQxo96-p-yaZoGZB_cbyMkQF-D0LZLWiu' .
+            '2zvIt_vhg2AukMmwamaemgd8utIrLl_EALeK4xzHOQMSFJkhL7saa5005C7IcGowO9cIZpIi9KqOYd9zOpuEbd41Gqf9jO8T_6' .
+            'RKdsqeFUz9ma45p6H-F75kljdgEvFtoCHCbvjeFXJTLlykLk4ovWFxGAp0hX5SoRQ';
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
-        $parameters = [
-            'operatorId' => '7ebe33c9-6f98-4131-b627-0a6d9730e7c2',
-        ];
+        $expectedMessage = 'Exception error trying to get operator details. ' .
+            'Operator not found: ' . $operatorId;
 
         // When
         $client->request(
             'GET',
-            '/api/v2/user/operator/' . $parameters['operatorId'],
+            '/api/v2/user/operator/' . $operatorId,
             [],
             [],
             [
@@ -97,42 +92,37 @@ class GetOperatorByIdControllerTest extends WebTestCase
         // Then
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertFalse($response['success']);
-        $this->assertEquals(
-            'Exception error trying to get operator details. ' .
-            'Operator not found: ' . $parameters['operatorId'],
-            $response['error']
-        );
+        $this->assertEquals($expectedMessage, $response['error']);
     }
 
     public function testGetOperatorByIdWithWrongUuidShouldBeError()
     {
         // Given
         $client = self::createClient();
+        $operatorId = '7ebe33c9-6f98-4131';
 
         // Must be changed every so often
-        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODEyOTcwNTEsImV4cCI6MTY4MTMyNTg1MSwicm9sZXMi' .
-            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzkiLCJ1c2VybmFtZS' .
-            'I6ImRldkBkZXYuY29tIiwiZmlyc3ROYW1lIjoiTWFyaWFuYSIsImxhc3ROYW1lIjoiVmllbG1hIiwib3JnYW5pemF0aW9uSWQi' .
-            'OiIwMDAwMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMDAwMDAiLCJjb21wYW5pZXMiOlt7ImNvbXBhbnlfaWQiOiI2YWNjYj' .
-            'hjMy0yZmY0LTQ3ZTMtOWQ1My1kMWU1NjZhMjg5ODgiLCJuYW1lIjoiRGV2IDEiLCJ2cm4iOnRydWV9LHsiY29tcGFueV9pZCI6' .
-            'ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1NmVkMjJjYmU4YyIsIm5hbWUiOiJTaW1wbGlmeSIsInZybiI6dHJ1ZX1dLCJ1c2' .
-            'VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA0LTEyIDA3OjA0OjI0Iiwic3RhdHVzIjoiQUNUSVZFIiwi' .
-            'ZW1haWwiOiJkZXZAZGV2LmNvbSIsImNvbXBhbnlJZCI6IjZhY2NiOGMzLTJmZjQtNDdlMy05ZDUzLWQxZTU2NmEyODk4OCJ9.p' .
-            'Fd_PCFKJX-gq6TKzC1dXa_hgM75z9RpaQJ1lESC399OxdvRfdIVUqsKgWmW9RneXMYWc2fORPZf4JyOj-gbN4H8T7HDUE2hRq2' .
-            'eFE92Z3TzxDUI-voAR055zENkcus_HU-61SFzGP3ylSKWPd1hC0l0nB0ak7GicBYJLeoZT2SyBvWHBSbhnsLRUSeIQblHE22h5' .
-            'iFF0DrJt-cRVJTRvgj38git7fyi0ZkhQH2p_3XS-zoYpt2vi31dLyj8j1qp_ethQhay11EoSsQc2kZJPmzMpFPypTjUctpr4bf' .
-            'oVgFGRjLQ2w0WmmPfMk7cBHNizO2dQEIofv2-ih6eevjfsA';
+        $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2ODc0NDQ2NTUsImV4cCI6MTY4NzQ3MzQ1NSwicm9sZXMi' .
+            'OlsiUk9MRV9BRE1JTiJdLCJ1c2VySWQiOiI3ZWJlMzNjOS02Zjk4LTQxMzEtYjYyNy0wYTZkOTczMGU3YzgiLCJ1c2VybmFtZS' .
+            'I6ImFuZ2xvem1AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiQW5nZWwiLCJsYXN0TmFtZSI6IkxvemFkYSIsIm9yZ2FuaXphdGlv' .
+            'bklkIjoiMDAwMDMzYzktNmY5OC00MTMxLWI2MjctMGE2ZDk3MzAwMDAwIiwiY29tcGFuaWVzIjpbeyJjb21wYW55X2lkIjoiOG' .
+            'RlMTEwYjQtN2VhMC00MWFjLTg5ZjQtMjliNTU5NjQyNmRiIiwibmFtZSI6IlNpbXBsaXRlY2ggTGltaXRlZCIsInZybiI6dHJ1' .
+            'ZX1dLCJ1c2VyVHlwZSI6IlRZUEVfT1dORVIiLCJsYXN0TG9naW4iOiIyMDIzLTA2LTIyIDE1OjE3OjI3Iiwic3RhdHVzIjoiQU' .
+            'NUSVZFIiwiZW1haWwiOiJhbmdsb3ptQGdtYWlsLmNvbSIsImNvbXBhbnlJZCI6ImRhODEyMmM2LTQ1YjEtNGUyYS05Y2EwLTk1' .
+            'NmVkMjJjYmU4YyJ9.iau6wCB-UWno5UvcbNc3gN9AkUG4fNMJBV7HsrXhtoPRmzU728BveGjn95AbzX62ialAGZ7lxoEwC45Ui' .
+            'KIzFBYczrf3qFCTr8R4DnbUKfo_3cgqnt4YEPs_Gko7YxXLHQ-6y1_9nCxK8SfNvHBQxo96-p-yaZoGZB_cbyMkQF-D0LZLWiu' .
+            '2zvIt_vhg2AukMmwamaemgd8utIrLl_EALeK4xzHOQMSFJkhL7saa5005C7IcGowO9cIZpIi9KqOYd9zOpuEbd41Gqf9jO8T_6' .
+            'RKdsqeFUz9ma45p6H-F75kljdgEvFtoCHCbvjeFXJTLlykLk4ovWFxGAp0hX5SoRQ';
 
         $client->setServerParameter('HTTP_Authorization', sprintf('Bearer %s', $token));
 
-        $parameters = [
-            'operatorId' => '7ebe33c9-6f98-4131-b627',
-        ];
+        $expectedMessage = 'Exception error trying to get operator details. ' .
+            'Invalid UUID string: ' . $operatorId;
 
         // When
         $client->request(
             'GET',
-            '/api/v2/user/operator/' . $parameters['operatorId'],
+            '/api/v2/user/operator/' . $operatorId,
             [],
             [],
             [
@@ -145,10 +135,6 @@ class GetOperatorByIdControllerTest extends WebTestCase
         // Then
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $client->getResponse()->getStatusCode());
         $this->assertFalse($response['success']);
-        $this->assertEquals(
-            'Exception error trying to get operator details. ' .
-            'Invalid UUID string: ' . $parameters['operatorId'],
-            $response['error']
-        );
+        $this->assertEquals($expectedMessage, $response['error']);
     }
 }

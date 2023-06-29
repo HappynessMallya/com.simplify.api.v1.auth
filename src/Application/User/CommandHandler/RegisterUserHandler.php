@@ -16,6 +16,8 @@ use App\Domain\Services\SendCredentialsRequest;
 use App\Domain\Services\User\PasswordEncoder;
 use App\Domain\Services\SendCredentialsService;
 use App\Infrastructure\Repository\DoctrineCompanyRepository;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,26 +68,44 @@ class RegisterUserHandler
 
     /**
      * @param RegisterUserCommand $command
-     * @return bool
+     * @return array
      * @throws Exception
      */
-    public function handle(RegisterUserCommand $command): bool
+    public function handle(RegisterUserCommand $command): array
     {
-        $userRole = empty($command->getRole()) ? UserRole::USER() : UserRole::byName($command->getRole());
-
         try {
             $userId = UserId::generate();
+            $companyId = CompanyId::fromString($command->getCompanyId());
+            $userRole = empty($command->getRole()) ? UserRole::USER() : UserRole::byName($command->getRole());
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
+
+            $company = $this->companyRepository->get($companyId);
+
+            if (empty($company)) {
+                $this->logger->critical(
+                    'Company could not be found',
+                    [
+                        'company_id' => $companyId->toString(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'Company could not be found',
+                    Response::HTTP_NOT_FOUND
+                );
+            }
 
             $user = User::create(
                 $userRole,
                 $userId,
-                CompanyId::fromString($command->getCompanyId()),
+                $companyId,
                 $command->getEmail(),
                 $command->getUsername(),
                 $password,
                 null,
                 UserStatus::CHANGE_PASSWORD(),
+                UserRole::USER(),
                 UserType::TYPE_OPERATOR(),
                 $command->getFirstName(),
                 $command->getLastName(),
@@ -94,9 +114,11 @@ class RegisterUserHandler
 
             $user->setPassword($this->passwordEncoder->hashPassword($user));
 
-            if (!$this->userRepository->save($user)) {
+            $isSaved = $this->userRepository->save($user);
+
+            if (!$isSaved) {
                 $this->logger->critical(
-                    'Error trying to save user',
+                    'The user could not be registered',
                     [
                         'company_id' => $user->companyId(),
                         'user_id' => $user->userId(),
@@ -106,10 +128,11 @@ class RegisterUserHandler
                     ]
                 );
 
-                return false;
+                throw new Exception(
+                    'The user could not be registered',
+                    Response::HTTP_INTERNAL_SERVER_ERROR
+                );
             }
-
-            $company = $this->companyRepository->get($user->companyId());
 
             $request = new SendCredentialsRequest(
                 'NEW_CREDENTIALS',
@@ -131,12 +154,10 @@ class RegisterUserHandler
                         'method' => __METHOD__,
                     ]
                 );
-
-                return false;
             }
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to register user',
+                'An internal server error has been occurred',
                 [
                     'company_id' => $command->getCompanyId(),
                     'username' => $command->getUsername(),
@@ -147,11 +168,17 @@ class RegisterUserHandler
             );
 
             throw new Exception(
-                'Exception error trying to register user: ' . $exception->getMessage(),
-                Response::HTTP_BAD_REQUEST
+                $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
-        return true;
+        return [
+            'userId' => $userId->toString(),
+            'username' => $user->username(),
+            'createdAt' => (
+                new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
+            )->format(('Y-m-d H:i:s')),
+        ];
     }
 }

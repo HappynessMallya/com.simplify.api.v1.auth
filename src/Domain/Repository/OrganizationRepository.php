@@ -38,4 +38,10 @@ interface OrganizationRepository
      * @return Organization|null
      */
     public function findOneBy(array $criteria): ?Organization;
+
+    /**
+     * @param array $criteria
+     * @return array|null
+     */
+    public function findByCriteria(array $criteria): ?array;
 }

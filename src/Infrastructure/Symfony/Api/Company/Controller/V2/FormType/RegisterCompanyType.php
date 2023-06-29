@@ -1,18 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Symfony\Api\Company\Controller\V2\FormType;
 
-use App\Application\Company\Command\CreateCompanyCommand;
 use App\Application\Company\V2\CommandHandler\RegisterCompanyCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UuidType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * Class CreateCompanyType
+ * Class RegisterCompanyType
  * @package App\Infrastructure\Symfony\Api\Company\Controller\V2\FormType
  */
 class RegisterCompanyType extends AbstractType
@@ -25,30 +25,157 @@ class RegisterCompanyType extends AbstractType
     {
         $builder
             ->add(
+                'organizationId',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            [
+                                'min' => 36,
+                                'max' => 36,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        )
+                    ]
+                ]
+            )
+            ->add(
                 'name',
                 TextType::class,
                 [
-                    'constraints' => new Assert\NotBlank(),
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Length(
+                            [
+<<<<<<< HEAD
+                                'min' => 2,
+                                'max' => 200,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+=======
+                                'min' => 1,
+                                'max' => 200,
+                                'minMessage' => 'Must be at least {{ limit }} characters long.',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
+                            ]
+                        ),
+                    ]
+>>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 ]
-            )->add(
+            )
+            ->add(
                 'tin',
                 TextType::class,
                 [
-                    'constraints' => new Assert\NotBlank(),
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Regex(
+                            [
+                                'pattern' => '/^[0-9]*$/',
+<<<<<<< HEAD
+                                'message' => 'This value should be numeric',
+                            ]
+                        ),
+                        new Assert\Length(
+                            [
+                                'min' => 9,
+                                'max' => 9,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+=======
+                                'message' => 'This value should be numeric.',
+                            ]
+                        ),
+                    ]
+>>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 ]
-            )->add(
+            )
+            ->add(
                 'email',
                 TextType::class,
                 [
-                    'constraints' => new Assert\Email(),
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                        new Assert\Email()
+                    ],
+                ]
+            )
+            ->add(
+                'phone',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Assert\Regex(
+                            [
+                                'pattern' => '/^[0-9]*$/',
+<<<<<<< HEAD
+                                'message' => 'This value should be numeric.',
+=======
+                                'message' => 'This value should be numeric.'
+>>>>>>> a0ad8974b085c54779022f85960193829fe75996
+                            ]
+                        ),
+                        new Assert\Length(
+                            [
+                                'min' => 9,
+<<<<<<< HEAD
+                                'max' => 9,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            ->add(
+=======
+                                'max' => 15,
+                                'minMessage' => 'Must be at least {{ limit }} characters long.',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
+                            ]
+                        ),
+                    ]
                 ]
             )->add(
-                'phone',
-                TextType::class
-            )->add(
+>>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 'address',
-                TextType::class
+                TextType::class,
+                [
+                    'constraints' => [
+<<<<<<< HEAD
+                        new Assert\Length(
+                            [
+                                'min' => 2,
+                                'max' => 200,
+=======
+                        new Assert\Blank(),
+                        new Assert\Length(
+                            [
+                                'min' => 5,
+                                'max' => 100,
+>>>>>>> a0ad8974b085c54779022f85960193829fe75996
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+<<<<<<< HEAD
+                    ],
+                ]
+            )
+            ->add(
+=======
+                    ]
+                ]
             )->add(
+>>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 'serial',
                 TextType::class,
                 [
@@ -65,22 +192,7 @@ class RegisterCompanyType extends AbstractType
                     ],
                 ]
             )
-            ->add(
-                'organizationId',
-                TextType::class,
-                [
-                    'constraints' => [
-                        new Assert\Length(
-                            [
-                                'min' => 36,
-                                'max' => 36,
-                                'minMessage' => 'Must be at least {{ limit }} characters long',
-                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
-                            ]
-                        )
-                    ]
-                ]
-            );
+        ;
     }
 
     /**

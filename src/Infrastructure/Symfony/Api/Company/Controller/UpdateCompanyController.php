@@ -7,6 +7,8 @@ namespace App\Infrastructure\Symfony\Api\Company\Controller;
 use App\Application\Company\Command\UpdateCompanyCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Company\Form\UpdateCompanyType;
+use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,35 +24,80 @@ class UpdateCompanyController extends BaseController
      * @Route(path="/{companyId}", methods={"PUT"})
      *
      * @param Request $request
-     * @param string $companyId
+     * @param LoggerInterface $logger
      * @return JsonResponse
      */
-    public function updateCompanyAction(Request $request, string $companyId)
-    {
-        $updated = false;
+    public function updateCompanyAction(
+        Request $request,
+        LoggerInterface $logger
+    ): JsonResponse {
+        $companyId = $request->get('companyId');
+
         $command = new UpdateCompanyCommand();
         $form = $this->createForm(UpdateCompanyType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
+            $logger->critical(
+                'Invalid data',
+                [
+                    'data' => $form->getData(),
+                    'errors' => $this->getValidationErrors($form),
+                    'method' => __METHOD__,
+                ]
+            );
+
             return $this->createApiResponse(
-                ['errors' => $this->getValidationErrors($form)],
+                [
+                    'success' => false,
+                    'errors' => $this->getValidationErrors($form),
+                ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         $command->setCompanyId($companyId);
 
-        try {
-            $updated = $this->commandBus->handle($command);
-        } catch (\Exception $e) {
-            if ($e->getCode() === 404) {
-                return $this->createApiResponse(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
-            }
+        $isUpdated = false;
 
-            $this->logger->critical($e->getMessage(), [__METHOD__]);
+        try {
+            $isUpdated = $this->commandBus->handle($command);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                'Exception error trying to update company',
+                [
+                    'error_message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
+                return $this->createApiResponse(
+                    [
+                        'success' => false,
+                        'errors' => 'Exception error trying to update company. ' . $exception->getMessage(),
+                    ],
+                    Response::HTTP_NOT_FOUND
+                );
+            }
         }
 
-        return $this->createApiResponse(['success' => $updated], Response::HTTP_OK);
+        if (!$isUpdated) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'message' => 'Company has not been updated',
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        return $this->createApiResponse(
+            [
+                'success' => true,
+                'message' => 'Company updated successfully',
+            ],
+            Response::HTTP_OK
+        );
     }
 }

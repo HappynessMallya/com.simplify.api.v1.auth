@@ -9,11 +9,12 @@ use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Infrastructure\Symfony\Security\UserEntity;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
@@ -33,9 +34,11 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
 
     /**
      * @param EntityManagerInterface $em
+     * @throws NotSupported
      */
-    public function __construct(EntityManagerInterface $em)
-    {
+    public function __construct(
+        EntityManagerInterface $em
+    ) {
         $this->em = $em;
         $this->repository = $this->em->getRepository(User::class);
     }
@@ -110,15 +113,28 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
      */
     public function findByCriteria(array $criteria): ?array
     {
-        if (empty($criteria['status'])) {
-            $criteria['status'] = [
-                UserStatus::ACTIVE(),
-                UserStatus::CHANGE_PASSWORD(),
-                UserStatus::SUSPENDED(),
-            ];
+        $sql = sprintf(/** @lang sql */
+            'SELECT u FROM \App\Domain\Model\User\User u
+            WHERE u.status in (\'%s\', \'%s\', \'%s\')',
+            UserStatus::ACTIVE, UserStatus::CHANGE_PASSWORD, UserStatus::SUSPENDED
+        );
+
+        if (!empty($criteria)) {
+            foreach ($criteria as $column => $filter) {
+                if ($column === 'userType') {
+                    $sql .= " and u.userType = '" . $filter ->getValue() . "'";
+                    continue;
+                }
+
+                $sql .= " and u.$column LIKE '%$filter%'";
+            }
         }
 
-        return $this->repository->findBy($criteria);
+        $result = $this->em->createQuery($sql);
+
+        if (empty($result)) return [];
+
+        return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }
 
     /**
@@ -144,21 +160,27 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
      */
     public function getByUsername(string $username): ?User
     {
-        $users = $this->findBy(['email' => $username]);
+        $users = $this->findBy(
+            [
+                'email' => $username,
+            ]
+        );
+
         return empty($users) ? null : $users[0];
     }
 
     /**
      * @param User $user
      * @return bool
+     * @throws Exception
      */
     public function save(User $user): bool
     {
         try {
             $this->em->persist($user);
             $this->em->flush();
-        } catch (ORMException $exception) {
-            return false;
+        } catch (Exception $exception) {
+            throw new Exception('Exception error trying to save user: ' . $exception->getMessage());
         }
 
         return true;
@@ -167,6 +189,7 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
     /**
      * @param User $user
      * @return bool
+     * @throws Exception
      */
     public function remove(User $user): bool
     {
@@ -175,8 +198,8 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
         try {
             $this->em->persist($user);
             $this->em->flush();
-        } catch (ORMException $e) {
-            return false;
+        } catch (Exception $exception) {
+            throw new Exception('Exception error trying to suspend user: ' . $exception->getMessage());
         }
 
         return true;
@@ -184,7 +207,7 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
 
     /**
      * @param string $username
-     * @return UserEntity|UserInterface|null
+     * @return User|null
      */
     public function loadUserByUsername(string $username): ?UserEntity
     {
@@ -213,15 +236,17 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
                 $user->roles(),
                 $user->userType()
             );
-        } catch (NonUniqueResultException $exception) {
-            return null;
-        } catch (Exception $exception) {
+        } catch (
+            NonUniqueResultException
+            | Exception $exception
+        ) {
             return null;
         }
     }
 
     /**
      * @param UserId $userId
+     * @throws Exception
      */
     public function login(UserId $userId): void
     {

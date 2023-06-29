@@ -25,3 +25,8 @@ company_v2:
     resource: ../../src/Infrastructure/Symfony/Api/Company/Controller/V2
     prefix: /api/v2/company
     type: annotation
+
+organization:
+    resource: ../../src/Infrastructure/Symfony/Api/Organization/Controller/
+    prefix: /api/v1/organization
+    type: annotation

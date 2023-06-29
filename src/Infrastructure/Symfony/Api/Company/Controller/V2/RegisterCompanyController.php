@@ -32,30 +32,30 @@ class RegisterCompanyController extends BaseController
      */
     public function action(Request $request, LoggerInterface $logger): JsonResponse
     {
+        $command = new RegisterCompanyCommand();
+        $form = $this->createForm(RegisterCompanyType::class, $command);
+        $this->processForm($request, $form);
+
+        if ($form->isValid() === false) {
+            $logger->critical(
+                'Invalid data',
+                [
+                    'data' => $form->getData(),
+                    'errors' => $this->getValidationErrors($form),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'errors' => $this->getValidationErrors($form),
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         try {
-            $command = new RegisterCompanyCommand();
-            $form = $this->createForm(RegisterCompanyType::class, $command);
-            $this->processForm($request, $form);
-
-            if ($form->isValid() === false) {
-                $logger->critical(
-                    'The form contains errors',
-                    [
-                        'data' => $form->getData(),
-                        'errors' => $this->getValidationErrors($form),
-                        'method' => __METHOD__,
-                    ]
-                );
-
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'errors' => $this->getValidationErrors($form),
-                    ],
-                    Response::HTTP_BAD_REQUEST
-                );
-            }
-
             $companyId = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
@@ -70,7 +70,7 @@ class RegisterCompanyController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'errors' => 'Company has not been created',
+                    'error' => 'An internal error has been occurred. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -81,7 +81,7 @@ class RegisterCompanyController extends BaseController
                 'success' => true,
                 'company_id' => $companyId,
                 'created_at' => (
-                new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
+                    new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
                 )->format('Y-m-d H:i:s')
             ],
             Response::HTTP_CREATED
