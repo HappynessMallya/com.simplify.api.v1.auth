@@ -22,18 +22,25 @@ class GetCompanyByIdController extends BaseController
      * @param string $companyId
      * @return JsonResponse
      */
-    public function getCompaniesAction(string $companyId)
+    public function getCompanyByIdAction(string $companyId): JsonResponse
     {
         $command = new GetCompanyByIdQuery($companyId);
         $company =  $this->commandBus->handle($command);
 
         if (empty($company)) {
-            return $this->createApiResponse(['errors' => 'Not Found'], Response::HTTP_NOT_FOUND);
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'errors' => 'Not Found',
+                ],
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         return $this->createApiResponse(
             [
                 'companyId' => $company->companyId()->toString(),
+                'organizationId' => $company->organizationId()->toString(),
                 'name' => $company->name(),
                 'tin' => $company->tin(),
                 'email' => $company->email(),

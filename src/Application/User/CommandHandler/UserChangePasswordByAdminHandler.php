@@ -82,7 +82,10 @@ class UserChangePasswordByAdminHandler
                 ]
             );
 
-            return false;
+            throw new Exception(
+                'Invalid current password',
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         $user = $this->userRepository->get($userEntity->userId());

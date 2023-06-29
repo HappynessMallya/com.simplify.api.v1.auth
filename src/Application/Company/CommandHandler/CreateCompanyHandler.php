@@ -56,7 +56,8 @@ class CreateCompanyHandler
             $command->getPhone(),
             new DateTime(),
             CompanyStatus::STATUS_ACTIVE(),
-            $command->getSerial()
+            $command->getSerial(),
+            null
         );
 
         try {

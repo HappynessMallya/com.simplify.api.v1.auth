@@ -8,6 +8,10 @@ doctrine:
                 class: App\Infrastructure\Symfony\Doctrine\Type\DoctrineUserStatus
             CompanyId:
                 class: App\Infrastructure\Symfony\Doctrine\Type\DoctrineCompanyId
+            OrganizationId:
+                class: App\Infrastructure\Symfony\Doctrine\Type\DoctrineOrganizationId
+            UserType:
+                class: App\Infrastructure\Symfony\Doctrine\Type\DoctrineUserType
     orm:
         auto_generate_proxy_classes: true
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -18,6 +22,11 @@ doctrine:
                 type: xml
                 dir: '%kernel.project_dir%/src/Infrastructure/Symfony/Doctrine/Mapping/User'
                 prefix: App\Domain\Model\User
+            Organization:
+                is_bundle: false
+                type: xml
+                dir: '%kernel.project_dir%/src/Infrastructure/Symfony/Doctrine/Mapping/Organization'
+                prefix: App\Domain\Model\Organization
             Company:
                 is_bundle: false
                 type: xml

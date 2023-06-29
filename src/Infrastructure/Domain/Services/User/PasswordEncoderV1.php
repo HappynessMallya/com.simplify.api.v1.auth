@@ -53,7 +53,8 @@ class PasswordEncoderV1 implements PasswordEncoder
             $user->password(),
             $user->salt(),
             $user->status(),
-            $user->roles()
+            $user->roles(),
+            $user->getUserType()
         );
 
         return $this->passwordEncoder->encodePassword($user, $user->getPassword());
