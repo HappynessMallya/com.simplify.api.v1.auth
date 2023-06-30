@@ -8,6 +8,7 @@ use App\Application\User\Command\UserChangePasswordCommand;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\User\PasswordEncoder;
+use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -77,6 +78,11 @@ class UserChangePasswordHandler
 
         $user->setPassword($passwordEncoded);
         $user->changeStatus(UserStatus::CHANGE_PASSWORD());
+        $user->update(
+            [
+                'updatedAt' => new DateTime('now'),
+            ]
+        );
 
         return $this->userRepository->save($user);
     }

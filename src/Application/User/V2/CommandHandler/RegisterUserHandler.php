@@ -105,7 +105,7 @@ class RegisterUserHandler
 
             if (empty($user)) {
                 $this->logger->critical(
-                    'User who register not found by ID',
+                    'User who register could not be found',
                     [
                         'user_id' => $userIdWhoRegister->toString(),
                         'method' => __METHOD__,
@@ -113,7 +113,7 @@ class RegisterUserHandler
                 );
 
                 throw new Exception(
-                    'User who register not found by ID: ' . $userIdWhoRegister->toString(),
+                    'User who register could not be found',
                     Response::HTTP_NOT_FOUND
                 );
             }
@@ -168,7 +168,7 @@ class RegisterUserHandler
 
             if (!$isSaved) {
                 $this->logger->critical(
-                    'The user could not be registered',
+                    'User could not be registered',
                     [
                         'company_id' => $user->companyId(),
                         'user_id' => $user->userId(),
@@ -179,7 +179,7 @@ class RegisterUserHandler
                 );
 
                 throw new Exception(
-                    'The user could not be registered',
+                    'User could not be registered',
                     Response::HTTP_INTERNAL_SERVER_ERROR
                 );
             }
@@ -194,19 +194,19 @@ class RegisterUserHandler
                 $company->name()
             );
 
-            $response = $this->sendCredentials->onSendCredentials($request);
-
-            if (!$response->isSuccess()) {
-                $this->logger->critical(
-                    'Error trying to send credentials to client',
-                    [
-                        'company_id' => $company->companyId()->toString(),
-                        'username' => $user->username(),
-                        'error_message' => $response->getErrorMessage(),
-                        'method' => __METHOD__,
-                    ]
-                );
-            }
+//            $response = $this->sendCredentials->onSendCredentials($request);
+//
+//            if (!$response->isSuccess()) {
+//                $this->logger->critical(
+//                    'Error trying to send credentials to client',
+//                    [
+//                        'company_id' => $company->companyId()->toString(),
+//                        'username' => $user->username(),
+//                        'error_message' => $response->getErrorMessage(),
+//                        'method' => __METHOD__,
+//                    ]
+//                );
+//            }
         } catch (Exception $exception) {
             $this->logger->critical(
                 'An internal server error has been occurred',

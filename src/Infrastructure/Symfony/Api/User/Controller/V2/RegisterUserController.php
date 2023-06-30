@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class RegisterUserController extends BaseController
 {
     /**
-     * @Route(path="/register", methods={"POST"})
+     * @Route(path="/", methods={"POST"})
      *
      * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
