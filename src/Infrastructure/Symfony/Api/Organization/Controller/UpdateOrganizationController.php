@@ -54,10 +54,10 @@ class UpdateOrganizationController extends BaseController
             );
         }
 
-        $updated = false;
+        $isUpdated = false;
 
         try {
-            $updated = $this->commandBus->handle($command);
+            $isUpdated = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to update organization',
@@ -78,7 +78,7 @@ class UpdateOrganizationController extends BaseController
             }
         }
 
-        if (!$updated) {
+        if (!$isUpdated) {
             return $this->createApiResponse(
                 [
                     'success' => false,

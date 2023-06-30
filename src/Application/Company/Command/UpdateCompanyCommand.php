@@ -8,47 +8,41 @@ namespace App\Application\Company\Command;
  * Class UpdateCompanyCommand
  * @package App\Application\Company\Command
  */
-final class UpdateCompanyCommand
+class UpdateCompanyCommand
 {
-    /**
-     * @var string
-     */
+    /** @var string|null */
+    private ?string $organizationId;
+
+    /** @var string */
     private string $companyId;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $name;
 
-    /**
-     * @var string
-     */
-    private string $tin;
+    /** @var string|null */
+    private ?string $email;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
+    private ?string $phone;
+
+    /** @var string|null */
     private ?string $address;
 
     /**
-     * @var string|null
+     * @return string|null
      */
-    private ?string $email;
+    public function getOrganizationId(): ?string
+    {
+        return empty($this->organizationId) ? null : $this->organizationId;
+    }
 
     /**
-     * @var string|null
+     * @param string|null $organizationId
      */
-    private ?string $phone;
-
-    /**
-     * @var bool|null
-     */
-    private ?bool $enable;
-
-    /**
-     * @var array|null
-     */
-    private ?array $traRegistration;
+    public function setOrganizationId(?string $organizationId): void
+    {
+        $this->organizationId = $organizationId;
+    }
 
     /**
      * @return string
@@ -83,43 +77,11 @@ final class UpdateCompanyCommand
     }
 
     /**
-     * @return string
-     */
-    public function getTin(): ?string
-    {
-        return $this->tin;
-    }
-
-    /**
-     * @param string $tin
-     */
-    public function setTin(string $tin): void
-    {
-        $this->tin = $tin;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    /**
-     * @param string $address
-     */
-    public function setAddress(string $address): void
-    {
-        $this->address = $address;
-    }
-
-    /**
      * @return string|null
      */
     public function getEmail(): ?string
     {
-        return $this->email;
+        return empty($this->email) ? null : $this->email;
     }
 
     /**
@@ -135,7 +97,7 @@ final class UpdateCompanyCommand
      */
     public function getPhone(): ?string
     {
-        return $this->phone;
+        return empty($this->phone) ? null : $this->phone;
     }
 
     /**
@@ -147,34 +109,18 @@ final class UpdateCompanyCommand
     }
 
     /**
-     * @return array|null
+     * @return string|null
      */
-    public function getTraRegistration(): ?array
+    public function getAddress(): ?string
     {
-        return $this->traRegistration;
+        return empty($this->address) ? null : $this->address;
     }
 
     /**
-     * @return bool|null
+     * @param string $address
      */
-    public function getEnable(): ?bool
+    public function setAddress(string $address): void
     {
-        return $this->enable ?? true;
-    }
-
-    /**
-     * @param bool|null $enable
-     */
-    public function setEnable(?bool $enable): void
-    {
-        $this->enable = $enable ?? true;
-    }
-
-    /**
-     * @param string|null $traRegistration
-     */
-    public function setTraRegistration(?string $traRegistration): void
-    {
-        $this->traRegistration = json_decode($traRegistration, true);
+        $this->address = $address;
     }
 }
