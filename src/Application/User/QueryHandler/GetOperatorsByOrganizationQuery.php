@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\User\QueryHandler;
 
 /**
  * Class GetOperatorsByOrganizationIdQuery
  * @package App\Application\User\V2\QueryHandler
  */
-class GetOperatorsByOrganizationIdQuery
+class GetOperatorsByOrganizationQuery
 {
     /** @var string */
     protected string $organizationId;

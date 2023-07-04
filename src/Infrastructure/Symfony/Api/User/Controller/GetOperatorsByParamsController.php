@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
+namespace App\Infrastructure\Symfony\Api\User\Controller;
 
-use App\Application\User\V2\QueryHandler\GetOperatorsByParamsHandler;
+use App\Application\User\QueryHandler\GetOperatorsByParamsHandler;
 use App\Application\User\V2\QueryHandler\GetOperatorsByParamsQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
@@ -14,7 +14,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**

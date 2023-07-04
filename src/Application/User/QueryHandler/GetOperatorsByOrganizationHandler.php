@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\User\QueryHandler;
 
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Organization\OrganizationId;
@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class GetOperatorsByOrganizationIdHandler
  * @package App\Application\User\V2\QueryHandler
  */
-class GetOperatorsByOrganizationIdHandler
+class GetOperatorsByOrganizationHandler
 {
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -52,11 +52,11 @@ class GetOperatorsByOrganizationIdHandler
     }
 
     /**
-     * @param GetOperatorsByOrganizationIdQuery $query
+     * @param GetOperatorsByOrganizationQuery $query
      * @return array
      * @throws Exception
      */
-    public function __invoke(GetOperatorsByOrganizationIdQuery $query): array
+    public function __invoke(GetOperatorsByOrganizationQuery $query): array
     {
         $organizationId = OrganizationId::fromString($query->getOrganizationId());
         $userType = UserType::byName($query->getUserType());

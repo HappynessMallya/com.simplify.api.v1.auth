@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
+namespace App\Infrastructure\Symfony\Api\User\Controller;
 
 use App\Application\User\V2\QueryHandler\GetOperatorByIdHandler;
 use App\Application\User\V2\QueryHandler\GetOperatorByIdQuery;
@@ -13,7 +13,6 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
