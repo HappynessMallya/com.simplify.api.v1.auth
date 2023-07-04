@@ -98,7 +98,8 @@ class RegisterUserHandler
                 );
 
                 throw new Exception(
-                    'User who is making the registration is neither owner nor admin: ' . $userTypeWhoRegister->getValue(),
+                    'User who is making the registration is neither owner nor admin: ' .
+                        $userTypeWhoRegister->getValue(),
                     Response::HTTP_BAD_REQUEST
                 );
             }

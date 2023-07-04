@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Organization\Controller;
 
-
 use App\Application\Organization\QueryHandler\GetCompaniesByParamsHandler;
 use App\Application\Organization\QueryHandler\GetCompaniesByParamsQuery;
 use App\Infrastructure\Symfony\Api\BaseController;

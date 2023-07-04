@@ -133,7 +133,9 @@ class DoctrineCompanyRepository implements CompanyRepository
             WHERE c.organizationId = '$organizationId'",
         );
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }
@@ -164,7 +166,9 @@ class DoctrineCompanyRepository implements CompanyRepository
 
         $result = $this->em->createQuery($sql);
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }

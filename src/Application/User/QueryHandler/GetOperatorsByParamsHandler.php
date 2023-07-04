@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\User\QueryHandler;
 
-
 use App\Application\User\Query\GetOperatorsByParamsQuery;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Organization\OrganizationId;
@@ -27,13 +26,13 @@ class GetOperatorsByParamsHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var UserRepository  */
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /** @var CompanyByUserRepository  */
+    /** @var CompanyByUserRepository */
     private CompanyByUserRepository $companyByUserRepository;
 
     /**

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Company\CompanyId;
-use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserId;
 use App\Domain\Repository\CompanyByUserRepository;
 use Doctrine\DBAL\Connection;
@@ -48,7 +49,9 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
             ]
         )->fetchAllAssociative();
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result;
     }
@@ -76,7 +79,9 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
             ]
         )->fetchAllAssociative();
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result;
     }

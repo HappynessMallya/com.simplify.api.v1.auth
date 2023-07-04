@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Symfony\Api\User\Form;
 
 use App\Application\User\Command\UserChangePasswordByAdminCommand;

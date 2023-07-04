@@ -116,7 +116,9 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
         $sql = sprintf(/** @lang sql */
             'SELECT u FROM \App\Domain\Model\User\User u
             WHERE u.status in (\'%s\', \'%s\', \'%s\')',
-            UserStatus::ACTIVE, UserStatus::CHANGE_PASSWORD, UserStatus::SUSPENDED
+            UserStatus::ACTIVE,
+            UserStatus::CHANGE_PASSWORD,
+            UserStatus::SUSPENDED
         );
 
         if (!empty($criteria)) {
@@ -132,7 +134,9 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
 
         $result = $this->em->createQuery($sql);
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }

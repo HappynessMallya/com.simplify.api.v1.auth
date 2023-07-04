@@ -17,6 +17,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
+/**
+ * Class GetCompaniesByOrganizationIdController
+ * @package App\Infrastructure\Symfony\Api\Organization\Controller
+ */
 class GetCompaniesByOrganizationIdController extends BaseController
 {
     /**
@@ -26,6 +30,7 @@ class GetCompaniesByOrganizationIdController extends BaseController
      * @param TokenStorageInterface $jwtStorage
      * @param Request $request
      * @param LoggerInterface $logger
+     * @param GetCompaniesByOrganizationIdHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */

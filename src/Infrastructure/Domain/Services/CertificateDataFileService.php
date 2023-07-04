@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Domain\Services;
 
 use App\Domain\Services\CertificateDataService;
@@ -9,19 +11,29 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 
-
+/**
+ * Class CertificateDataFileService
+ * @package App\Infrastructure\Domain\Services
+ */
 class CertificateDataFileService implements CertificateDataService
 {
-
     public const CERTIFICATE_PASSWORD = 'Kimara20';
 
     private SerializerInterface $serializer;
 
-    public function __construct(SerializerInterface $serializer)
-    {
+    /**
+     * @param SerializerInterface $serializer
+     */
+    public function __construct(
+        SerializerInterface $serializer
+    ) {
         $this->serializer = $serializer;
     }
 
+    /**
+     * @param string $filepath
+     * @return string
+     */
     public function createCertificateData(string $filepath): string
     {
         $filesystem = new Filesystem();
@@ -30,7 +42,7 @@ class CertificateDataFileService implements CertificateDataService
         // Path to the PFX file
         $pfxFilePath = $filepath;
 
-        $filepathWithoutExtension = explode('.',$pfxFilePath);
+        $filepathWithoutExtension = explode('.', $pfxFilePath);
 
         $dataFilePath = $filepathWithoutExtension[0] . '.data';
 
@@ -54,6 +66,11 @@ class CertificateDataFileService implements CertificateDataService
         return $dataFilePath;
     }
 
+    /**
+     * @param Filesystem $filesystem
+     * @param string $pfxFilePath
+     * @return string
+     */
     private function convertPfxToPem(Filesystem $filesystem, string $pfxFilePath): string
     {
         $pemFilePath = $pfxFilePath . '.pem';
@@ -81,6 +98,10 @@ class CertificateDataFileService implements CertificateDataService
         return $pemFilePath;
     }
 
+    /**
+     * @param string $pemFilePath
+     * @return array
+     */
     private function extractCertificateInfo(string $pemFilePath): array
     {
 
@@ -90,7 +111,7 @@ class CertificateDataFileService implements CertificateDataService
             '-in',
             $pemFilePath,
             '-noout',
-            '-serial'
+            '-serial',
         ];
 
         $process = new Process($command);
@@ -109,6 +130,9 @@ class CertificateDataFileService implements CertificateDataService
         ];
     }
 
+    /**
+     * @return SerializerInterface
+     */
     private function getSerializer(): SerializerInterface
     {
         // Configure the serializer if needed
