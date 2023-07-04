@@ -7,6 +7,8 @@ namespace App\Infrastructure\Symfony\Api\Company\Controller;
 use App\Application\Company\Command\CreateCompanyCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Company\Form\CreateCompanyType;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,47 +26,63 @@ class CreateCompanyController extends BaseController
      *
      * @param Request $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function createCompanyAction(Request $request): JsonResponse
     {
-        try {
-            $command = new CreateCompanyCommand();
-            $form = $this->createForm(CreateCompanyType::class, $command);
-            $this->processForm($request, $form);
+        $command = new CreateCompanyCommand();
+        $form = $this->createForm(CreateCompanyType::class, $command);
+        $this->processForm($request, $form);
 
-            if ($form->isValid() === false) {
-                return $this->createApiResponse(
-                    [
-                        'errors' => $this->getValidationErrors($form),
-                    ],
-                    Response::HTTP_BAD_REQUEST
-                );
-            }
-
-            $companyId = $this->commandBus->handle($command);
-
-            if (!empty($companyId)) {
-                return $this->createApiResponse(
-                    [
-                        'company_id' => $companyId,
-                    ],
-                    Response::HTTP_CREATED
-                );
-            }
-        } catch (Exception $exception) {
+        if ($form->isValid() === false) {
             $this->logger->critical(
-                $exception->getMessage(),
+                'Invalid data',
                 [
+                    'data' => $form->getData(),
+                    'errors' => $this->getValidationErrors($form),
                     'method' => __METHOD__,
                 ]
+            );
+
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'errors' => $this->getValidationErrors($form),
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        try {
+            $companyId = $this->commandBus->handle($command);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                'An internal error has been occurred',
+                [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error' => 'An internal error has been occurred. ' . $exception->getMessage(),
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
         return $this->createApiResponse(
             [
-                'errors' => 'Company no created',
+                'success' => true,
+                'company_id' => $companyId,
+                'created_at' => (
+                    new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
+                )->format('Y-m-d H:i:s')
             ],
-            Response::HTTP_FORBIDDEN
+            Response::HTTP_CREATED
         );
     }
 }

@@ -12,6 +12,7 @@ use App\Domain\Repository\CompanyRepository;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class CreateCompanyHandler
@@ -43,8 +44,26 @@ class CreateCompanyHandler
      * @return string|null
      * @throws Exception
      */
-    public function handle(CreateCompanyCommand $command): ?string
+    public function handle(CreateCompanyCommand $command): string
     {
+        $companyRegistered = $this->companyRepository->findOneBy(
+            [
+                'tin' => $command->getTin(),
+            ]
+        );
+
+        if (!empty($companyRegistered)) {
+            $this->logger->critical(
+                'Company has pre-registered with the TIN number provided',
+                [
+                    'tin' => $command->getTin(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception('Company has pre-registered with the TIN number provided');
+        }
+
         $companyId = CompanyId::generate();
 
         $company = Company::create(
@@ -64,19 +83,33 @@ class CreateCompanyHandler
             $isSaved = $this->companyRepository->save($company);
         } catch (Exception $exception) {
             $this->logger->critical(
-                $exception->getMessage(),
+                'Company could not be registered',
                 [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
 
-            throw new Exception($exception->getMessage());
+            throw new Exception(
+                $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         if ($isSaved) {
+            $this->logger->debug(
+                'Company registered successfully',
+                [
+                    'company_id' => $companyId->toString(),
+                    'name' => $company->name(),
+                    'tin' => $company->tin(),
+                ]
+            );
+
             return $companyId->toString();
         }
 
-        return null;
+        return '';
     }
 }

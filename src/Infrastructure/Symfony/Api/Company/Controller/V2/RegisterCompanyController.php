@@ -10,7 +10,6 @@ use App\Infrastructure\Symfony\Api\Company\Controller\V2\FormType\RegisterCompan
 use DateTime;
 use DateTimeZone;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,18 +25,17 @@ class RegisterCompanyController extends BaseController
      * @Route(path="/", methods={"POST"})
      *
      * @param Request $request
-     * @param LoggerInterface $logger
      * @return JsonResponse
      * @throws Exception
      */
-    public function action(Request $request, LoggerInterface $logger): JsonResponse
+    public function registerCompanyAction(Request $request): JsonResponse
     {
         $command = new RegisterCompanyCommand();
         $form = $this->createForm(RegisterCompanyType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
-            $logger->critical(
+            $this->logger->critical(
                 'Invalid data',
                 [
                     'data' => $form->getData(),

@@ -19,6 +19,10 @@ use Symfony\Component\Validator\Constraints\Regex;
  */
 class UpdateCompanyType extends AbstractType
 {
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -36,7 +40,7 @@ class UpdateCompanyType extends AbstractType
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
                             ]
                         ),
-                    ]
+                    ],
                 ]
             )
             ->add(
@@ -45,8 +49,8 @@ class UpdateCompanyType extends AbstractType
                 [
                     'constraints' => [
                         new NotBlank(),
-                        new Email()
-                    ]
+                        new Email(),
+                    ],
                 ]
             )
             ->add(
@@ -58,7 +62,7 @@ class UpdateCompanyType extends AbstractType
                         new Regex(
                             [
                                 'pattern' => '/^[0-9]*$/',
-                                'message' => 'This value should be numeric.'
+                                'message' => 'This value should be numeric.',
                             ]
                         ),
                         new Length(
@@ -69,7 +73,7 @@ class UpdateCompanyType extends AbstractType
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
                             ]
                         ),
-                    ]
+                    ],
                 ]
             )
             ->add(
@@ -86,7 +90,7 @@ class UpdateCompanyType extends AbstractType
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
                             ]
                         ),
-                    ]
+                    ],
                 ]
             )
             ->add(
@@ -101,8 +105,8 @@ class UpdateCompanyType extends AbstractType
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
                             ]
-                        )
-                    ]
+                        ),
+                    ],
                 ]
             )
             ->add(
@@ -118,19 +122,24 @@ class UpdateCompanyType extends AbstractType
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
                             ]
-                        )
-                    ]
+                        ),
+                    ],
                 ]
             );
     }
 
+    /**
+     * @param OptionsResolver $resolver
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => UpdateCompanyCommand::class,
-            'csrf_protection' => false,
-            'is_edit' => false,
-            'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}'
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => UpdateCompanyCommand::class,
+                'csrf_protection' => false,
+                'is_edit' => false,
+                'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}',
+            ]
+        );
     }
 }

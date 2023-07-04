@@ -8,21 +8,18 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-<<<<<<< HEAD
 use Symfony\Component\Validator\Constraints as Assert;
-=======
-use Symfony\Component\Validator\Constraints\Choice;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
 
 /**
  * Class UpdateCompanyType
  * @package App\Infrastructure\Symfony\Api\Company\Form
  */
-final class UpdateCompanyType extends AbstractType
+class UpdateCompanyType extends AbstractType
 {
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -31,7 +28,6 @@ final class UpdateCompanyType extends AbstractType
                 TextType::class,
                 [
                     'constraints' => [
-<<<<<<< HEAD
                         new Assert\Length(
                             [
                                 'min' => 36,
@@ -40,21 +36,13 @@ final class UpdateCompanyType extends AbstractType
                             ]
                         ),
                     ],
-=======
-                        new NotBlank(),
-                    ]
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 ]
             )
             ->add(
                 'name',
                 TextType::class,
             )
-<<<<<<< HEAD
             ->add('email', EmailType::class, ['constraints' => new Assert\Email()])
-=======
-             ->add('email', EmailType::class, ['constraints' => new Email()])
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
             ->add(
                 'phone',
                 TextType::class
@@ -62,12 +50,8 @@ final class UpdateCompanyType extends AbstractType
             ->add(
                 'address',
                 TextType::class
-<<<<<<< HEAD
             )
         ;
-=======
-            );
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
     }
 
     /**

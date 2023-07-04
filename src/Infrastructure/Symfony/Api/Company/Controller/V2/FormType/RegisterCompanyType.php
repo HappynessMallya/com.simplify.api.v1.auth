@@ -49,7 +49,6 @@ class RegisterCompanyType extends AbstractType
                         new Assert\NotBlank(),
                         new Assert\Length(
                             [
-<<<<<<< HEAD
                                 'min' => 2,
                                 'max' => 200,
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
@@ -57,15 +56,6 @@ class RegisterCompanyType extends AbstractType
                             ]
                         ),
                     ],
-=======
-                                'min' => 1,
-                                'max' => 200,
-                                'minMessage' => 'Must be at least {{ limit }} characters long.',
-                                'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
-                            ]
-                        ),
-                    ]
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 ]
             )
             ->add(
@@ -77,7 +67,6 @@ class RegisterCompanyType extends AbstractType
                         new Assert\Regex(
                             [
                                 'pattern' => '/^[0-9]*$/',
-<<<<<<< HEAD
                                 'message' => 'This value should be numeric',
                             ]
                         ),
@@ -90,12 +79,6 @@ class RegisterCompanyType extends AbstractType
                             ]
                         ),
                     ],
-=======
-                                'message' => 'This value should be numeric.',
-                            ]
-                        ),
-                    ]
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 ]
             )
             ->add(
@@ -116,17 +99,12 @@ class RegisterCompanyType extends AbstractType
                         new Assert\Regex(
                             [
                                 'pattern' => '/^[0-9]*$/',
-<<<<<<< HEAD
                                 'message' => 'This value should be numeric.',
-=======
-                                'message' => 'This value should be numeric.'
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
                             ]
                         ),
                         new Assert\Length(
                             [
                                 'min' => 9,
-<<<<<<< HEAD
                                 'max' => 9,
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
@@ -136,46 +114,22 @@ class RegisterCompanyType extends AbstractType
                 ]
             )
             ->add(
-=======
-                                'max' => 15,
-                                'minMessage' => 'Must be at least {{ limit }} characters long.',
-                                'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
-                            ]
-                        ),
-                    ]
-                ]
-            )->add(
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 'address',
                 TextType::class,
                 [
                     'constraints' => [
-<<<<<<< HEAD
-                        new Assert\Length(
-                            [
-                                'min' => 2,
-                                'max' => 200,
-=======
-                        new Assert\Blank(),
                         new Assert\Length(
                             [
                                 'min' => 5,
                                 'max' => 100,
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
                             ]
                         ),
-<<<<<<< HEAD
                     ],
                 ]
             )
             ->add(
-=======
-                    ]
-                ]
-            )->add(
->>>>>>> a0ad8974b085c54779022f85960193829fe75996
                 'serial',
                 TextType::class,
                 [

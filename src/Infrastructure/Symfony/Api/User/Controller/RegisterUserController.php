@@ -60,7 +60,7 @@ class RegisterUserController extends BaseController
             $response = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to register user',
+                'Exception error trying to register new user',
                 [
                     'error_message' => $exception->getMessage(),
                     'error_code' => $exception->getCode(),
@@ -71,7 +71,7 @@ class RegisterUserController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Exception error trying to register user. ' . $exception->getMessage(),
+                    'error_message' => 'Exception error trying to register new user. ' . $exception->getMessage(),
                 ],
                 $exception->getCode()
             );

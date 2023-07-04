@@ -120,7 +120,7 @@ class RegisterUserHandler
 
             $userId = UserId::generate();
             $companies = $command->getCompanies();
-            $userRole = !empty($command->getRole()) ? UserRole::byName($command->getRole()) : UserRole::USER();
+            $userRole = empty($command->getRole()) ? UserRole::USER() : UserRole::byName($command->getRole());
             $password = empty($command->getPassword()) ? base64_encode($this::NEW_PASSWORD) : $command->getPassword();
 
             foreach ($companies as $providedCompanyId) {
@@ -194,19 +194,19 @@ class RegisterUserHandler
                 $company->name()
             );
 
-//            $response = $this->sendCredentials->onSendCredentials($request);
-//
-//            if (!$response->isSuccess()) {
-//                $this->logger->critical(
-//                    'Error trying to send credentials to client',
-//                    [
-//                        'company_id' => $company->companyId()->toString(),
-//                        'username' => $user->username(),
-//                        'error_message' => $response->getErrorMessage(),
-//                        'method' => __METHOD__,
-//                    ]
-//                );
-//            }
+            $response = $this->sendCredentials->onSendCredentials($request);
+
+            if (!$response->isSuccess()) {
+                $this->logger->critical(
+                    'Error trying to send credentials to client',
+                    [
+                        'company_id' => $company->companyId()->toString(),
+                        'username' => $user->username(),
+                        'error_message' => $response->getErrorMessage(),
+                        'method' => __METHOD__,
+                    ]
+                );
+            }
         } catch (Exception $exception) {
             $this->logger->critical(
                 'An internal server error has been occurred',

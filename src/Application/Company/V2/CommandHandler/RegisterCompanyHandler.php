@@ -81,7 +81,7 @@ class RegisterCompanyHandler
                 'Company has pre-registered with the TIN number provided',
                 [
                     'tin' => $command->getTin(),
-                    'method' => __METHOD__
+                    'method' => __METHOD__,
                 ]
             );
 
@@ -105,19 +105,6 @@ class RegisterCompanyHandler
 
         try {
             $isSaved = $this->companyRepository->save($company);
-
-            if ($isSaved) {
-                $this->logger->debug(
-                    'Company registered successfully',
-                    [
-                        'company_id' => $companyId->toString(),
-                        'name' => $company->name(),
-                        'tin' => $company->tin(),
-                    ]
-                );
-
-                return $companyId->toString();
-            }
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Company could not be registered',
@@ -132,6 +119,19 @@ class RegisterCompanyHandler
                 $exception->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
+        }
+
+        if ($isSaved) {
+            $this->logger->debug(
+                'Company registered successfully',
+                [
+                    'company_id' => $companyId->toString(),
+                    'name' => $company->name(),
+                    'tin' => $company->tin(),
+                ]
+            );
+
+            return $companyId->toString();
         }
 
         return '';
