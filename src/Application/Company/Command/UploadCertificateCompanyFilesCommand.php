@@ -4,24 +4,26 @@ declare(strict_types=1);
 
 namespace App\Application\Company\Command;
 
+/**
+ * Class UploadCertificateCompanyFilesCommand
+ * @package App\Application\Company\Command
+ */
 class UploadCertificateCompanyFilesCommand
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $tin;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private array $companyFiles;
 
     /**
      * @param string $tin
      * @param array $companyFiles
      */
-    public function __construct(string $tin, array $companyFiles)
-    {
+    public function __construct(
+        string $tin,
+        array $companyFiles
+    ) {
         $this->tin = $tin;
         $this->companyFiles = $companyFiles;
     }

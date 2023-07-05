@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Company\CommandHandler;
 
 use App\Application\Company\Command\RequestAuthenticationTraCommand;
@@ -7,24 +9,26 @@ use App\Domain\Services\CompanyStatusOnTraRequest;
 use App\Domain\Services\TraIntegrationService;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Class RequestAuthenticationTraHandler
+ * @package App\Application\Company\CommandHandler
+ */
 class RequestAuthenticationTraHandler
 {
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /**
-     * @var TraIntegrationService
-     */
+    /** @var TraIntegrationService */
     private TraIntegrationService $traIntegrationService;
 
     /**
      * @param LoggerInterface $logger
      * @param TraIntegrationService $traIntegrationService
      */
-    public function __construct(LoggerInterface $logger, TraIntegrationService $traIntegrationService)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        TraIntegrationService $traIntegrationService
+    ) {
         $this->logger = $logger;
         $this->traIntegrationService = $traIntegrationService;
     }
@@ -74,7 +78,7 @@ class RequestAuthenticationTraHandler
                     'company_id' => $companyStatusOnTraRequest->getCompanyId(),
                     'tin' => $companyStatusOnTraRequest->getTin(),
                     'error_message' => $companyStatusOnTraResponse->getErrorMessage(),
-                    'method' => __METHOD__
+                    'method' => __METHOD__,
                 ]
             );
         }

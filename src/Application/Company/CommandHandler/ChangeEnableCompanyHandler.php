@@ -5,27 +5,32 @@ declare(strict_types=1);
 namespace App\Application\Company\CommandHandler;
 
 use App\Application\Company\Command\ChangeEnableCompanyCommand;
-use App\Application\Company\Command\ChangeStatusCompanyCommand;
 use App\Domain\Model\Company\CompanyId;
-use App\Domain\Model\Company\CompanyStatus;
 use App\Domain\Repository\CompanyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class ChangeEnableCompanyHandler
+ * @package App\Application\Company\CommandHandler
+ */
 class ChangeEnableCompanyHandler
 {
-    /** @var LoggerInterface  */
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
     /**
      * @param LoggerInterface $logger
      * @param CompanyRepository $companyRepository
      */
-    public function __construct(LoggerInterface $logger, CompanyRepository $companyRepository)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        CompanyRepository $companyRepository
+    ) {
         $this->logger = $logger;
         $this->companyRepository = $companyRepository;
     }
@@ -49,7 +54,7 @@ class ChangeEnableCompanyHandler
                 ]
             );
 
-            throw new Exception('Company could not be found', 404);
+            throw new Exception('Company could not be found', Response::HTTP_NOT_FOUND);
         }
 
         if (!$command->isEnable()) {
@@ -71,7 +76,10 @@ class ChangeEnableCompanyHandler
                 ]
             );
 
-            throw new Exception('An internal error has been occurred when trying change enable company');
+            throw new Exception(
+                'An internal error has been occurred when trying change enable company',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

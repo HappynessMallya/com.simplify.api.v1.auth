@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Company\CommandHandler;
 
 use App\Application\Company\Command\RegisterCompanyToTraCommand;
@@ -7,17 +9,18 @@ use App\Domain\Services\RegistrationCompanyToTraRequest;
 use App\Domain\Services\TraIntegrationService;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class RegisterCompanyToTraHandler
+ * @package App\Application\Company\CommandHandler
+ */
 class RegisterCompanyToTraHandler
 {
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /**
-     * @var TraIntegrationService
-     */
+    /** @var TraIntegrationService */
     private TraIntegrationService $traIntegrationService;
 
     /**
@@ -57,7 +60,11 @@ class RegisterCompanyToTraHandler
                 ]
             );
 
-            throw new Exception('An error has been occurred when attempt registration company to TRA', 500);
+            throw new Exception(
+                'An error has been occurred when attempt registration company to TRA: ' .
+                    $registrationCompanyResponse->getErrorMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         $this->logger->debug(

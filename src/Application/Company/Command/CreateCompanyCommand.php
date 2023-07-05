@@ -10,34 +10,22 @@ namespace App\Application\Company\Command;
  */
 class CreateCompanyCommand
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected string $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected string $tin;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected ?string $address;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected ?string $email;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected ?string $phone;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected ?string $serial;
 
     /**

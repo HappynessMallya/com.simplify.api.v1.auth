@@ -9,19 +9,28 @@ use App\Domain\Model\Company\CompanyStatus;
 use App\Domain\Repository\CompanyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class ChangeStatusCompanyHandler
+ * @package App\Application\Company\CommandHandler
+ */
 class ChangeStatusCompanyHandler
 {
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
     /**
      * @param LoggerInterface $logger
      * @param CompanyRepository $companyRepository
      */
-    public function __construct(LoggerInterface $logger, CompanyRepository $companyRepository)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        CompanyRepository $companyRepository
+    ) {
         $this->logger = $logger;
         $this->companyRepository = $companyRepository;
     }
@@ -33,18 +42,27 @@ class ChangeStatusCompanyHandler
      */
     public function handle(ChangeStatusCompanyCommand $command): void
     {
-        $company = $this->companyRepository->findOneBy([ 'tin' => $command->getTin()]);
+        $company = $this->companyRepository->findOneBy(
+            [
+                'tin' => $command->getTin(),
+            ]
+        );
+
         $status = CompanyStatus::byValue($command->getStatus());
 
         if (empty($company)) {
             $this->logger->critical(
-                'Company not found',
+                'Company could not be found',
                 [
                     'tin' => $command->getTin(),
                     'method' => __METHOD__,
                 ]
             );
-            throw new Exception('Company not found');
+
+            throw new Exception(
+                'Company could not be found',
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         if (CompanyStatus::byValue($company->companyStatus())->sameValueAs($status)) {
@@ -58,7 +76,10 @@ class ChangeStatusCompanyHandler
                 ]
             );
 
-            throw new Exception('The company already has the same status');
+            throw new Exception(
+                'The company already has the same status',
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         $company->updateCompanyStatus($status);

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Application\Company\Command;
 
+/**
+ * Class ChangeStatusCompanyCommand
+ * @package App\Application\Company\Command
+ */
 class ChangeStatusCompanyCommand
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $tin;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $status;
 
     /**

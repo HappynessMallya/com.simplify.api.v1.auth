@@ -10,6 +10,7 @@ use App\Domain\Repository\CompanyRepository;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
@@ -28,7 +29,6 @@ class CompanyTraRegistrationHandler
     private CompanyRepository $companyRepository;
 
     /**
-     * CompanyTraRegistrationHandler constructor
      * @param LoggerInterface $logger
      * @param MessageBusInterface $messageBus
      * @param CompanyRepository $companyRepository
@@ -51,26 +51,34 @@ class CompanyTraRegistrationHandler
     public function handle(CompanyTraRegistrationCommand $command): ?bool
     {
         $isSaved = false;
-        $company = $this->companyRepository->findOneBy(['tin' => $command->getTin()]);
+
+        $company = $this->companyRepository->findOneBy(
+            [
+                'tin' => $command->getTin(),
+            ]
+        );
 
         if (empty($company)) {
             $this->logger->critical(
-                'Company not found by TIN',
+                'Company could not be found by TIN',
                 [
                     'tin' => $command->getTin(),
                     'method' => __METHOD__,
                 ]
             );
 
-            throw new Exception('Company not found by TIN: ' . $command->getTin(), 404);
+            throw new Exception(
+                'Company not found by TIN: ' . $command->getTin(),
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         $company->updateTraRegistration(json_decode($command->getTraRegistration(), true));
         $company->setUpdatedAt(new DateTime('now'));
 
-        $isSaved = $this->companyRepository->save($company);
-
         try {
+            $isSaved = $this->companyRepository->save($company);
+
             $dto = new VerifyReceiptCodeCommand(
                 $company->companyId()->toString(),
                 json_decode($command->getTraRegistration(), true)['RECEIPTCODE']
@@ -83,6 +91,17 @@ class CompanyTraRegistrationHandler
                 [
                     'tin' => $command->getTin(),
                     'method' => __METHOD__,
+                ]
+            );
+        }
+
+        if ($isSaved) {
+            $this->logger->debug(
+                'Company updated successfully',
+                [
+                    'company_id' => $company->companyId()->toString(),
+                    'name' => $company->name(),
+                    'tin' => $company->tin(),
                 ]
             );
         }

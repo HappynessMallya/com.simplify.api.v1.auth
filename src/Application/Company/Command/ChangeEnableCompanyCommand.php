@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Application\Company\Command;
 
+/**
+ * Class ChangeEnableCompanyCommand
+ * @package App\Application\Company\Command
+ */
 class ChangeEnableCompanyCommand
 {
     /** @var string  */
     private string $companyId;
 
-    /** @var bool  */
+    /** @var bool */
     private bool $enable;
 
     /**

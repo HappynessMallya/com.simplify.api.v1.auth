@@ -1,15 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Company\Command;
 
+/**
+ * Class RegisterCompanyToTraCommand
+ * @package App\Application\Company\Command
+ */
 class RegisterCompanyToTraCommand
 {
+    /** @var string */
     private string $tin;
 
+    /** @var string */
     private string $certificateKey;
 
+    /** @var string */
     private string $certificateSerial;
 
+    /** @var string */
     private string $certificatePassword;
 
     /**

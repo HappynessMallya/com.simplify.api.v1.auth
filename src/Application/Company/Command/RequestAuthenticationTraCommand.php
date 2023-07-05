@@ -1,27 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Application\Company\Command;
 
+/**
+ * Class RequestAuthenticationTraCommand
+ * @package App\Application\Company\Command
+ */
 class RequestAuthenticationTraCommand
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $companyId;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $tin;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $username;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $password;
 
     /**
@@ -30,8 +28,12 @@ class RequestAuthenticationTraCommand
      * @param string $username
      * @param string $password
      */
-    public function __construct(string $companyId, string $tin, string $username, string $password)
-    {
+    public function __construct(
+        string $companyId,
+        string $tin,
+        string $username,
+        string $password
+    ) {
         $this->companyId = $companyId;
         $this->tin = $tin;
         $this->username = $username;

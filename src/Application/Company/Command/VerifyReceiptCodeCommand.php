@@ -17,7 +17,6 @@ class VerifyReceiptCodeCommand
     private string $receiptCode;
 
     /**
-     * VerifyReceiptCodeCommand constructor
      * @param string $companyId
      * @param string $receiptCode
      */

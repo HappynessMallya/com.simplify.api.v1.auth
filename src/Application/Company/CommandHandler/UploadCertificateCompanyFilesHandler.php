@@ -17,41 +17,34 @@ use App\Domain\Repository\CertificateRepository;
 use App\Domain\Services\UploadCertificateToTraRegistrationRequest;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * Class UploadCertificateCompanyFilesHandler
+ * @package App\Application\Company\CommandHandler
+ */
 class UploadCertificateCompanyFilesHandler
 {
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /**
-     * @var TraIntegrationService
-     */
+    /** @var TraIntegrationService */
     private TraIntegrationService $traIntegrationService;
 
-    /**
-     * @var FileUploaderService
-     */
+    /** @var FileUploaderService */
     private FileUploaderService $fileUploaderService;
 
-    /**
-     * @var CompanyRepository
-     */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /**
-     * @var CertificateRepository
-     */
+    /** @var CertificateRepository */
     private CertificateRepository $certificateRepository;
 
-    /**
-     * @var MessageBusInterface
-     */
+    /** @var MessageBusInterface */
     private MessageBusInterface $messageBus;
 
-    /** @var CertificateDataService  */
+    /** @var CertificateDataService */
     private CertificateDataService $certificateDataService;
 
     /**
@@ -61,6 +54,7 @@ class UploadCertificateCompanyFilesHandler
      * @param CertificateRepository $certificateRepository
      * @param TraIntegrationService $traIntegrationService
      * @param MessageBusInterface $messageBus
+     * @param CertificateDataService $certificateDataService
      */
     public function __construct(
         LoggerInterface $logger,
@@ -87,19 +81,28 @@ class UploadCertificateCompanyFilesHandler
      */
     public function __invoke(UploadCertificateCompanyFilesCommand $command): array
     {
-        $files = $command->getCompanyFiles();
         $tin = new TaxIdentificationNumber($command->getTin());
+        $files = $command->getCompanyFiles();
 
-        $company = $this->companyRepository->findOneBy(['tin' => $tin->value()]);
+        $company = $this->companyRepository->findOneBy(
+            [
+                'tin' => $tin->value(),
+            ]
+        );
+
         if (empty($company)) {
             $this->logger->critical(
-                'Company not found',
+                'Company could not be found',
                 [
                     'tin' => $tin->value(),
                     'method' => __METHOD__
                 ]
             );
-            throw new Exception('Company not found');
+
+            throw new Exception(
+                'Company could not be found',
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         $filesPath = [];
@@ -148,7 +151,10 @@ class UploadCertificateCompanyFilesHandler
                     ]
                 );
 
-                throw new Exception('File is not unique');
+                throw new Exception(
+                    'File is not unique',
+                    Response::HTTP_BAD_REQUEST
+                );
             }
 
             $filesPath[] = $filepath;
@@ -165,9 +171,10 @@ class UploadCertificateCompanyFilesHandler
         $uploadCertificateResponse = $this->traIntegrationService->uploadCertificateToTraRegistration(
             $uploadCertificateRequest
         );
+
         if (!$uploadCertificateResponse->isSuccess()) {
             $this->logger->critical(
-                'An error has been occurred when upload the certificate',
+                'An internal error has been occurred when upload the certificate',
                 [
                     'tin' => $tin->value(),
                     'errorMessage' => $uploadCertificateResponse->getErrorMessage(),
@@ -175,7 +182,10 @@ class UploadCertificateCompanyFilesHandler
                 ]
             );
 
-            throw new Exception('An error has been occurred when upload the certificate', 500);
+            throw new Exception(
+                'An internal error has been occurred when upload the certificate',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
 
@@ -184,13 +194,13 @@ class UploadCertificateCompanyFilesHandler
                 $certificateValues['tin'],
                 $certificateValues['certificateKey'],
                 $certificateValues['certificateSerial'],
-                $certificateValues['certificatePassword'],
+                $certificateValues['certificatePassword']
             );
 
             $this->messageBus->dispatch($dto);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'An error has been occurred when attempt register company on TRA',
+                'An internal error has been occurred when attempt register company on TRA',
                 [
                     'tin' => $tin->value(),
                     'code' => $exception->getCode(),
@@ -199,12 +209,15 @@ class UploadCertificateCompanyFilesHandler
                 ]
             );
 
-            throw new Exception('An error has been occurred when attempt register company on TRA');
+            throw new Exception(
+                'An internal error has been occurred when attempt register company on TRA',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return [
             'tin' => $tin->value(),
-            'filesPath' => $filesPath
-        ] ;
+            'filesPath' => $filesPath,
+        ];
     }
 }

@@ -9,6 +9,7 @@ use App\Domain\Services\VerifyReceiptCodeRequest;
 use App\Domain\Services\VerifyReceiptCodeService;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class VerifyReceiptCodeHandler
@@ -23,7 +24,6 @@ class VerifyReceiptCodeHandler
     private VerifyReceiptCodeService $verifyReceiptCode;
 
     /**
-     * VerifyReceiptCodeHandler constructor
      * @param LoggerInterface $logger
      * @param VerifyReceiptCodeService $verifyReceiptCode
      */
@@ -58,7 +58,10 @@ class VerifyReceiptCodeHandler
                 ]
             );
 
-            throw new Exception('Failed trying to verify receipt code', 500);
+            throw new Exception(
+                'Failed trying to verify receipt code',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

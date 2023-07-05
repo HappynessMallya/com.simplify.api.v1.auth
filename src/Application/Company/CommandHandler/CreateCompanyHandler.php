@@ -27,7 +27,6 @@ class CreateCompanyHandler
     private CompanyRepository $companyRepository;
 
     /**
-     * CreateCompanyHandler constructor
      * @param LoggerInterface $logger
      * @param CompanyRepository $companyRepository
      */

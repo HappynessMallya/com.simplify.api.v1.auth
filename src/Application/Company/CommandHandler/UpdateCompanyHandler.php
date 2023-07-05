@@ -23,7 +23,7 @@ class UpdateCompanyHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var OrganizationRepository  */
+    /** @var OrganizationRepository */
     private OrganizationRepository $organizationRepository;
 
     /** @var CompanyRepository */
