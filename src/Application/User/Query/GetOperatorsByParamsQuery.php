@@ -10,7 +10,7 @@ namespace App\Application\User\Query;
  */
 class GetOperatorsByParamsQuery
 {
-    /** @var string  */
+    /** @var string */
     private string $organizationId;
 
     /** @var string */

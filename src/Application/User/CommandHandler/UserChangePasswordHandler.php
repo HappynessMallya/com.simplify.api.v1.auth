@@ -77,9 +77,11 @@ class UserChangePasswordHandler
         $passwordEncoded = $this->passwordEncoder->hashPassword($userEntity);
 
         $user->setPassword($passwordEncoded);
+
         if ($user->status()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
             $user->changeStatus(UserStatus::ACTIVE());
         }
+
         $user->update(
             [
                 'updatedAt' => new DateTime('now'),

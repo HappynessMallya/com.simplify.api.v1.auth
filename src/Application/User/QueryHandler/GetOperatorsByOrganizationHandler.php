@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class GetOperatorsByOrganizationIdHandler
- * @package App\Application\User\V2\QueryHandler
+ * @package App\Application\User\QueryHandler
  */
 class GetOperatorsByOrganizationHandler
 {
@@ -81,7 +81,7 @@ class GetOperatorsByOrganizationHandler
 
         if (empty($companies)) {
             $this->logger->critical(
-                'Operators not found by organization ID',
+                'Operators could not be found by organization',
                 [
                     'user_id' => $organizationId->toString(),
                     'method' => __METHOD__,
@@ -89,7 +89,7 @@ class GetOperatorsByOrganizationHandler
             );
 
             throw new Exception(
-                'Operators not found by organization ID: ' . $organizationId->toString(),
+                'Operators could not be found by organization',
                 Response::HTTP_NOT_FOUND
             );
         }

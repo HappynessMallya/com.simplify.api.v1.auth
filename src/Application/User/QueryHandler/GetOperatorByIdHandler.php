@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class GetOperatorByIdHandler
- * @package App\Application\User\V2\QueryHandler
+ * @package App\Application\User\QueryHandler
  */
 class GetOperatorByIdHandler
 {
@@ -66,7 +66,7 @@ class GetOperatorByIdHandler
             $companiesByOperator = $this->companyByUserRepository->getCompaniesByUser($operatorId);
         } else {
             $this->logger->critical(
-                'User is not an owner',
+                'User is neither owner nor admin',
                 [
                     'user_type' => $userType->getValue(),
                     'method' => __METHOD__,
@@ -74,14 +74,14 @@ class GetOperatorByIdHandler
             );
 
             throw new Exception(
-                'User is not an owner: ' . $userType->getValue(),
+                'User is neither owner nor admin: ' . $userType->getValue(),
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         if (empty($operator)) {
             $this->logger->critical(
-                'Operator not found',
+                'Operator could not be found',
                 [
                     'operator_id' => $operatorId->toString(),
                     'method' => __METHOD__,
@@ -89,14 +89,14 @@ class GetOperatorByIdHandler
             );
 
             throw new Exception(
-                'Operator not found: ' . $operatorId->toString(),
+                'Operator could not be found',
                 Response::HTTP_NOT_FOUND
             );
         }
 
         if (empty($companiesByOperator)) {
             $this->logger->critical(
-                'Companies not found by operator',
+                'Companies could not be found by operator',
                 [
                     'operator_id' => $operatorId->toString(),
                     'method' => __METHOD__,
@@ -104,7 +104,7 @@ class GetOperatorByIdHandler
             );
 
             throw new Exception(
-                'Companies not found by operator: ' . $operatorId->toString(),
+                'Companies could not be found by operator',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -122,7 +122,7 @@ class GetOperatorByIdHandler
                 'address' => $company->address(),
                 'traRegistration' => $company->traRegistration(),
                 'status' => $company->companyStatus(),
-                'createdAt' => $company->createdAt()->format(DATE_ATOM),
+                'createdAt' => $company->createdAt()->format('Y-m-d H:i:s'),
             ];
         }
 
@@ -134,7 +134,7 @@ class GetOperatorByIdHandler
             'mobileNumber' => $operator->mobileNumber(),
             'companies' => $companies,
             'status' => $operator->status()->getValue(),
-            'createdAt' => $operator->createdAt()->format(DATE_ATOM),
+            'createdAt' => $operator->createdAt()->format('Y-m-d H:i:s'),
         ];
     }
 }
