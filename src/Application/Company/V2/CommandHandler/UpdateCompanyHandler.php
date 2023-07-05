@@ -11,20 +11,21 @@ use App\Domain\Repository\OrganizationRepository;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class UpdateCompanyHandler
- * @package App\Application\Company\CommandHandler
+ * @package App\Application\Company\V2\CommandHandler
  */
 class UpdateCompanyHandler
 {
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /** @var LoggerInterface  */
+    /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var OrganizationRepository  */
+    /** @var OrganizationRepository */
     private OrganizationRepository $organizationRepository;
 
     /**
@@ -60,11 +61,14 @@ class UpdateCompanyHandler
                 'Company not found',
                 [
                     'company_id' => $companyId->toString(),
-                    'method' => __METHOD__
+                    'method' => __METHOD__,
                 ]
             );
 
-            throw new Exception('Company could not be found', 404);
+            throw new Exception(
+                'Company could not be found',
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         if (!empty($organizationId) && !$company->organizationId()->sameValueAs($organizationId)) {
@@ -80,7 +84,10 @@ class UpdateCompanyHandler
                     ]
                 );
 
-                throw new Exception('Organization could not be found', 404);
+                throw new Exception(
+                    'Organization could not be found',
+                    Response::HTTP_NOT_FOUND
+                );
             }
 
             $company->setOrganizationId($organizationId);
@@ -92,6 +99,7 @@ class UpdateCompanyHandler
             'address' => $command->getAddress(),
             'phone' => $command->getPhone(),
         ]);
+
         $company->setUpdatedAt(new DateTime('now'));
 
         try {
@@ -113,7 +121,10 @@ class UpdateCompanyHandler
                 ]
             );
 
-            throw new Exception('An internal error has been occurred trying update company', 500);
+            throw new Exception(
+                'An internal error has been occurred trying update company',
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

@@ -85,7 +85,10 @@ class RegisterCompanyHandler
                 ]
             );
 
-            throw new Exception('Company has pre-registered with the TIN number provided');
+            throw new Exception(
+                'Company has pre-registered with the TIN number provided',
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         $companyId = CompanyId::generate();

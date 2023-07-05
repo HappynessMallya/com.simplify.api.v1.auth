@@ -4,38 +4,31 @@ declare(strict_types=1);
 
 namespace App\Application\Company\V2\CommandHandler;
 
+/**
+ * Class RegisterCompanyCommand
+ * @package App\Application\Company\V2\CommandHandler
+ */
 class RegisterCompanyCommand
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $name;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private string $tin;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private ?string $address;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private ?string $email;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private ?string $phone;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private ?string $serial;
 
+    /** @var string|null */
     private ?string $organizationId;
 
     /**

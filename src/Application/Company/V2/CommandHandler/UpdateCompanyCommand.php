@@ -6,7 +6,7 @@ namespace App\Application\Company\V2\CommandHandler;
 
 /**
  * Class UpdateCompanyCommand
- * @package App\Application\Company\Command
+ * @package App\Application\Company\V2\CommandHandler
  */
 class UpdateCompanyCommand
 {
