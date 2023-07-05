@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\Organization\QueryHandler;
 
-use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Company\CompanyStatus;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserType;
-use App\Domain\Repository\CompanyByUserRepository;
 use App\Domain\Repository\CompanyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -17,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class GetCompaniesByParamsHandler
- * @package App\Application\User\V2\QueryHandler
+ * @package App\Application\Organization\QueryHandler
  */
 class GetCompaniesByParamsHandler
 {
@@ -27,22 +25,16 @@ class GetCompaniesByParamsHandler
     /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    /** @var CompanyByUserRepository */
-    private CompanyByUserRepository $companyByUserRepository;
-
     /**
      * @param LoggerInterface $logger
      * @param CompanyRepository $companyRepository
-     * @param CompanyByUserRepository $companyByUserRepository
      */
     public function __construct(
         LoggerInterface $logger,
-        CompanyRepository $companyRepository,
-        CompanyByUserRepository $companyByUserRepository
+        CompanyRepository $companyRepository
     ) {
         $this->logger = $logger;
         $this->companyRepository = $companyRepository;
-        $this->companyByUserRepository = $companyByUserRepository;
     }
 
     /**
@@ -101,7 +93,7 @@ class GetCompaniesByParamsHandler
 
         if (empty($companies)) {
             $this->logger->critical(
-                'Companies not found by user',
+                'Companies not found by the search criteria',
                 [
                     'user_id' => $userId->toString(),
                     'organization_id' => $organizationId->toString(),
@@ -110,7 +102,7 @@ class GetCompaniesByParamsHandler
             );
 
             throw new Exception(
-                'Companies not found by organization: ' . $organizationId->toString(),
+                'Companies not found by the search criteria',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -128,7 +120,7 @@ class GetCompaniesByParamsHandler
                     'address' => $company->address(),
                     'traRegistration' => $company->traRegistration(),
                     'status' => $company->companyStatus(),
-                    'createdAt' => $company->createdAt()->format(DATE_ATOM),
+                    'createdAt' => $company->createdAt()->format('Y-m-d H:i:s'),
                 ];
             }
         }

@@ -46,7 +46,7 @@ class GetOrganizationByIdHandler
 
         if (empty($organization)) {
             $this->logger->critical(
-                'Organization not found',
+                'Organization could not be found',
                 [
                     'organization_id' => $organizationId->toString(),
                     'method' => __METHOD__,
@@ -54,7 +54,7 @@ class GetOrganizationByIdHandler
             );
 
             throw new Exception(
-                'Organization not found: ' . $organizationId->toString(),
+                'Organization could not be found',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -66,7 +66,7 @@ class GetOrganizationByIdHandler
             'ownerEmail' => $organization->getOwnerEmail(),
             'ownerPhoneNumber' => $organization->getOwnerPhoneNumber(),
             'status' => $organization->getStatus()->getValue(),
-            'createdAt' => $organization->getCreatedAt()->format(DATE_ATOM),
+            'createdAt' => $organization->getCreatedAt()->format('Y-m-d H:i:s'),
         ];
     }
 }

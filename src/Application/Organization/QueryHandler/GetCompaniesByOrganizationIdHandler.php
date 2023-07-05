@@ -6,7 +6,6 @@ namespace App\Application\Organization\QueryHandler;
 
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserType;
-use App\Domain\Repository\CompanyByUserRepository;
 use App\Domain\Repository\CompanyRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -74,7 +73,7 @@ class GetCompaniesByOrganizationIdHandler
             );
 
             throw new Exception(
-                'Companies not found by organization: ' . $organizationId->toString(),
+                'Companies not found by organization',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -90,7 +89,7 @@ class GetCompaniesByOrganizationIdHandler
                 'address' => $company->address(),
                 'traRegistration' => $company->traRegistration(),
                 'status' => $company->companyStatus(),
-                'createdAt' => $company->createdAt()->format(DATE_ATOM),
+                'createdAt' => $company->createdAt()->format('Y-m-d H:i:s'),
             ];
         }
 

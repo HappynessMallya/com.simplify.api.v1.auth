@@ -6,11 +6,11 @@ namespace App\Application\Organization\QueryHandler;
 
 /**
  * Class GetCompaniesByOrganizationQuery
- * @package App\Application\User\V2\QueryHandler
+ * @package App\Application\Organization\QueryHandler
  */
 class GetCompaniesByOrganizationQuery
 {
-    /** @var string  */
+    /** @var string */
     protected string $organizationId;
 
     /** @var string */
@@ -24,8 +24,11 @@ class GetCompaniesByOrganizationQuery
      * @param string $userId
      * @param string $userType
      */
-    public function __construct(string $organizationId, string $userId, string $userType)
-    {
+    public function __construct(
+        string $organizationId,
+        string $userId,
+        string $userType
+    ) {
         $this->userId = $userId;
         $this->userType = $userType;
         $this->organizationId = $organizationId;

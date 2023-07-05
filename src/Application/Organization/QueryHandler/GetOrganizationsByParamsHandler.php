@@ -90,7 +90,7 @@ class GetOrganizationsByParamsHandler
                 'ownerEmail' => $organization->getOwnerEmail(),
                 'ownerPhoneNumber' => $organization->getOwnerPhoneNumber() ?? '',
                 'status' => $organization->getStatus()->getValue(),
-                'createdAt' => $organization->getCreatedAt()->format(DATE_ATOM),
+                'createdAt' => $organization->getCreatedAt()->format('Y-m-d H:i:s'),
             ];
         }
 

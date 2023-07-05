@@ -6,11 +6,11 @@ namespace App\Application\Organization\QueryHandler;
 
 /**
  * Class GetCompaniesByParamsQuery
- * @package App\Application\User\V2\QueryHandler
+ * @package App\Application\Organization\QueryHandler
  */
 class GetCompaniesByParamsQuery
 {
-    /** @var string  */
+    /** @var string */
     private string $organizationId;
 
     /** @var string */
