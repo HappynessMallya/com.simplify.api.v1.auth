@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class RegisterUserHandler
- * @package App\Application\ApiUser\CommandHandler
+ * @package App\Application\User\CommandHandler
  */
 class RegisterUserHandler
 {

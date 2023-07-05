@@ -24,8 +24,10 @@ class VerifyUserExistsHandler
      * @param LoggerInterface $logger
      * @param UserRepository $userRepository
      */
-    public function __construct(LoggerInterface $logger, UserRepository $userRepository)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        UserRepository $userRepository
+    ) {
         $this->logger = $logger;
         $this->userRepository = $userRepository;
     }
@@ -37,7 +39,7 @@ class VerifyUserExistsHandler
     public function __invoke(VerifyUserExistsCommand $command): bool
     {
         $criteria = [
-            'email' => $command->getUsername()
+            'email' => $command->getUsername(),
         ];
 
         $user = $this->userRepository->findOneBy($criteria);

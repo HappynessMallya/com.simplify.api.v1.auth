@@ -6,7 +6,7 @@ namespace App\Application\User\Command;
 
 /**
  * Class RegisterUserCommand
- * @package App\Application\ApiUser\Command
+ * @package App\Application\User\Command
  */
 class RegisterUserCommand
 {
