@@ -48,7 +48,7 @@ class GetCompanyByTinHandler
             'email' => $company->email(),
             'address' => $company->address(),
             'traRegistration' => $company->traRegistration(),
-            'createdAt' => $company->createdAt()->format(DATE_ATOM),
+            'createdAt' => $company->createdAt()->format('Y-m-d H:i:s'),
             'status' => $company->companyStatus(),
         ];
     }

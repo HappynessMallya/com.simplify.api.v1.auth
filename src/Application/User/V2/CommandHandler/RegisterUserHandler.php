@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class RegisterUserHandler
- * @package App\Application\ApiUser\CommandHandler
+ * @package App\Application\User\V2\CommandHandler
  */
 class RegisterUserHandler
 {
@@ -231,7 +231,7 @@ class RegisterUserHandler
             'username' => $user->username(),
             'createdAt' => (
                 new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
-            )->format(('Y-m-d H:i:s')),
+            )->format('Y-m-d H:i:s'),
         ];
     }
 }
