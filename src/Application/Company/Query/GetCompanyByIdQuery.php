@@ -8,11 +8,9 @@ namespace App\Application\Company\Query;
  * Class GetCompanyByIdQuery
  * @package App\Application\Company\Query
  */
-final class GetCompanyByIdQuery
+class GetCompanyByIdQuery
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $companyId;
 
     public function __construct(string $companyId)

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Company\QueryHandler;
 
 use App\Application\Company\Query\GetCompanyByTinQuery;
-use App\Domain\Model\Company\Company;
 use App\Domain\Repository\CompanyRepository;
 
 /**
@@ -18,7 +17,6 @@ class GetCompanyByTinHandler
     private CompanyRepository $companyRepository;
 
     /**
-     * GetCompanyByTinHandler constructor
      * @param CompanyRepository $companyRepository
      */
     public function __construct(CompanyRepository $companyRepository)

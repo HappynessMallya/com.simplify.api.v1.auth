@@ -14,7 +14,6 @@ class GetCompanyByTinQuery
     protected string $tin;
 
     /**
-     * GetCompanyByTinQuery constructor
      * @param string $tin
      */
     public function __construct(string $tin)

@@ -8,21 +8,15 @@ namespace App\Application\Company\Query;
  * Class GetCompaniesQuery
  * @package App\Application\Company\Query
  */
-final class GetCompaniesQuery
+class GetCompaniesQuery
 {
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $page;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $pageSize;
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     protected $orderBy;
 
     /**

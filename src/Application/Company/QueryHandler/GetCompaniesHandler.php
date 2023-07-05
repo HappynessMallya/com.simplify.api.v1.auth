@@ -7,7 +7,6 @@ namespace App\Application\Company\QueryHandler;
 use App\Application\Company\Query\GetCompaniesQuery ;
 use App\Domain\Model\Company\Company;
 use App\Domain\Repository\CompanyRepository;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class CreateCompanyHandler
@@ -15,20 +14,16 @@ use Psr\Log\LoggerInterface;
  */
 class GetCompaniesHandler
 {
-    /**
-     * @var CompanyRepository
-     */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
     /**
-     * @var LoggerInterface
+     * @param CompanyRepository $companyRepository
      */
-    private LoggerInterface $logger;
-
-    public function __construct(CompanyRepository $companyRepository, LoggerInterface $logger)
-    {
+    public function __construct(
+        CompanyRepository $companyRepository
+    ) {
         $this->companyRepository = $companyRepository;
-        $this->logger = $logger;
     }
 
     public function handle(GetCompaniesQuery $command): array

@@ -15,16 +15,22 @@ use App\Domain\Repository\CompanyRepository;
  */
 class GetCompanyByIdHandler
 {
-    /**
-     * @var CompanyRepository
-     */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
-    public function __construct(CompanyRepository $companyRepository)
-    {
+    /**
+     * @param CompanyRepository $companyRepository
+     */
+    public function __construct(
+        CompanyRepository $companyRepository
+    ) {
         $this->companyRepository = $companyRepository;
     }
 
+    /**
+     * @param GetCompanyByIdQuery $command
+     * @return Company|null
+     */
     public function handle(GetCompanyByIdQuery $command): ?Company
     {
         return $this->companyRepository->get(CompanyId::fromString($command->companyId()));
