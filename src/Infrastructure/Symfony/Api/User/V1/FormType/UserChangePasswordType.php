@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Symfony\Api\User\V1\FormType;
 
-use App\Application\User\Command\UserChangePasswordCommand;
+use App\Application\User\V1\Command\UserChangePasswordCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

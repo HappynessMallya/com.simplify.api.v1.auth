@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\V1\Controller;
 
-use App\Application\User\Command\RegisterUserCommand;
+use App\Application\User\V1\Command\RegisterUserCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\User\V1\FormType\RegisterUserType;
 use Exception;

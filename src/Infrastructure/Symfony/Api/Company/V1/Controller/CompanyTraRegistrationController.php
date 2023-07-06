@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Company\V1\Controller;
 
-use App\Application\Company\Command\CompanyTraRegistrationCommand;
+use App\Application\Company\V1\Command\CompanyTraRegistrationCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Company\V1\FormType\TraRegistrationCompanyType;
 use Exception;

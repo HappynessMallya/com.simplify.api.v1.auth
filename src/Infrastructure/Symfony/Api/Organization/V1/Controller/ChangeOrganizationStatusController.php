@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Organization\V1\Controller;
 
-use App\Application\Organization\CommandHandler\ChangeOrganizationStatusCommand;
-use App\Application\Organization\CommandHandler\ChangeOrganizationStatusHandler;
+use App\Application\Organization\V1\Command\ChangeOrganizationStatusCommand;
+use App\Application\Organization\V1\CommandHandler\ChangeOrganizationStatusHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Organization\V1\FormType\ChangeOrganizationStatusType;
 use Exception;

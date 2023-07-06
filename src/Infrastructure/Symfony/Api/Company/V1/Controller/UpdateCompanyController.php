@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Company\V1\Controller;
 
-use App\Application\Company\Command\UpdateCompanyCommand;
+use App\Application\Company\V1\Command\UpdateCompanyCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Company\V1\FormType\UpdateCompanyType;
 use Exception;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Company\V2\CommandHandler;
 
+use App\Application\Company\V2\Command\RegisterCompanyCommand;
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Company\CompanyStatus;

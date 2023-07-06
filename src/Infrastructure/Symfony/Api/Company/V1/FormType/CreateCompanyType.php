@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Company\V1\FormType;
 
-use App\Application\Company\Command\CreateCompanyCommand;
+use App\Application\Company\V1\Command\CreateCompanyCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

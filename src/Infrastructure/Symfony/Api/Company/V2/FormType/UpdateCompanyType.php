@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Symfony\Api\Company\V2\FormType;
 
-use App\Application\Company\V2\CommandHandler\UpdateCompanyCommand;
+use App\Application\Company\V2\Command\UpdateCompanyCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Company\V1\Controller;
 
-use App\Application\Company\Query\GetCompanyByIdQuery;
+use App\Application\Company\V1\Query\GetCompanyByIdQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;

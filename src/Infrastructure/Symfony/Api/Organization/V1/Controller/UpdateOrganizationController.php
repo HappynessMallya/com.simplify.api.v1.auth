@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Organization\V1\Controller;
 
-use App\Application\Organization\CommandHandler\UpdateOrganizationCommand;
+use App\Application\Organization\V1\Command\UpdateOrganizationCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Organization\V1\FormType\UpdateOrganizationType;
 use Exception;

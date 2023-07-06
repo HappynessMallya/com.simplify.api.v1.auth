@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Company\V2\CommandHandler;
 
+use App\Application\Company\V2\Command\UpdateCompanyCommand;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Repository\CompanyRepository;

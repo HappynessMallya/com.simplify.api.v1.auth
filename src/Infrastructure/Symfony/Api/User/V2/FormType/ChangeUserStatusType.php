@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\V2\FormType;
 
-use App\Application\User\V2\CommandHandler\ChangeUserStatusCommand;
+use App\Application\User\V2\Command\ChangeUserStatusCommand;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Model\User\UserType;
 use Symfony\Component\Form\AbstractType;

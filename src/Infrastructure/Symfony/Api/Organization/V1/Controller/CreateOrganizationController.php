@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Organization\V1\Controller;
 
-use App\Application\Organization\CommandHandler\CreateOrganizationCommand;
+use App\Application\Organization\V1\Command\CreateOrganizationCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Organization\V1\FormType\CreateOrganizationType;
 use DateTime;

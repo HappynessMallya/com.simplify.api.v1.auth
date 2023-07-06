@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Organization\V1\Controller;
 
-use App\Application\Organization\QueryHandler\GetOrganizationsByParamsHandler;
-use App\Application\Organization\QueryHandler\GetOrganizationsByParamsQuery;
+use App\Application\Organization\V1\Query\GetOrganizationsByParamsQuery;
+use App\Application\Organization\V1\QueryHandler\GetOrganizationsByParamsHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;

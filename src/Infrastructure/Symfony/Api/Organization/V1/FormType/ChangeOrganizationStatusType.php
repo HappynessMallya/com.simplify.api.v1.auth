@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Organization\V1\FormType;
 
-use App\Application\Organization\CommandHandler\ChangeOrganizationStatusCommand;
+use App\Application\Organization\V1\Command\ChangeOrganizationStatusCommand;
 use App\Domain\Model\Organization\OrganizationStatus;
 use App\Domain\Model\User\UserType;
 use Symfony\Component\Form\AbstractType;

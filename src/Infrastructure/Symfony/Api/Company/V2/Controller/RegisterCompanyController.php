@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Company\V2\Controller;
 
-use App\Application\Company\V2\CommandHandler\RegisterCompanyCommand;
+use App\Application\Company\V2\Command\RegisterCompanyCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Company\V2\FormType\RegisterCompanyType;
 use DateTime;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\User\V2\CommandHandler;
 
+use App\Application\User\V2\Command\RegisterUserCommand;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserId;
@@ -13,8 +14,8 @@ use App\Domain\Model\User\UserType;
 use App\Domain\Repository\CompanyByUserRepository;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Services\SendCredentialsRequest;
-use App\Domain\Services\User\PasswordEncoder;
 use App\Domain\Services\SendCredentialsService;
+use App\Domain\Services\User\PasswordEncoder;
 use App\Infrastructure\Repository\DoctrineCompanyRepository;
 use DateTime;
 use DateTimeZone;

@@ -1,0 +1,70 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Application\Company\V1\QueryHandler;
+
+use App\Application\Company\V1\Query\GetCompaniesQuery;
+use App\Domain\Model\Company\Company;
+use App\Domain\Repository\CompanyRepository;
+
+/**
+ * Class CreateCompanyHandler
+ * @package App\Application\Company\V1\QueryHandler
+ */
+class GetCompaniesHandler
+{
+    /** @var CompanyRepository */
+    private CompanyRepository $companyRepository;
+
+    /**
+     * @param CompanyRepository $companyRepository
+     */
+    public function __construct(
+        CompanyRepository $companyRepository
+    ) {
+        $this->companyRepository = $companyRepository;
+    }
+
+    /**
+     * @param GetCompaniesQuery $command
+     * @return array
+     */
+    public function handle(GetCompaniesQuery $command): array
+    {
+        $companiesData = [];
+
+        $companies = $this->companyRepository->getAll(
+            $command->getPage(),
+            $command->getPageSize(),
+            $command->getOrderBy()
+        );
+
+        /** @var Company $company */
+        foreach ($companies['result'] as $company) {
+            $traRegistration = $company['traRegistration'];
+            unset($traRegistration['TAXCODES']);
+            unset($traRegistration['USERNAME']);
+            unset($traRegistration['PASSWORD']);
+
+            $companiesData[] = [
+                'companyId' => $company['companyId']->toString(),
+                'organizationId' => $company['organizationId']->toString(),
+                'name' => $company['name'],
+                'tin' => $company['tin'],
+                'address' => $company['address'],
+                'phone' => $company['phone'],
+                'email' => $company['email'],
+                'traRegistration' => $traRegistration,
+            ];
+        }
+
+        return [
+            'total' => $companies['total'],
+            'pages' => $companies['pages'],
+            'page' => $command->getPage(),
+            'records' => count($companiesData),
+            'data' => $companiesData,
+        ];
+    }
+}

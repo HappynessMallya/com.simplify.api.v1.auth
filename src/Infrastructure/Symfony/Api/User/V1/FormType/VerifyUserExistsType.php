@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\V1\FormType;
 
-use App\Application\User\Command\VerifyUserExistsCommand;
+use App\Application\User\V1\Command\VerifyUserExistsCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;

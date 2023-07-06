@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\Organization\V1\FormType;
 
-use App\Application\Organization\CommandHandler\UpdateOrganizationCommand;
+use App\Application\Organization\V1\Command\UpdateOrganizationCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

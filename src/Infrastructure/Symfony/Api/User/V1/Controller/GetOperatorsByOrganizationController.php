@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\V1\Controller;
 
-use App\Application\User\Query\GetOperatorsByOrganizationQuery;
-use App\Application\User\QueryHandler\GetOperatorsByOrganizationHandler;
+use App\Application\User\V1\Query\GetOperatorsByOrganizationQuery;
+use App\Application\User\V1\QueryHandler\GetOperatorsByOrganizationHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;

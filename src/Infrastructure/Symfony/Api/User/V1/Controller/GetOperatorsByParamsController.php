@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\V1\Controller;
 
-use App\Application\User\Query\GetOperatorsByParamsQuery;
-use App\Application\User\QueryHandler\GetOperatorsByParamsHandler;
+use App\Application\User\V1\Query\GetOperatorsByParamsQuery;
+use App\Application\User\V1\QueryHandler\GetOperatorsByParamsHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;

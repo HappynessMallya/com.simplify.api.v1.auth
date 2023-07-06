@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\User\V2\CommandHandler;
 
+use App\Application\User\V2\Command\ChangeUserStatusCommand;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Model\User\UserType;

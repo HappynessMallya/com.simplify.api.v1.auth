@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Api\User\V1\Controller;
 
-use App\Application\User\Query\GetProfileByUsernameQuery;
+use App\Application\User\V1\Query\GetProfileByUsernameQuery;
 use App\Domain\Model\User\User;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
