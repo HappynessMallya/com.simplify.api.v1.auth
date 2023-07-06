@@ -30,7 +30,7 @@ class GetCompaniesByOrganizationHandler
      */
     public function __construct(
         LoggerInterface $logger,
-        CompanyRepository $companyRepository,
+        CompanyRepository $companyRepository
     ) {
         $this->logger = $logger;
         $this->companyRepository = $companyRepository;

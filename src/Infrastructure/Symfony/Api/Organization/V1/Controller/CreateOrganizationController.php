@@ -29,7 +29,7 @@ class CreateOrganizationController extends BaseController
      * @throws Exception
      */
     public function createOrganizationAction(
-        Request $request,
+        Request $request
     ): JsonResponse {
         try {
             $command = new CreateOrganizationCommand();
