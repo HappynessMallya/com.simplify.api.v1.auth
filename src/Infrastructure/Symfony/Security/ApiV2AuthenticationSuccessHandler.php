@@ -93,7 +93,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $companies = $this->companyByUserRepository->getCompaniesByUser($userId);
 
         $organization = !empty($userCompany)
-            ? $this->organizationRepository->findOneBy(['companyId' => $userCompany->companyId()])
+            ? $this->organizationRepository->get($userCompany->organizationId())
             : null;
         $companiesUser = [];
 
