@@ -14,11 +14,12 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class ChangeOrganizationStatusController
- * @package App\Infrastructure\Symfony\Api\Organization\Controller
+ * @package App\Infrastructure\Symfony\Api\Organization\V1\Controller
  */
 class ChangeOrganizationStatusController extends BaseController
 {

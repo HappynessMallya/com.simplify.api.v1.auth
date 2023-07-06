@@ -9,10 +9,11 @@ use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Events;
 use Lexik\Bundle\JWTAuthenticationBundle\Response\JWTAuthenticationSuccessResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class RefreshTokenController
- * @package App\Infrastructure\Symfony\Api\User\Controller
+ * @package App\Infrastructure\Symfony\Api\User\V1\Controller
  */
 class RefreshTokenController extends BaseController
 {

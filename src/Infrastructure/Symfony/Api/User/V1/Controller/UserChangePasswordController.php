@@ -6,15 +6,16 @@ namespace App\Infrastructure\Symfony\Api\User\V1\Controller;
 
 use App\Application\User\Command\UserChangePasswordCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
-use App\Infrastructure\Symfony\Api\User\V1\Form\UserChangePasswordType;
+use App\Infrastructure\Symfony\Api\User\V1\FormType\UserChangePasswordType;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class UserChangePasswordController
- * @package App\Infrastructure\Symfony\Api\User\Controller
+ * @package App\Infrastructure\Symfony\Api\User\V1\Controller
  */
 class UserChangePasswordController extends BaseController
 {
@@ -24,25 +25,34 @@ class UserChangePasswordController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function userChangePasswordAction(Request $request): JsonResponse
-    {
+    public function userChangePasswordAction(
+        Request $request
+    ): JsonResponse {
         $command = new UserChangePasswordCommand();
         $form = $this->createForm(UserChangePasswordType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid data',
+                [
+                    'errors' => $this->getValidationErrors($form),
+                ]
+            );
+
             return $this->createApiResponse(
                 [
+                    'success' => false,
                     'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        $changed = false;
+        $isChanged = false;
 
         try {
-            $changed = $this->commandBus->handle($command);
+            $isChanged = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to change password',
@@ -57,18 +67,18 @@ class UserChangePasswordController extends BaseController
                 return $this->createApiResponse(
                     [
                         'success' => false,
-                        'error_message' => 'Exception error trying to change password. ' . $exception->getMessage(),
+                        'error' => 'Exception error trying to change password. ' . $exception->getMessage(),
                     ],
                     Response::HTTP_NOT_FOUND
                 );
             }
         }
 
-        if (!$changed) {
+        if (!$isChanged) {
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Password not changed',
+                    'error' => 'Password not changed',
                 ],
                 Response::HTTP_BAD_REQUEST
             );

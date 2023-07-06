@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Symfony\Api\User\V2\FormType;
 
 use App\Application\User\V2\CommandHandler\RegisterUserCommand;
@@ -14,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class RegisterUserType
- * @package App\Infrastructure\Symfony\Api\User\Controller\V2\FormType
+ * @package App\Infrastructure\Symfony\Api\User\V2\FormType
  */
 class RegisterUserType extends AbstractType
 {

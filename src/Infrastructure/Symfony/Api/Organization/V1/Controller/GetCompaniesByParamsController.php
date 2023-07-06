@@ -10,15 +10,15 @@ use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class GetCompaniesByParamsController
- * @package App\Infrastructure\Symfony\Api\User\Controller\V2
+ * @package App\Infrastructure\Symfony\Api\Organization\V1\Controller
  */
 class GetCompaniesByParamsController extends BaseController
 {
@@ -28,7 +28,6 @@ class GetCompaniesByParamsController extends BaseController
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
      * @param Request $request
-     * @param LoggerInterface $logger
      * @param GetCompaniesByParamsHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
@@ -37,7 +36,6 @@ class GetCompaniesByParamsController extends BaseController
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
         Request $request,
-        LoggerInterface $logger,
         GetCompaniesByParamsHandler $handler
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
@@ -96,7 +94,7 @@ class GetCompaniesByParamsController extends BaseController
                 );
             }
         } catch (Exception $exception) {
-            $logger->critical(
+            $this->logger->critical(
                 'Error trying to find the set of companies',
                 [
                     'user_id' => $userId,

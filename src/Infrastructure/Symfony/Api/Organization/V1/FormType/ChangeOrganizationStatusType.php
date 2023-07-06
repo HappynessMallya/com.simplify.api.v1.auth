@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class ChangeOrganizationStatusType
- * @package App\Infrastructure\Symfony\Api\Organization\Controller\FormType
+ * @package App\Infrastructure\Symfony\Api\Organization\V1\FormType
  */
 class ChangeOrganizationStatusType extends AbstractType
 {

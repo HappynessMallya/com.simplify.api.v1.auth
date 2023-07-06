@@ -6,18 +6,19 @@ namespace App\Infrastructure\Symfony\Api\User\V1\Controller;
 
 use App\Application\User\Command\UpdateUserCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
-use App\Infrastructure\Symfony\Api\User\V1\Form\UpdateUserType;
+use App\Infrastructure\Symfony\Api\User\V1\FormType\UpdateUserType;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class UpdateUserController
- * @package App\Infrastructure\Symfony\Api\User\Controller
+ * @package App\Infrastructure\Symfony\Api\User\V1\Controller
  */
 class UpdateUserController extends BaseController
 {
@@ -43,8 +44,18 @@ class UpdateUserController extends BaseController
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid form',
+                [
+                    'data' => $form->getData(),
+                    'errors' => $this->getValidationErrors($form),
+                    'method' => __METHOD__,
+                ]
+            );
+
             return $this->createApiResponse(
                 [
+                    'success' => false,
                     'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
@@ -53,10 +64,10 @@ class UpdateUserController extends BaseController
 
         $command->setUsername($username);
 
-        $updated = false;
+        $isUpdated = false;
 
         try {
-            $updated = $this->commandBus->handle($command);
+            $isUpdated = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to update user',
@@ -69,6 +80,7 @@ class UpdateUserController extends BaseController
             if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
                 return $this->createApiResponse(
                     [
+                        'success' => false,
                         'errors' => 'Exception error trying to update user. ' . $exception->getMessage(),
                     ],
                     Response::HTTP_NOT_FOUND
@@ -76,10 +88,11 @@ class UpdateUserController extends BaseController
             }
         }
 
-        if (!$updated) {
+        if (!$isUpdated) {
             return $this->createApiResponse(
                 [
                     'success' => false,
+                    'message' => 'User has not been updated',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -88,6 +101,7 @@ class UpdateUserController extends BaseController
         return $this->createApiResponse(
             [
                 'success' => true,
+                'message' => 'User updated successfully',
             ],
             Response::HTTP_OK
         );

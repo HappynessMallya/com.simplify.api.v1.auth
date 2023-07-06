@@ -24,7 +24,7 @@ class GetCompanyByTinController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function action(
+    public function getCompanyByTinAction(
         Request $request
     ): JsonResponse {
         $tin = $request->get('tin');

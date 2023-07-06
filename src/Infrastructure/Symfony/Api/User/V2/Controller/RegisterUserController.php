@@ -13,11 +13,12 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class RegisterUserController
- * @package App\Infrastructure\Symfony\Api\ApiUser\Controller\V2
+ * @package App\Infrastructure\Symfony\Api\User\V2\Controller
  */
 class RegisterUserController extends BaseController
 {

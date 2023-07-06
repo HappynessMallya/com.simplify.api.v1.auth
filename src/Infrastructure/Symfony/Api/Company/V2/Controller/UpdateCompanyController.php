@@ -7,13 +7,15 @@ namespace App\Infrastructure\Symfony\Api\Company\V2\Controller;
 use App\Application\Company\V2\CommandHandler\UpdateCompanyCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Company\V2\FormType\UpdateCompanyType;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class UpdateCompanyController
- * @package App\Infrastructure\Symfony\Api\Company\Controller
+ * @package App\Infrastructure\Symfony\Api\Company\V2\Controller
  */
 class UpdateCompanyController extends BaseController
 {
@@ -23,13 +25,23 @@ class UpdateCompanyController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function action(Request $request): JsonResponse
-    {
+    public function updateCompanyAction(
+        Request $request
+    ): JsonResponse {
         $command = new UpdateCompanyCommand();
         $form = $this->createForm(UpdateCompanyType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid data',
+                [
+                    'data' => $form->getData(),
+                    'errors' => $this->getValidationErrors($form),
+                    'method' => __METHOD__,
+                ]
+            );
+
             return $this->createApiResponse(
                 [
                     'success' => false,
@@ -40,22 +52,24 @@ class UpdateCompanyController extends BaseController
         }
 
         $response = null;
+
         try {
             $response = $this->commandBus->handle($command);
-        } catch (\Exception $e) {
+        } catch (Exception $exception) {
             $this->logger->critical(
-                $e->getMessage(),
+                'An internal server error has been occurred',
                 [
-
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__
                 ]
             );
 
-            if ($e->getCode() === 404) {
+            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
                 return $this->createApiResponse(
                     [
                         'success' => false,
-                        'errors' => $e->getMessage()
+                        'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                     ],
                     Response::HTTP_NOT_FOUND
                 );
@@ -64,7 +78,7 @@ class UpdateCompanyController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'errors' => $e->getMessage(),
+                    'error' => $exception->getMessage(),
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );

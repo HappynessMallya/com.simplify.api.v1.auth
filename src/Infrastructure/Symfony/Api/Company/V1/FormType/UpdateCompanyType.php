@@ -42,7 +42,13 @@ class UpdateCompanyType extends AbstractType
                 'name',
                 TextType::class,
             )
-            ->add('email', EmailType::class, ['constraints' => new Assert\Email()])
+            ->add(
+                'email',
+                EmailType::class,
+                [
+                    'constraints' => new Assert\Email(),
+                ]
+            )
             ->add(
                 'phone',
                 TextType::class

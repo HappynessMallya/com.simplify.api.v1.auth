@@ -7,15 +7,16 @@ namespace App\Infrastructure\Symfony\Api\User\V1\Controller;
 use App\Application\User\Command\VerifyUserExistsCommand;
 use App\Application\User\CommandHandler\VerifyUserExistsHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
-use App\Infrastructure\Symfony\Api\User\V1\Form\VerifyUserExistsType;
+use App\Infrastructure\Symfony\Api\User\V1\FormType\VerifyUserExistsType;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class VerifyUserExistsController
- * @package App\Infrastructure\Symfony\Api\User\Controller
+ * @package App\Infrastructure\Symfony\Api\User\V1\Controller
  */
 class VerifyUserExistsController extends BaseController
 {
@@ -35,8 +36,16 @@ class VerifyUserExistsController extends BaseController
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid data',
+                [
+                    'errors' => $this->getValidationErrors($form),
+                ]
+            );
+
             return $this->createApiResponse(
                 [
+                    'success' => false,
                     'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
@@ -44,20 +53,10 @@ class VerifyUserExistsController extends BaseController
         }
 
         try {
-            $registered = $handler->__invoke($verifyUserExistsCommand);
-
-            if (!$registered) {
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'error_message' => 'User could not be found',
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
+            $isRegistered = $handler->__invoke($verifyUserExistsCommand);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'An internal error has been occurred',
+                'An internal server error has been occurred',
                 [
                     'code' => $exception->getCode(),
                     'error_message' => $exception->getMessage(),
@@ -68,15 +67,26 @@ class VerifyUserExistsController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'An internal error has been occurred. ' . $exception->getMessage(),
+                    'error_message' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        if (!$isRegistered) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error' => 'User could not be found',
+                ],
+                Response::HTTP_NOT_FOUND
             );
         }
 
         return $this->createApiResponse(
             [
                 'success' => true,
+                'message' => 'User exists',
             ],
             Response::HTTP_OK
         );

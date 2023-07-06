@@ -10,14 +10,14 @@ use App\Infrastructure\Symfony\Api\Organization\V1\FormType\CreateOrganizationTy
 use DateTime;
 use DateTimeZone;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class CreateOrganizationController
- * @package App\Infrastructure\Symfony\Api\Organization\Controller
+ * @package App\Infrastructure\Symfony\Api\Organization\V1\Controller
  */
 class CreateOrganizationController extends BaseController
 {
@@ -25,13 +25,11 @@ class CreateOrganizationController extends BaseController
      * @Route(path="/", methods={"POST"})
      *
      * @param Request $request
-     * @param LoggerInterface $logger
      * @return JsonResponse
      * @throws Exception
      */
     public function createOrganizationAction(
         Request $request,
-        LoggerInterface $logger
     ): JsonResponse {
         try {
             $command = new CreateOrganizationCommand();
@@ -39,7 +37,7 @@ class CreateOrganizationController extends BaseController
             $this->processForm($request, $form);
 
             if ($form->isValid() === false) {
-                $logger->critical(
+                $this->logger->critical(
                     'Invalid form',
                     [
                         'data' => $form->getData(),

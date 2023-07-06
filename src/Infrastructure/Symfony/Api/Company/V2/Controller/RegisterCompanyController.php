@@ -13,10 +13,11 @@ use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class CreateCompanyController
- * @package App\Infrastructure\Symfony\Api\Company\Controller\V2
+ * Class RegisterCompanyController
+ * @package App\Infrastructure\Symfony\Api\Company\V2\Controller
  */
 class RegisterCompanyController extends BaseController
 {
@@ -56,7 +57,7 @@ class RegisterCompanyController extends BaseController
             $companyId = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'An internal error has been occurred',
+                'An internal server error has been occurred',
                 [
                     'code' => $exception->getCode(),
                     'message' => $exception->getMessage(),
@@ -67,7 +68,7 @@ class RegisterCompanyController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'An internal error has been occurred. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );

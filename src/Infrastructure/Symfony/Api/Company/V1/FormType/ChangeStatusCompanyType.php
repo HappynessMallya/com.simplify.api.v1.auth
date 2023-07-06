@@ -33,9 +33,10 @@ class ChangeStatusCompanyType extends AbstractType
                     'constraints' => [
                         new NotBlank(),
                         new Choice(CompanyStatus::getValues()),
-                    ]
+                    ],
                 ]
-            );
+            )
+        ;
     }
 
     /**

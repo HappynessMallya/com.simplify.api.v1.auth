@@ -10,23 +10,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class BaseController
- * @package App\Infrastructure\Symfony\Controller\Api
+ * @package App\Infrastructure\Symfony\Api
  */
 class BaseController extends AbstractController
 {
-    /**
-     * @var CommandBus
-     */
-    protected $commandBus;
+    /** @var CommandBus */
+    protected CommandBus $commandBus;
 
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
+    /** @var LoggerInterface */
+    protected LoggerInterface $logger;
 
     public function __construct(CommandBus $commandBus, LoggerInterface $logger)
     {
@@ -34,7 +31,12 @@ class BaseController extends AbstractController
         $this->logger = $logger;
     }
 
-    protected function createApiResponse($data = null, $statusCode = 200)
+    /**
+     * @param $data
+     * @param int $statusCode
+     * @return JsonResponse
+     */
+    protected function createApiResponse($data = null, int $statusCode = Response::HTTP_OK): JsonResponse
     {
         $json = [];
 

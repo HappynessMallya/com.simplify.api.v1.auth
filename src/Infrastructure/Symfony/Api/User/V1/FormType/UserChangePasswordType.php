@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class UserChangePasswordType
- * @package App\Infrastructure\Symfony\Api\User\Form
+ * @package App\Infrastructure\Symfony\Api\User\V1\FormType
  */
 class UserChangePasswordType extends AbstractType
 {

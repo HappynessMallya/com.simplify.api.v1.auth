@@ -8,14 +8,14 @@ use App\Application\Organization\QueryHandler\GetOrganizationsByParamsHandler;
 use App\Application\Organization\QueryHandler\GetOrganizationsByParamsQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Class GetCompaniesByParamsController
- * @package App\Infrastructure\Symfony\Api\Organization\Controller
+ * Class GetOrganizationsByParamsController
+ * @package App\Infrastructure\Symfony\Api\Organization\V1\Controller
  */
 class GetOrganizationsByParamsController extends BaseController
 {
@@ -23,13 +23,11 @@ class GetOrganizationsByParamsController extends BaseController
      * @Route(path="/getOrganizationsBy/query", methods={"GET"})
      *
      * @param Request $request
-     * @param LoggerInterface $logger
      * @param GetOrganizationsByParamsHandler $handler
      * @return JsonResponse
      */
     public function getOrganizationByParamsAction(
         Request $request,
-        LoggerInterface $logger,
         GetOrganizationsByParamsHandler $handler
     ): JsonResponse {
         $name = $request->query->get('name');
@@ -72,7 +70,7 @@ class GetOrganizationsByParamsController extends BaseController
                 );
             }
         } catch (Exception $exception) {
-            $logger->critical(
+            $this->logger->critical(
                 'Error trying to find the set of organizations',
                 [
                     'code' => $exception->getCode(),

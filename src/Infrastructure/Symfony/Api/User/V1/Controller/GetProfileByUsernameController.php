@@ -12,11 +12,12 @@ use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class GetProfileByUsernameController
- * @package App\Infrastructure\Symfony\Api\User\Controller
+ * @package App\Infrastructure\Symfony\Api\User\V1\Controller
  */
 class GetProfileByUsernameController extends BaseController
 {
@@ -28,7 +29,7 @@ class GetProfileByUsernameController extends BaseController
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getUserByIdAction(
+    public function getProfileByUsernameAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage
     ): JsonResponse {

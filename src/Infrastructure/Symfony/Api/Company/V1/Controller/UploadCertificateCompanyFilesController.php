@@ -26,7 +26,7 @@ class UploadCertificateCompanyFilesController extends BaseController
      * @param UploadCertificateCompanyFilesHandler $handler
      * @return JsonResponse
      */
-    public function createCompanyAction(
+    public function uploadCertificateCompanyFilesAction(
         Request $request,
         UploadCertificateCompanyFilesHandler $handler
     ): JsonResponse {

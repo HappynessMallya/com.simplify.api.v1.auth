@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class RegisterCompanyType
- * @package App\Infrastructure\Symfony\Api\Company\Controller\V2\FormType
+ * @package App\Infrastructure\Symfony\Api\Company\V2\FormType
  */
 class RegisterCompanyType extends AbstractType
 {
@@ -37,8 +37,8 @@ class RegisterCompanyType extends AbstractType
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
                             ]
-                        )
-                    ]
+                        ),
+                    ],
                 ]
             )
             ->add(

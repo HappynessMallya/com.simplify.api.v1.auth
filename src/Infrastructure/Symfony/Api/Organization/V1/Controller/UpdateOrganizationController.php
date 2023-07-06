@@ -8,14 +8,14 @@ use App\Application\Organization\CommandHandler\UpdateOrganizationCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
 use App\Infrastructure\Symfony\Api\Organization\V1\FormType\UpdateOrganizationType;
 use Exception;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class UpdateOrganizationController
- * @package App\Infrastructure\Symfony\Api\Organization\Controller
+ * @package App\Infrastructure\Symfony\Api\Organization\V1\Controller
  */
 class UpdateOrganizationController extends BaseController
 {
@@ -23,19 +23,17 @@ class UpdateOrganizationController extends BaseController
      * @Route(path="/update/", methods={"PUT"})
      *
      * @param Request $request
-     * @param LoggerInterface $logger
      * @return JsonResponse
      */
     public function updateOrganizationAction(
-        Request $request,
-        LoggerInterface $logger
+        Request $request
     ): JsonResponse {
         $command = new UpdateOrganizationCommand();
         $form = $this->createForm(UpdateOrganizationType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
-            $logger->critical(
+            $this->logger->critical(
                 'Invalid form',
                 [
                     'data' => $form->getData(),

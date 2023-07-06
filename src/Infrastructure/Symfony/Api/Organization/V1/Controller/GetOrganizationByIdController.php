@@ -11,10 +11,11 @@ use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class GetOrganizationByIdController
- * @package App\Infrastructure\Symfony\Api\Organization\Controller
+ * @package App\Infrastructure\Symfony\Api\Organization\V1\Controller
  */
 class GetOrganizationByIdController extends BaseController
 {

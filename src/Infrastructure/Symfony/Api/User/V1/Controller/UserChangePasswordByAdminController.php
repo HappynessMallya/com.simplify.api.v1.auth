@@ -6,15 +6,16 @@ namespace App\Infrastructure\Symfony\Api\User\V1\Controller;
 
 use App\Application\User\Command\UserChangePasswordByAdminCommand;
 use App\Infrastructure\Symfony\Api\BaseController;
-use App\Infrastructure\Symfony\Api\User\V1\Form\UserChangePasswordByAdminType;
+use App\Infrastructure\Symfony\Api\User\V1\FormType\UserChangePasswordByAdminType;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class UserChangePasswordByAdminController
- * @package App\Infrastructure\Symfony\Api\User\Controller
+ * @package App\Infrastructure\Symfony\Api\User\V1\Controller
  */
 class UserChangePasswordByAdminController extends BaseController
 {
@@ -24,15 +25,24 @@ class UserChangePasswordByAdminController extends BaseController
      * @param Request $request
      * @return JsonResponse
      */
-    public function userChangePasswordByAdminAction(Request $request): JsonResponse
-    {
+    public function userChangePasswordByAdminAction(
+        Request $request
+    ): JsonResponse {
         $command = new UserChangePasswordByAdminCommand();
         $form = $this->createForm(UserChangePasswordByAdminType::class, $command);
         $this->processForm($request, $form);
 
         if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid data',
+                [
+                    'errors' => $this->getValidationErrors($form),
+                ]
+            );
+
             return $this->createApiResponse(
                 [
+                    'success' => false,
                     'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
@@ -40,7 +50,7 @@ class UserChangePasswordByAdminController extends BaseController
         }
 
         try {
-            $changed = $this->commandBus->handle($command);
+            $isChanged = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to change password',
@@ -60,7 +70,7 @@ class UserChangePasswordByAdminController extends BaseController
             );
         }
 
-        if (!$changed) {
+        if (!$isChanged) {
             return $this->createApiResponse(
                 [
                     'success' => false,

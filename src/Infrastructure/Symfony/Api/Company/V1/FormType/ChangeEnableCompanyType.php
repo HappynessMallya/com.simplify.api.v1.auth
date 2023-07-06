@@ -40,8 +40,8 @@ class ChangeEnableCompanyType extends AbstractType
                                 'minMessage' => 'Must be at least {{ limit }} characters long',
                                 'maxMessage' => 'Cannot be longer than {{ limit }} characters',
                             ]
-                        )
-                    ]
+                        ),
+                    ],
                 ]
             )
             ->add(
@@ -50,9 +50,10 @@ class ChangeEnableCompanyType extends AbstractType
                 [
                     'constraints' => [
                         new NotNull(),
-                    ]
+                    ],
                 ]
-            );
+            )
+        ;
     }
 
     /**

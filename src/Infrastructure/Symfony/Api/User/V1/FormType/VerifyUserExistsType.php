@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class VerifyUserExistsType
- * @package App\Infrastructure\Symfony\Api\User\Form
+ * @package App\Infrastructure\Symfony\Api\User\V1\FormType
  */
 class VerifyUserExistsType extends AbstractType
 {
@@ -31,11 +31,11 @@ class VerifyUserExistsType extends AbstractType
                 [
                     'constraints' => [
                         new NotBlank(),
-                        new Email()
-
-                    ]
+                        new Email(),
+                    ],
                 ]
-            );
+            )
+        ;
     }
 
     /**
@@ -43,11 +43,13 @@ class VerifyUserExistsType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class' => VerifyUserExistsCommand::class,
-            'csrf_protection' => false,
-            'is_edit' => false,
-            'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}'
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => VerifyUserExistsCommand::class,
+                'csrf_protection' => false,
+                'is_edit' => false,
+                'extra_fields_message' => 'Extra fields sent: {{ extra_fields }}',
+            ]
+        );
     }
 }

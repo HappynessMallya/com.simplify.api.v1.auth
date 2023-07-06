@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class ChangeUserStatusType
- * @package App\Infrastructure\Symfony\Api\User\Controller\V2\FormType
+ * @package App\Infrastructure\Symfony\Api\User\V2\FormType
  */
 class ChangeUserStatusType extends AbstractType
 {

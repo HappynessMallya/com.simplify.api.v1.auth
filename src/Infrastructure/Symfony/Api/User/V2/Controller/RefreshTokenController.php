@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Symfony\Api\User\V2\Controller;
 
 use App\Domain\Model\Company\CompanyId;
@@ -16,19 +18,19 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class RefreshTokenController extends AbstractController
 {
-    /** @var JWTTokenManagerInterface  */
+    /** @var JWTTokenManagerInterface */
     private JWTTokenManagerInterface $JWTTokenManager;
 
-    /** @var RefreshTokenManagerInterface  */
+    /** @var RefreshTokenManagerInterface */
     private RefreshTokenManagerInterface $refreshTokenManager;
 
-    /** @var UserRepository  */
+    /** @var UserRepository */
     private UserRepository $userRepository;
 
-    /** @var CompanyByUserRepository  */
+    /** @var CompanyByUserRepository */
     private CompanyByUserRepository $companyByUserRepository;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
     /**
@@ -36,6 +38,7 @@ class RefreshTokenController extends AbstractController
      * @param RefreshTokenManagerInterface $refreshTokenManager
      * @param UserRepository $userRepository
      * @param CompanyByUserRepository $companyByUserRepository
+     * @param CompanyRepository $companyRepository
      */
     public function __construct(
         JWTTokenManagerInterface $jwtManager,
@@ -55,8 +58,9 @@ class RefreshTokenController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      */
-    public function refresh(Request $request): JsonResponse
-    {
+    public function refresh(
+        Request $request
+    ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
         $refreshToken = $data['refresh_token'];
@@ -106,7 +110,7 @@ class RefreshTokenController extends AbstractController
         return new JsonResponse(
             [
                 'token' => $newToken,
-                'refresh_token' => $refreshTokenObject->getRefreshToken()
+                'refresh_token' => $refreshTokenObject->getRefreshToken(),
             ],
             Response::HTTP_OK
         );
