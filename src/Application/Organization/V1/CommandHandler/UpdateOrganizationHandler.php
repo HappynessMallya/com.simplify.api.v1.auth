@@ -50,7 +50,7 @@ class UpdateOrganizationHandler
             $this->logger->critical(
                 'Organization could not be found',
                 [
-                    'organization_id' => $command->getOrganizationId(),
+                    'organization_id' => $organizationId->toString(),
                     'method' => __METHOD__,
                 ]
             );

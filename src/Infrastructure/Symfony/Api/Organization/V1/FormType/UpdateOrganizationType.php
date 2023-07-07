@@ -76,7 +76,9 @@ class UpdateOrganizationType extends AbstractType
                 'ownerEmail',
                 TextType::class,
                 [
-                    'constraints' => new Assert\Email(),
+                    'constraints' => [
+                        new Assert\Email(),
+                    ],
                 ]
             )
             ->add(

@@ -100,13 +100,45 @@ class ChangeOrganizationStatusHandler
             );
         }
 
-        $organization->update(
-            [
-                'status' => $newStatus->toString(),
-                'updatedAt' => new DateTime('now'),
-            ]
-        );
+        try {
+            $organization->update(
+                [
+                    'status' => $newStatus->toString(),
+                    'updatedAt' => new DateTime('now'),
+                ]
+            );
 
-        return $this->organizationRepository->save($organization);
+            $isStatusChanged = $this->organizationRepository->save($organization);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                'Organization status could not be updated',
+                [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'Organization status could not be updated. ' . $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        if ($isStatusChanged) {
+            $this->logger->debug(
+                'Organization status updated successfully',
+                [
+                    'organization_id' => $organization->getOrganizationId(),
+                    'name' => $organization->getName(),
+                    'owner_name' => $organization->getOwnerName(),
+                    'owner_email' => $organization->getOwnerEmail(),
+                ]
+            );
+
+            return true;
+        }
+
+        return false;
     }
 }

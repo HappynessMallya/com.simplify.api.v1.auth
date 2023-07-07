@@ -66,7 +66,7 @@ class UpdateOrganizationController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'errors' => 'An internal server error has been occurred. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
                 $exception->getCode()
             );
@@ -76,7 +76,7 @@ class UpdateOrganizationController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'message' => 'Organization has not been updated',
+                    'error' => 'Organization has not been updated',
                 ],
                 Response::HTTP_BAD_REQUEST
             );

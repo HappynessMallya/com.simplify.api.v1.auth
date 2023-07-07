@@ -71,10 +71,10 @@ class ChangeOrganizationStatusController extends BaseController
             $isStatusChanged = $handler->__invoke($command);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to change organization status',
+                'An internal server error has been occurred',
                 [
-                    'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
@@ -82,9 +82,9 @@ class ChangeOrganizationStatusController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to change organization status. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_BAD_REQUEST
+                $exception->getCode()
             );
         }
 
@@ -92,7 +92,7 @@ class ChangeOrganizationStatusController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Organization status has not changed',
+                    'error' => 'Organization status has not been changed',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -101,7 +101,7 @@ class ChangeOrganizationStatusController extends BaseController
         return $this->createApiResponse(
             [
                 'success' => true,
-                'message' => 'Organization status changed',
+                'message' => 'Organization status changed successfully',
             ],
             Response::HTTP_OK
         );
