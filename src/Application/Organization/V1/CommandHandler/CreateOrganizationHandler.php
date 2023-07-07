@@ -40,7 +40,7 @@ class CreateOrganizationHandler
 
     /**
      * @param CreateOrganizationCommand $command
-     * @return string|null
+     * @return string
      * @throws Exception
      */
     public function handle(CreateOrganizationCommand $command): string
@@ -58,15 +58,15 @@ class CreateOrganizationHandler
             null,
         );
 
-        $organizationRegistered = $this->organizationRepository->findOneBy(
+        $isPreRegistered = $this->organizationRepository->findOneBy(
             [
                 'name' => $command->getName(),
             ]
         );
 
-        if (!empty($organizationRegistered)) {
+        if (!empty($isPreRegistered)) {
             $this->logger->critical(
-                'Organization previously registered with the provided name',
+                'Organization has pre-registered with the name provided',
                 [
                     'name' => $command->getName(),
                     'method' => __METHOD__,
@@ -74,27 +74,13 @@ class CreateOrganizationHandler
             );
 
             throw new Exception(
-                'Organization previously registered with the provided name',
+                'Organization has pre-registered with the name provided',
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         try {
             $isSaved = $this->organizationRepository->save($organization);
-
-            if ($isSaved) {
-                $this->logger->debug(
-                    'Organization registered successfully',
-                    [
-                        'organization_id' => $organization->getOrganizationId(),
-                        'name' => $organization->getName(),
-                        'owner_name' => $organization->getOwnerName(),
-                        'owner_email' => $organization->getOwnerEmail(),
-                    ]
-                );
-
-                return $organizationId->toString();
-            }
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Organization could not be registered',
@@ -106,9 +92,23 @@ class CreateOrganizationHandler
             );
 
             throw new Exception(
-                $exception->getMessage(),
+                'Organization could not be registered' . $exception->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
+        }
+
+        if ($isSaved) {
+            $this->logger->debug(
+                'Organization registered successfully',
+                [
+                    'organization_id' => $organization->getOrganizationId(),
+                    'name' => $organization->getName(),
+                    'owner_name' => $organization->getOwnerName(),
+                    'owner_email' => $organization->getOwnerEmail(),
+                ]
+            );
+
+            return $organizationId->toString();
         }
 
         return '';

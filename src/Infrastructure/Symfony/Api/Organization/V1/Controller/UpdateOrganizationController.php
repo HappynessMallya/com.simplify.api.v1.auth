@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UpdateOrganizationController extends BaseController
 {
     /**
-     * @Route(path="/update/", methods={"PUT"})
+     * @Route(path="/", methods={"PUT"})
      *
      * @param Request $request
      * @return JsonResponse
@@ -51,28 +51,25 @@ class UpdateOrganizationController extends BaseController
             );
         }
 
-        $isUpdated = false;
-
         try {
             $isUpdated = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to update organization',
+                'An internal server error has been occurred',
                 [
-                    'error_message' => $exception->getMessage(),
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
 
-            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'errors' => 'Exception error trying to update organization. ' . $exception->getMessage(),
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'errors' => 'An internal server error has been occurred. ' . $exception->getMessage(),
+                ],
+                $exception->getCode()
+            );
         }
 
         if (!$isUpdated) {

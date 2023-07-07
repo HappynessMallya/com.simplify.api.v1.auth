@@ -38,10 +38,10 @@ class UpdateOrganizationHandler
 
     /**
      * @param UpdateOrganizationCommand $command
-     * @return bool|null
+     * @return bool
      * @throws Exception
      */
-    public function handle(UpdateOrganizationCommand $command): ?bool
+    public function handle(UpdateOrganizationCommand $command): bool
     {
         $organizationId = OrganizationId::fromString($command->getOrganizationId());
         $organization = $this->organizationRepository->get($organizationId);
@@ -81,7 +81,7 @@ class UpdateOrganizationHandler
 
         if (count($criteria) === 1) {
             $this->logger->critical(
-                'You need at least one data to update the organization',
+                'You need at least one field to update organization',
                 [
                     'organization_id' => $command->getOrganizationId(),
                     'method' => __METHOD__,
@@ -89,15 +89,35 @@ class UpdateOrganizationHandler
             );
 
             throw new Exception(
-                'You need at least one data to update the organization',
+                'You need at least one field to update organization',
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        $organization->update($criteria);
+        $isPreRegistered = $this->organizationRepository->findOneBy(
+            [
+                'name' => $command->getName(),
+            ]
+        );
+
+        if (!empty($isPreRegistered)) {
+            $this->logger->critical(
+                'Organization has pre-registered with the name provided',
+                [
+                    'name' => $command->getName(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'Organization has pre-registered with the name provided',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
         try {
-            $response = $this->organizationRepository->save($organization);
+            $organization->update($criteria);
+            $isUpdated = $this->organizationRepository->save($organization);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Organization could not be updated',
@@ -109,11 +129,25 @@ class UpdateOrganizationHandler
             );
 
             throw new Exception(
-                $exception->getMessage(),
+                'Organization could not be updated. ' . $exception->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
-        return $response;
+        if ($isUpdated) {
+            $this->logger->debug(
+                'Organization updated successfully',
+                [
+                    'organization_id' => $organization->getOrganizationId(),
+                    'name' => $organization->getName(),
+                    'owner_name' => $organization->getOwnerName(),
+                    'owner_email' => $organization->getOwnerEmail(),
+                ]
+            );
+
+            return true;
+        }
+
+        return false;
     }
 }

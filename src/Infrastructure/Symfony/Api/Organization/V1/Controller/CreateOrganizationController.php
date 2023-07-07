@@ -31,34 +31,34 @@ class CreateOrganizationController extends BaseController
     public function createOrganizationAction(
         Request $request
     ): JsonResponse {
+        $command = new CreateOrganizationCommand();
+        $form = $this->createForm(CreateOrganizationType::class, $command);
+        $this->processForm($request, $form);
+
+        if ($form->isValid() === false) {
+            $this->logger->critical(
+                'Invalid form',
+                [
+                    'data' => $form->getData(),
+                    'errors' => $this->getValidationErrors($form),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'errors' => $this->getValidationErrors($form),
+                ],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         try {
-            $command = new CreateOrganizationCommand();
-            $form = $this->createForm(CreateOrganizationType::class, $command);
-            $this->processForm($request, $form);
-
-            if ($form->isValid() === false) {
-                $this->logger->critical(
-                    'Invalid form',
-                    [
-                        'data' => $form->getData(),
-                        'errors' => $this->getValidationErrors($form),
-                        'method' => __METHOD__,
-                    ]
-                );
-
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'errors' => $this->getValidationErrors($form),
-                    ],
-                    Response::HTTP_BAD_REQUEST
-                );
-            }
-
             $organizationId = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'An internal error has been occurred',
+                'An internal server error has been occurred',
                 [
                     'code' => $exception->getCode(),
                     'message' => $exception->getMessage(),
@@ -69,9 +69,9 @@ class CreateOrganizationController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'errors' => 'Organization has not created: ' . $exception->getMessage(),
+                    'errors' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $exception->getCode()
             );
         }
 

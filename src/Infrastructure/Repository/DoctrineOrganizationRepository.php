@@ -16,6 +16,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DoctrineOrganizationRepository
@@ -74,7 +75,10 @@ class DoctrineOrganizationRepository implements OrganizationRepository
                 ]
             );
 
-            throw new Exception('Exception error trying to save organization: ' . $exception->getMessage());
+            throw new Exception(
+                'Exception error trying to save organization: ' . $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return true;
