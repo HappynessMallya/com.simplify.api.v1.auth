@@ -20,13 +20,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class GetOrganizationsByParamsController extends BaseController
 {
     /**
-     * @Route(path="/getOrganizationsBy/query", methods={"GET"})
+     * @Route(path="/getBy/query", methods={"GET"})
      *
      * @param Request $request
      * @param GetOrganizationsByParamsHandler $handler
      * @return JsonResponse
      */
-    public function getOrganizationByParamsAction(
+    public function getOrganizationsByParamsAction(
         Request $request,
         GetOrganizationsByParamsHandler $handler
     ): JsonResponse {
@@ -46,35 +46,12 @@ class GetOrganizationsByParamsController extends BaseController
 
         try {
             $organizations = $handler->__invoke($query);
-
-            if (!$organizations) {
-                $this->logger->debug(
-                    'No organizations found by the search criteria',
-                    [
-                        'criteria' => [
-                            'name' => $name,
-                            'ownerName' => $ownerName,
-                            'ownerEmail' => $ownerEmail,
-                            'ownerPhoneNumber' => $ownerPhoneNumber,
-                            'status' => $status,
-                        ],
-                    ]
-                );
-
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'error' => 'No organizations found by the search criteria',
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Error trying to find the set of organizations',
+                'An internal server error has been occurred',
                 [
                     'code' => $exception->getCode(),
-                    'error_message' => $exception->getMessage(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
@@ -82,9 +59,9 @@ class GetOrganizationsByParamsController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Error trying to find the set of organizations. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $exception->getCode()
             );
         }
 

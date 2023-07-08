@@ -64,18 +64,20 @@ class GetOrganizationsByParamsHandler
         if ($query->getStatus() !== 'ALL') {
             $criteria['status'] = OrganizationStatus::byValue(trim($query->getStatus()))->getValue();
         }
+
         $organizationsByCriteria = $this->organizationRepository->findByCriteria($criteria);
 
         if (empty($organizationsByCriteria)) {
             $this->logger->critical(
-                'Organizations not found by the search criteria',
+                'Organizations could not be found by the search criteria',
                 [
                     'criteria' => $criteria,
+                    'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'Organizations not found by the search criteria',
+                'Organizations could not be found by the search criteria',
                 Response::HTTP_NOT_FOUND
             );
         }
