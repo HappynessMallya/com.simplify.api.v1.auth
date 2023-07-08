@@ -37,10 +37,10 @@ class GetOrganizationByIdController extends BaseController
             $organization = $handler->__invoke($query);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to get organization details',
+                'An internal server error has been occurred',
                 [
-                    'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
@@ -48,9 +48,9 @@ class GetOrganizationByIdController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to get organization details. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_BAD_REQUEST
+                $exception->getCode()
             );
         }
 
