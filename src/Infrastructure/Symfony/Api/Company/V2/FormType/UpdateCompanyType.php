@@ -27,6 +27,39 @@ class UpdateCompanyType extends AbstractType
     {
         $builder
             ->add(
+                'organizationId',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new Length(
+                            [
+                                'min' => 36,
+                                'max' => 36,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            ->add(
+                'companyId',
+                TextType::class,
+                [
+                    'constraints' => [
+                        new NotBlank(),
+                        new Length(
+                            [
+                                'min' => 36,
+                                'max' => 36,
+                                'minMessage' => 'Must be at least {{ limit }} characters long',
+                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
+                            ]
+                        ),
+                    ],
+                ]
+            )
+            ->add(
                 'name',
                 TextType::class,
                 [
@@ -93,39 +126,7 @@ class UpdateCompanyType extends AbstractType
                     ],
                 ]
             )
-            ->add(
-                'organizationId',
-                TextType::class,
-                [
-                    'constraints' => [
-                        new Length(
-                            [
-                                'min' => 36,
-                                'max' => 36,
-                                'minMessage' => 'Must be at least {{ limit }} characters long',
-                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
-                            ]
-                        ),
-                    ],
-                ]
-            )
-            ->add(
-                'companyId',
-                TextType::class,
-                [
-                    'constraints' => [
-                        new NotBlank(),
-                        new Length(
-                            [
-                                'min' => 36,
-                                'max' => 36,
-                                'minMessage' => 'Must be at least {{ limit }} characters long',
-                                'maxMessage' => 'Cannot be longer than {{ limit }} characters',
-                            ]
-                        ),
-                    ],
-                ]
-            );
+        ;
     }
 
     /**

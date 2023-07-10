@@ -28,7 +28,6 @@ class CompanyTraRegistrationController extends BaseController
     public function companyTraRegistrationAction(
         Request $request
     ): JsonResponse {
-        $updated = false;
         $tin = $request->get('tin');
 
         $command = new CompanyTraRegistrationCommand();
@@ -68,22 +67,12 @@ class CompanyTraRegistrationController extends BaseController
                 ]
             );
 
-            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
-
             return $this->createApiResponse(
                 [
                     'success' => false,
                     'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $exception->getCode()
             );
         }
 

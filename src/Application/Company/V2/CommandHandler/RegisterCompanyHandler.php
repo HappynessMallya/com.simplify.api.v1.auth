@@ -92,6 +92,27 @@ class RegisterCompanyHandler
             );
         }
 
+        $isPreRegistered = $this->companyRepository->findOneBy(
+            [
+                'name' => $command->getName(),
+            ]
+        );
+
+        if (!empty($isPreRegistered)) {
+            $this->logger->critical(
+                'Company has pre-registered with the name provided',
+                [
+                    'tin' => $command->getName(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'Company has pre-registered with the name provided',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         $companyId = CompanyId::generate();
 
         $company = Company::create(
@@ -120,7 +141,7 @@ class RegisterCompanyHandler
             );
 
             throw new Exception(
-                $exception->getMessage(),
+                'Company could not be registered. ' . $exception->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -132,6 +153,7 @@ class RegisterCompanyHandler
                     'company_id' => $companyId->toString(),
                     'name' => $company->name(),
                     'tin' => $company->tin(),
+                    'email' => $company->email(),
                 ]
             );
 

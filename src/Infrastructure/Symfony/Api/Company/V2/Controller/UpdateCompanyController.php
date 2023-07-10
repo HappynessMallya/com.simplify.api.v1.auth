@@ -51,44 +51,41 @@ class UpdateCompanyController extends BaseController
             );
         }
 
-        $response = null;
-
         try {
-            $response = $this->commandBus->handle($command);
+            $isUpdated = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'An internal server error has been occurred',
                 [
                     'code' => $exception->getCode(),
                     'message' => $exception->getMessage(),
-                    'method' => __METHOD__
+                    'method' => __METHOD__,
                 ]
             );
-
-            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
 
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $exception->getCode()
+            );
+        }
+
+        if (!$isUpdated) {
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error' => 'Company has not been updated',
+                ],
+                Response::HTTP_BAD_REQUEST
             );
         }
 
         return $this->createApiResponse(
             [
                 'success' => true,
-                'companyId' => $response['companyId'],
-                'updatedAt' => $response['updatedAt'],
+                'message' => 'Company updated successfully',
             ],
             Response::HTTP_OK
         );

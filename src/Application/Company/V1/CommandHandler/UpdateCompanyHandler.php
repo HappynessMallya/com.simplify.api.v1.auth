@@ -83,7 +83,6 @@ class UpdateCompanyHandler
             $criteria['phone'] = $command->getPhone();
         }
 
-
         if (!empty($command->getAddress())) {
             $criteria['address'] = $command->getAddress();
         }

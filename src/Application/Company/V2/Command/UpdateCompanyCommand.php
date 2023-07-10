@@ -10,6 +10,9 @@ namespace App\Application\Company\V2\Command;
  */
 class UpdateCompanyCommand
 {
+    /** @var string|null */
+    private ?string $organizationId;
+
     /** @var string */
     private string $companyId;
 
@@ -25,8 +28,21 @@ class UpdateCompanyCommand
     /** @var string|null */
     private ?string $phone;
 
-    /** @var string|null */
-    private ?string $organizationId;
+    /**
+     * @return string|null
+     */
+    public function getOrganizationId(): ?string
+    {
+        return empty($this->organizationId) ? '' : $this->organizationId;
+    }
+
+    /**
+     * @param string|null $organizationId
+     */
+    public function setOrganizationId(?string $organizationId): void
+    {
+        $this->organizationId = $organizationId;
+    }
 
     /**
      * @return string
@@ -106,21 +122,5 @@ class UpdateCompanyCommand
     public function setPhone(?string $phone): void
     {
         $this->phone = $phone;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getOrganizationId(): ?string
-    {
-        return $this->organizationId;
-    }
-
-    /**
-     * @param string|null $organizationId
-     */
-    public function setOrganizationId(?string $organizationId): void
-    {
-        $this->organizationId = $organizationId;
     }
 }

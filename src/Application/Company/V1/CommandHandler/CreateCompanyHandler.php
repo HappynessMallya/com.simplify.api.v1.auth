@@ -115,7 +115,7 @@ class CreateCompanyHandler
             );
 
             throw new Exception(
-                'Company could not be registered' . $exception->getMessage(),
+                'Company could not be registered. ' . $exception->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }

@@ -68,7 +68,7 @@ class CompanyTraRegistrationHandler
             );
 
             throw new Exception(
-                'Company not found by TIN: ' . $command->getTin(),
+                'Company could not be found by TIN: ' . $command->getTin(),
                 Response::HTTP_NOT_FOUND
             );
         }
