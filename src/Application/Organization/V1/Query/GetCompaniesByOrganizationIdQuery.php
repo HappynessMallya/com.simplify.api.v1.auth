@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Application\Organization\V1\Query;
 
 /**
- * Class GetCompaniesByOrganizationQuery
+ * Class GetCompaniesByOrganizationIdQuery
  * @package App\Application\Organization\V1\Query
  */
 class GetCompaniesByOrganizationIdQuery
 {
     /** @var string */
-    protected string $organizationId;
+    private string $organizationId;
 
     /** @var string */
-    protected string $userType;
+    private string $userType;
 
     /**
      * @param string $organizationId
@@ -24,16 +24,8 @@ class GetCompaniesByOrganizationIdQuery
         string $organizationId,
         string $userType
     ) {
-        $this->userType = $userType;
         $this->organizationId = $organizationId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserType(): string
-    {
-        return $this->userType;
+        $this->userType = $userType;
     }
 
     /**
@@ -42,5 +34,13 @@ class GetCompaniesByOrganizationIdQuery
     public function getOrganizationId(): string
     {
         return $this->organizationId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserType(): string
+    {
+        return $this->userType;
     }
 }

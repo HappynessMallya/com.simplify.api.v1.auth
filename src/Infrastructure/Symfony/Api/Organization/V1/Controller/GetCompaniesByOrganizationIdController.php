@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetCompaniesByOrganizationIdController
+ * Class GetCompaniesByOrganizationController
  * @package App\Infrastructure\Symfony\Api\Organization\V1\Controller
  */
 class GetCompaniesByOrganizationIdController extends BaseController
@@ -32,7 +32,7 @@ class GetCompaniesByOrganizationIdController extends BaseController
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getCompaniesAction(
+    public function getCompaniesByOrganizationIdAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
         Request $request,
@@ -42,19 +42,16 @@ class GetCompaniesByOrganizationIdController extends BaseController
         $organizationId = $request->get('organizationId');
         $userType = $tokenData['userType'];
 
-        $query = new GetCompaniesByOrganizationIdQuery(
-            $organizationId,
-            $userType
-        );
+        $query = new GetCompaniesByOrganizationIdQuery($organizationId, $userType);
 
         try {
             $companies = $handler->__invoke($query);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to get companies',
+                'An internal server error has been occurred',
                 [
                     'organization_id' => $organizationId,
-                    'error_message' => $exception->getMessage(),
+                    'message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
                     'method' => __METHOD__,
                 ]
@@ -63,19 +60,9 @@ class GetCompaniesByOrganizationIdController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to get companies. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
-        if (empty($companies)) {
-            return $this->createApiResponse(
-                [
-                    'success' => false,
-                    'error' => 'Internal server error trying to get companies',
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $exception->getCode()
             );
         }
 

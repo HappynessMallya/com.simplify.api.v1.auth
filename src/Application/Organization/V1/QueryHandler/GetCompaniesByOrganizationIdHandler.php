@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GetCompaniesByOrganizationHandler
+ * Class GetCompaniesByOrganizationIdHandler
  * @package App\Application\Organization\V1\QueryHandler
  */
 class GetCompaniesByOrganizationIdHandler
@@ -21,7 +21,7 @@ class GetCompaniesByOrganizationIdHandler
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var CompanyRepository  */
+    /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
     /**
@@ -46,11 +46,14 @@ class GetCompaniesByOrganizationIdHandler
         $organizationId = OrganizationId::fromString($query->getOrganizationId());
         $userType = UserType::byName($query->getUserType());
 
-        if ($userType->sameValueAs(UserType::TYPE_ADMIN())) {
+        if (
+            $userType->sameValueAs(UserType::TYPE_OWNER()) ||
+            $userType->sameValueAs(UserType::TYPE_ADMIN())
+        ) {
             $companies = $this->companyRepository->getCompaniesByOrganizationId($organizationId);
         } else {
             $this->logger->critical(
-                'User is not an admin',
+                'User is neither owner nor admin',
                 [
                     'organization_id' => $organizationId->toString(),
                     'user_type' => $userType->getValue(),
@@ -59,14 +62,14 @@ class GetCompaniesByOrganizationIdHandler
             );
 
             throw new Exception(
-                'User is not an admin: ' . $userType->getValue(),
+                'User is neither owner nor admin: ' . $userType->getValue(),
                 Response::HTTP_BAD_REQUEST
             );
         }
 
         if (empty($companies)) {
             $this->logger->critical(
-                'Companies not found by organization',
+                'Companies could not be found by organization',
                 [
                     'organization_id' => $organizationId->toString(),
                     'method' => __METHOD__,
@@ -74,7 +77,7 @@ class GetCompaniesByOrganizationIdHandler
             );
 
             throw new Exception(
-                'Companies not found by organization',
+                'Companies could not be found by organization',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -83,7 +86,6 @@ class GetCompaniesByOrganizationIdHandler
         foreach ($companies as $company) {
             $companiesResult[] = [
                 'companyId' => $company->companyId()->toString(),
-                'organizationId' => $company->organizationId()->toString(),
                 'name' => $company->name(),
                 'tin' => $company->tin(),
                 'email' => $company->email(),
