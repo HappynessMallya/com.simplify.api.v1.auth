@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class GetCompaniesByParamsController extends BaseController
 {
     /**
-     * @Route(path="/companies/query", methods={"GET"})
+     * @Route(path="/companies/getBy/query", methods={"GET"})
      *
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
@@ -40,7 +40,6 @@ class GetCompaniesByParamsController extends BaseController
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
         $organizationId = $tokenData['organizationId'];
-        $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
         $companyName = $request->query->get('companyName');
@@ -53,7 +52,6 @@ class GetCompaniesByParamsController extends BaseController
 
         $query = new GetCompaniesByParamsQuery(
             $organizationId,
-            $userId,
             $userType,
             $companyName ?? '',
             $tin ?? '',
@@ -66,41 +64,12 @@ class GetCompaniesByParamsController extends BaseController
 
         try {
             $companies = $handler->__invoke($query);
-
-            if (!$companies) {
-                $this->logger->debug(
-                    'No companies found by the search criteria',
-                    [
-                        'criteria' => [
-                            'userId' => $userId,
-                            'userType' => $userType,
-                            'companyName' => $companyName,
-                            'tin' => $tin,
-                            'vrn' => $vrn,
-                            'email' => $email,
-                            'mobileNumber' => $mobileNumber,
-                            'serial' => $serial,
-                            'status' => $status,
-                        ],
-                    ]
-                );
-
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'error' => 'No companies found by the search criteria',
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Error trying to find the set of companies',
+                'An internal server error has been occurred',
                 [
-                    'user_id' => $userId,
-                    'user_type' => $userType,
-                    'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
@@ -108,9 +77,9 @@ class GetCompaniesByParamsController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Error trying to find the set of companies. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $exception->getCode()
             );
         }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Organization\V1\QueryHandler;
 
 use App\Application\Organization\V1\Query\GetCompaniesByOrganizationIdQuery;
+use App\Domain\Model\Company\Company;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserType;
 use App\Domain\Repository\CompanyRepository;
@@ -83,12 +84,15 @@ class GetCompaniesByOrganizationIdHandler
         }
 
         $companiesResult = [];
+
+        /** @var Company $company */
         foreach ($companies as $company) {
             $companiesResult[] = [
                 'companyId' => $company->companyId()->toString(),
                 'name' => $company->name(),
                 'tin' => $company->tin(),
                 'email' => $company->email(),
+                'phone' => $company->phone() ?? '',
                 'address' => $company->address(),
                 'traRegistration' => $company->traRegistration(),
                 'status' => $company->companyStatus(),

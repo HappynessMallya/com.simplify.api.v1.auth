@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetCompaniesByOrganizationController
+ * Class GetCompaniesByOrganizationIdController
  * @package App\Infrastructure\Symfony\Api\Organization\V1\Controller
  */
 class GetCompaniesByOrganizationIdController extends BaseController

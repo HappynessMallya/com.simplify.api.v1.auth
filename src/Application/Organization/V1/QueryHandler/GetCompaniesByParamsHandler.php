@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Organization\V1\QueryHandler;
 
 use App\Application\Organization\V1\Query\GetCompaniesByParamsQuery;
+use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyStatus;
 use App\Domain\Model\Organization\OrganizationId;
-use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserType;
 use App\Domain\Repository\CompanyRepository;
 use Exception;
@@ -40,17 +40,20 @@ class GetCompaniesByParamsHandler
 
     /**
      * @param GetCompaniesByParamsQuery $query
-     * @return array|null
+     * @return array
      * @throws Exception
      */
     public function __invoke(GetCompaniesByParamsQuery $query): array
     {
         $organizationId = OrganizationId::fromString($query->getOrganizationId());
-        $userId = UserId::fromString($query->getUserId());
         $userType = UserType::byName($query->getUserType());
 
-        if ($userType->sameValueAs(UserType::TYPE_OWNER())) {
+        if (
+            $userType->sameValueAs(UserType::TYPE_OWNER()) ||
+            $userType->sameValueAs(UserType::TYPE_ADMIN())
+        ) {
             $criteria = [];
+
             if (!empty($query->getCompanyName())) {
                 $criteria['name'] = trim($query->getCompanyName());
             }
@@ -75,49 +78,49 @@ class GetCompaniesByParamsHandler
                 $criteria['companyStatus'] = CompanyStatus::byValue(trim($query->getStatus()))->getValue();
             }
 
-            $companies = $this->companyRepository->getByOrganizationIdAndParams($organizationId, $criteria);
+            $companiesByCriteria = $this->companyRepository->getByOrganizationIdAndParams($organizationId, $criteria);
         } else {
             $this->logger->critical(
-                'User is not an owner',
+                'User is neither owner nor admin',
                 [
-                    'user_id' => $userId->toString(),
                     'user_type' => $userType->getValue(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'User is not an owner: ' . $userType->getValue(),
+                'User is neither owner nor admin: ' . $userType->getValue(),
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        if (empty($companies)) {
+        if (empty($companiesByCriteria)) {
             $this->logger->critical(
-                'Companies not found by the search criteria',
+                'Companies could not be found by the search criteria',
                 [
-                    'user_id' => $userId->toString(),
                     'organization_id' => $organizationId->toString(),
+                    'criteria' => $criteria,
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'Companies not found by the search criteria',
+                'Companies could not be found by the search criteria',
                 Response::HTTP_NOT_FOUND
             );
         }
 
-        $responseCompanies = [];
+        $companies = [];
 
-        foreach ($companies as $company) {
-            if (($company->traRegistration()['VRN'] == $query->getVrn()) || empty($query->getVrn())) {
-                $responseCompanies[] = [
+        /** @var Company $company */
+        foreach ($companiesByCriteria as $company) {
+            if (empty($query->getVrn()) || ($company->traRegistration()['VRN'] == $query->getVrn())) {
+                $companies[] = [
                     'companyId' => $company->companyId()->toString(),
                     'name' => $company->name(),
                     'tin' => $company->tin(),
                     'email' => $company->email(),
-                    'phone' => $company->phone(),
+                    'phone' => $company->phone() ?? '',
                     'address' => $company->address(),
                     'traRegistration' => $company->traRegistration(),
                     'status' => $company->companyStatus(),
@@ -126,6 +129,6 @@ class GetCompaniesByParamsHandler
             }
         }
 
-        return $responseCompanies;
+        return $companies;
     }
 }

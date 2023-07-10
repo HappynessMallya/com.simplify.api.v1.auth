@@ -14,9 +14,6 @@ class GetCompaniesByParamsQuery
     private string $organizationId;
 
     /** @var string */
-    private string $userId;
-
-    /** @var string */
     private string $userType;
 
     /** @var string */
@@ -42,7 +39,6 @@ class GetCompaniesByParamsQuery
 
     /**
      * @param string $organizationId
-     * @param string $userId
      * @param string $userType
      * @param string $companyName
      * @param string $tin
@@ -54,7 +50,6 @@ class GetCompaniesByParamsQuery
      */
     public function __construct(
         string $organizationId,
-        string $userId,
         string $userType,
         string $companyName,
         string $tin,
@@ -64,7 +59,7 @@ class GetCompaniesByParamsQuery
         string $serial,
         string $status
     ) {
-        $this->userId = $userId;
+        $this->organizationId = $organizationId;
         $this->userType = $userType;
         $this->companyName = $companyName;
         $this->tin = $tin;
@@ -73,15 +68,14 @@ class GetCompaniesByParamsQuery
         $this->mobileNumber = $mobileNumber;
         $this->serial = $serial;
         $this->status = $status;
-        $this->organizationId = $organizationId;
     }
 
     /**
      * @return string
      */
-    public function getUserId(): string
+    public function getOrganizationId(): string
     {
-        return $this->userId;
+        return $this->organizationId;
     }
 
     /**
@@ -146,13 +140,5 @@ class GetCompaniesByParamsQuery
     public function getStatus(): string
     {
         return $this->status;
-    }
-
-    /**
-     * @return string
-     */
-    public function getOrganizationId(): string
-    {
-        return $this->organizationId;
     }
 }
