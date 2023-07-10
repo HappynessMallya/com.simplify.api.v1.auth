@@ -44,14 +44,16 @@ class CreateCompanyType extends AbstractType
                 'tin',
                 TextType::class,
                 [
-                    'constraints' => new Assert\NotBlank(),
+                    'constraints' => [
+                        new Assert\NotBlank(),
+                    ],
                 ]
             )->add(
                 'email',
                 TextType::class,
                 [
                     'constraints' => [
-                        new Assert\Email()
+                        new Assert\Email(),
                     ],
                 ]
             )->add(

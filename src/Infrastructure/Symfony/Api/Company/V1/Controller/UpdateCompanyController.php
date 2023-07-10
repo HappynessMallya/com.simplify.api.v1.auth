@@ -47,7 +47,7 @@ class UpdateCompanyController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => $this->getValidationErrors($form),
+                    'errors' => $this->getValidationErrors($form),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -55,35 +55,32 @@ class UpdateCompanyController extends BaseController
 
         $command->setCompanyId($companyId);
 
-        $isUpdated = false;
-
         try {
             $isUpdated = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to update company',
+                'An internal server error has been occurred',
                 [
-                    'error_message' => $exception->getMessage(),
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
 
-            if ($exception->getCode() === Response::HTTP_NOT_FOUND) {
-                return $this->createApiResponse(
-                    [
-                        'success' => false,
-                        'errors' => 'Exception error trying to update company. ' . $exception->getMessage(),
-                    ],
-                    Response::HTTP_NOT_FOUND
-                );
-            }
+            return $this->createApiResponse(
+                [
+                    'success' => false,
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
+                ],
+                $exception->getCode()
+            );
         }
 
         if (!$isUpdated) {
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'message' => 'Company has not been updated',
+                    'error' => 'Company has not been updated',
                 ],
                 Response::HTTP_BAD_REQUEST
             );

@@ -46,10 +46,10 @@ class UpdateCompanyHandler
 
     /**
      * @param UpdateCompanyCommand $command
-     * @return bool|null
+     * @return bool
      * @throws Exception
      */
-    public function handle(UpdateCompanyCommand $command): ?bool
+    public function handle(UpdateCompanyCommand $command): bool
     {
         $companyId = CompanyId::fromString($command->getCompanyId());
         $company = $this->companyRepository->get($companyId);
@@ -69,6 +69,61 @@ class UpdateCompanyHandler
             );
         }
 
+        $criteria['updatedAt'] = new DateTime('now');
+
+        if (!empty($command->getName())) {
+            $criteria['name'] = $command->getName();
+        }
+
+        if (!empty($command->getEmail())) {
+            $criteria['email'] = $command->getEmail();
+        }
+
+        if (!empty($command->getPhone())) {
+            $criteria['phone'] = $command->getPhone();
+        }
+
+
+        if (!empty($command->getAddress())) {
+            $criteria['address'] = $command->getAddress();
+        }
+
+        if (count($criteria) === 1) {
+            $this->logger->critical(
+                'You need at least one field to update company',
+                [
+                    'company_id' => $command->getCompanyId(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'You need at least one field to update company',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $isPreRegistered = $this->companyRepository->findOneBy(
+            [
+                'name' => $command->getName(),
+            ]
+        );
+
+        if (!empty($isPreRegistered)) {
+            $this->logger->critical(
+                'Company has pre-registered with the name provided',
+                [
+                    'name' => $command->getName(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'Company has pre-registered with the name provided',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
         if (!empty($command->getOrganizationId())) {
             $organizationId = OrganizationId::fromString($command->getOrganizationId());
             $organization = $this->organizationRepository->get($organizationId);
@@ -78,7 +133,6 @@ class UpdateCompanyHandler
                     'Organization could not be found',
                     [
                         'organization_id' => $organizationId->toString(),
-                        'company_id' => $companyId->toString(),
                         'method' => __METHOD__,
                     ]
                 );
@@ -92,18 +146,9 @@ class UpdateCompanyHandler
             $company->setOrganizationId($organizationId);
         }
 
-        $company->update(
-            [
-                'name' => $command->getName(),
-                'email' => $command->getEmail(),
-                'phone' => $command->getPhone(),
-                'address' => $command->getAddress(),
-                'updatedAt' => new DateTime('now'),
-            ]
-        );
-
         try {
-            $response = $this->companyRepository->save($company);
+            $company->update($criteria);
+            $isUpdated = $this->companyRepository->save($company);
         } catch (Exception $exception) {
             $this->logger->critical(
                 'Company could not be updated',
@@ -115,11 +160,26 @@ class UpdateCompanyHandler
             );
 
             throw new Exception(
-                $exception->getMessage(),
+                'Company could not be updated. ' . $exception->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
 
-        return $response;
+        if ($isUpdated) {
+            $this->logger->debug(
+                'Company updated successfully',
+                [
+                    'company_id' => $companyId->toString(),
+                    'name' => $company->name(),
+                    'email' => $company->email(),
+                    'phone' => $company->phone(),
+                    'address' => $company->address(),
+                ]
+            );
+
+            return true;
+        }
+
+        return false;
     }
 }

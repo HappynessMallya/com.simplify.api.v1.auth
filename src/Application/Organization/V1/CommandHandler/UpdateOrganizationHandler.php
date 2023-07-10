@@ -142,6 +142,7 @@ class UpdateOrganizationHandler
                     'name' => $organization->getName(),
                     'owner_name' => $organization->getOwnerName(),
                     'owner_email' => $organization->getOwnerEmail(),
+                    'owner_phone_number' => $organization->getOwnerPhoneNumber(),
                 ]
             );
 
