@@ -11,17 +11,21 @@ namespace App\Application\Company\V1\Query;
 class GetCompanyByIdQuery
 {
     /** @var string */
-    protected $companyId;
+    private string $companyId;
 
-    public function __construct(string $companyId)
-    {
+    /**
+     * @param string $companyId
+     */
+    public function __construct(
+        string $companyId
+    ) {
         $this->companyId = $companyId;
     }
 
     /**
      * @return string
      */
-    public function companyId(): string
+    public function getCompanyId(): string
     {
         return $this->companyId;
     }

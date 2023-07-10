@@ -28,17 +28,16 @@ class GetCompanyByIdController extends BaseController
         Request $request
     ): JsonResponse {
         $companyId = $request->get('companyId');
-
         $query = new GetCompanyByIdQuery($companyId);
 
         try {
             $company =  $this->commandBus->handle($query);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to get company',
+                'An internal server error has been occurred',
                 [
-                    'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
@@ -46,34 +45,14 @@ class GetCompanyByIdController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to get company. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
-        if (empty($company)) {
-            return $this->createApiResponse(
-                [
-                    'success' => false,
-                    'errors' => 'Company could not be found',
-                ],
-                Response::HTTP_NOT_FOUND
+                $exception->getCode()
             );
         }
 
         return $this->createApiResponse(
-            [
-                'companyId' => $company->companyId()->toString(),
-                'organizationId' => $company->organizationId()->toString(),
-                'name' => $company->name(),
-                'tin' => $company->tin(),
-                'email' => $company->email(),
-                'address' => $company->address(),
-                'traRegistration' => $company->traRegistration(),
-                'createdAt' => $company->createdAt()->format('Y-m-d H:i:s'),
-                'status' => $company->companyStatus(),
-            ],
+            $company,
             Response::HTTP_OK
         );
     }
