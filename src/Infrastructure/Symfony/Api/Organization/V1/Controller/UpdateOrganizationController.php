@@ -34,7 +34,7 @@ class UpdateOrganizationController extends BaseController
 
         if ($form->isValid() === false) {
             $this->logger->critical(
-                'Invalid form',
+                'Invalid data',
                 [
                     'data' => $form->getData(),
                     'errors' => $this->getValidationErrors($form),

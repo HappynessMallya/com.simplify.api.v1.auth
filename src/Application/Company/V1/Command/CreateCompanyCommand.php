@@ -65,7 +65,7 @@ class CreateCompanyCommand
      */
     public function getAddress(): ?string
     {
-        return $this->address;
+        return empty($this->address) ? '' : $this->address;
     }
 
     /**
@@ -81,7 +81,7 @@ class CreateCompanyCommand
      */
     public function getEmail(): ?string
     {
-        return $this->email;
+        return empty($this->email) ? '' : $this->email;
     }
 
     /**
@@ -97,7 +97,7 @@ class CreateCompanyCommand
      */
     public function getPhone(): ?string
     {
-        return $this->phone;
+        return empty($this->phone) ? '' : $this->phone;
     }
 
     /**
@@ -113,7 +113,7 @@ class CreateCompanyCommand
      */
     public function getSerial(): ?string
     {
-        return $this->serial;
+        return empty($this->serial) ? '' : $this->serial;
     }
 
     /**

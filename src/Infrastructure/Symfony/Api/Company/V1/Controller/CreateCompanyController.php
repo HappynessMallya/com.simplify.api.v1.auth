@@ -71,17 +71,16 @@ class CreateCompanyController extends BaseController
                     'success' => false,
                     'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $exception->getCode()
             );
         }
 
         return $this->createApiResponse(
             [
-                'success' => true,
                 'company_id' => $companyId,
                 'created_at' => (
                     new DateTime('now', new DateTimeZone('Africa/Dar_es_Salaam'))
-                )->format('Y-m-d H:i:s')
+                )->format('Y-m-d H:i:s'),
             ],
             Response::HTTP_CREATED
         );

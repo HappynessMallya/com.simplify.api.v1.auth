@@ -40,18 +40,18 @@ class CreateCompanyHandler
 
     /**
      * @param CreateCompanyCommand $command
-     * @return string|null
+     * @return string
      * @throws Exception
      */
     public function handle(CreateCompanyCommand $command): string
     {
-        $companyRegistered = $this->companyRepository->findOneBy(
+        $isPreRegistered = $this->companyRepository->findOneBy(
             [
                 'tin' => $command->getTin(),
             ]
         );
 
-        if (!empty($companyRegistered)) {
+        if (!empty($isPreRegistered)) {
             $this->logger->critical(
                 'Company has pre-registered with the TIN number provided',
                 [
@@ -60,7 +60,31 @@ class CreateCompanyHandler
                 ]
             );
 
-            throw new Exception('Company has pre-registered with the TIN number provided');
+            throw new Exception(
+                'Company has pre-registered with the TIN number provided',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        $isPreRegistered = $this->companyRepository->findOneBy(
+            [
+                'name' => $command->getName(),
+            ]
+        );
+
+        if (!empty($isPreRegistered)) {
+            $this->logger->critical(
+                'Company has pre-registered with the name provided',
+                [
+                    'tin' => $command->getName(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'Company has pre-registered with the name provided',
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         $companyId = CompanyId::generate();
@@ -91,7 +115,7 @@ class CreateCompanyHandler
             );
 
             throw new Exception(
-                $exception->getMessage(),
+                'Company could not be registered' . $exception->getMessage(),
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -103,6 +127,7 @@ class CreateCompanyHandler
                     'company_id' => $companyId->toString(),
                     'name' => $company->name(),
                     'tin' => $company->tin(),
+                    'email' => $company->email(),
                 ]
             );
 

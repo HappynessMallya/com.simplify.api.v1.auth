@@ -45,19 +45,6 @@ class CreateOrganizationHandler
      */
     public function handle(CreateOrganizationCommand $command): string
     {
-        $organizationId = OrganizationId::generate();
-
-        $organization = Organization::create(
-            $organizationId,
-            $command->getName(),
-            $command->getOwnerName(),
-            $command->getOwnerEmail(),
-            $command->getOwnerPhoneNumber() ?? null,
-            OrganizationStatus::ACTIVE(),
-            new DateTime('now'),
-            null,
-        );
-
         $isPreRegistered = $this->organizationRepository->findOneBy(
             [
                 'name' => $command->getName(),
@@ -78,6 +65,19 @@ class CreateOrganizationHandler
                 Response::HTTP_BAD_REQUEST
             );
         }
+
+        $organizationId = OrganizationId::generate();
+
+        $organization = Organization::create(
+            $organizationId,
+            $command->getName(),
+            $command->getOwnerName(),
+            $command->getOwnerEmail(),
+            $command->getOwnerPhoneNumber() ?? null,
+            OrganizationStatus::ACTIVE(),
+            new DateTime('now'),
+            null,
+        );
 
         try {
             $isSaved = $this->organizationRepository->save($organization);
