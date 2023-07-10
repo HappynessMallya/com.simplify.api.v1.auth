@@ -28,7 +28,6 @@ class GetCompanyByTinController extends BaseController
         Request $request
     ): JsonResponse {
         $tin = $request->get('tin');
-
         $query = new GetCompanyByTinQuery($tin);
 
         try {
@@ -37,7 +36,8 @@ class GetCompanyByTinController extends BaseController
             $this->logger->critical(
                 'An internal server error has been occurred',
                 [
-                    'error' => $exception->getMessage(),
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
@@ -47,17 +47,7 @@ class GetCompanyByTinController extends BaseController
                     'success' => false,
                     'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-
-        if (empty($company)) {
-            return $this->createApiResponse(
-                [
-                    'success' => false,
-                    'errors' => 'Company could not be found',
-                ],
-                Response::HTTP_NOT_FOUND
+                $exception->getCode()
             );
         }
 

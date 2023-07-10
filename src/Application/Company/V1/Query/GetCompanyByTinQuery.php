@@ -11,13 +11,14 @@ namespace App\Application\Company\V1\Query;
 class GetCompanyByTinQuery
 {
     /** @var string */
-    protected string $tin;
+    private string $tin;
 
     /**
      * @param string $tin
      */
-    public function __construct(string $tin)
-    {
+    public function __construct(
+        string $tin
+    ) {
         $this->tin = $tin;
     }
 
