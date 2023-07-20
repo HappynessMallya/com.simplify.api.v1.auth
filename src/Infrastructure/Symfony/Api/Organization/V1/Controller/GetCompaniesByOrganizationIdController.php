@@ -8,13 +8,10 @@ use App\Application\Organization\V1\Query\GetCompaniesByOrganizationIdQuery;
 use App\Application\Organization\V1\QueryHandler\GetCompaniesByOrganizationIdHandler;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
-use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class GetCompaniesByOrganizationIdController
@@ -25,24 +22,19 @@ class GetCompaniesByOrganizationIdController extends BaseController
     /**
      * @Route(path="/{organizationId}/companies", methods={"GET"})
      *
-     * @param JWTTokenManagerInterface $jwtManager
-     * @param TokenStorageInterface $jwtStorage
      * @param Request $request
+     * @param string $organizationId
      * @param GetCompaniesByOrganizationIdHandler $handler
      * @return JsonResponse
-     * @throws JWTDecodeFailureException
      */
     public function getCompaniesByOrganizationIdAction(
-        JWTTokenManagerInterface $jwtManager,
-        TokenStorageInterface $jwtStorage,
         Request $request,
+        string $organizationId,
         GetCompaniesByOrganizationIdHandler $handler
     ): JsonResponse {
-        $tokenData = $jwtManager->decode($jwtStorage->getToken());
         $organizationId = $request->get('organizationId');
-        $userType = $tokenData['userType'];
 
-        $query = new GetCompaniesByOrganizationIdQuery($organizationId, $userType);
+        $query = new GetCompaniesByOrganizationIdQuery($organizationId);
 
         try {
             $companies = $handler->__invoke($query);

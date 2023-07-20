@@ -45,28 +45,7 @@ class GetCompaniesByOrganizationIdHandler
     public function __invoke(GetCompaniesByOrganizationIdQuery $query): array
     {
         $organizationId = OrganizationId::fromString($query->getOrganizationId());
-        $userType = UserType::byName($query->getUserType());
-
-        if (
-            $userType->sameValueAs(UserType::TYPE_OWNER()) ||
-            $userType->sameValueAs(UserType::TYPE_ADMIN())
-        ) {
-            $companies = $this->companyRepository->getCompaniesByOrganizationId($organizationId);
-        } else {
-            $this->logger->critical(
-                'User is neither owner nor admin',
-                [
-                    'organization_id' => $organizationId->toString(),
-                    'user_type' => $userType->getValue(),
-                    'method' => __METHOD__,
-                ]
-            );
-
-            throw new Exception(
-                'User is neither owner nor admin: ' . $userType->getValue(),
-                Response::HTTP_BAD_REQUEST
-            );
-        }
+        $companies = $this->companyRepository->getCompaniesByOrganizationId($organizationId);
 
         if (empty($companies)) {
             $this->logger->critical(

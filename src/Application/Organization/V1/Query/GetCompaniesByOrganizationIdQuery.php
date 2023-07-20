@@ -13,19 +13,13 @@ class GetCompaniesByOrganizationIdQuery
     /** @var string */
     private string $organizationId;
 
-    /** @var string */
-    private string $userType;
-
     /**
      * @param string $organizationId
-     * @param string $userType
      */
     public function __construct(
-        string $organizationId,
-        string $userType
+        string $organizationId
     ) {
         $this->organizationId = $organizationId;
-        $this->userType = $userType;
     }
 
     /**
@@ -34,13 +28,5 @@ class GetCompaniesByOrganizationIdQuery
     public function getOrganizationId(): string
     {
         return $this->organizationId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUserType(): string
-    {
-        return $this->userType;
     }
 }
