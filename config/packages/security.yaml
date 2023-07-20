@@ -71,7 +71,7 @@ security:
             anonymous: true
             methods: ['POST']
         organization_companies:
-            pattern: ^/api/v1/organization/\d+/companies
+            pattern: ^/api/v1/organization/\d+
             stateless: true
             anonymous: true
         api_v1:
@@ -105,4 +105,5 @@ security:
         - { path: ^/api/v1/user/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v2/user/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/user/verify, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/organization/\d+/companies, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         
