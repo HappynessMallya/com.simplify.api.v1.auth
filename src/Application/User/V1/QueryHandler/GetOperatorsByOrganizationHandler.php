@@ -62,7 +62,10 @@ class GetOperatorsByOrganizationHandler
         $organizationId = OrganizationId::fromString($query->getOrganizationId());
         $userType = UserType::byName($query->getUserType());
 
-        if ($userType->sameValueAs(UserType::TYPE_OWNER())) {
+        if (
+            $userType->sameValueAs(UserType::TYPE_OWNER()) ||
+            $userType->sameValueAs(UserType::TYPE_ADMIN())
+        ) {
             $companies = $this->companyRepository->getCompaniesByOrganizationId($organizationId);
         } else {
             $this->logger->critical(
@@ -142,6 +145,7 @@ class GetOperatorsByOrganizationHandler
                     'userType' => $operator->getUserType()->getValue(),
                     'companies' => $companies,
                     'createdAt' => $operator->createdAt()->format('Y-m-d H:i:s'),
+                    'status' => $operator->status()->getValue(),
                 ];
             }
         }
