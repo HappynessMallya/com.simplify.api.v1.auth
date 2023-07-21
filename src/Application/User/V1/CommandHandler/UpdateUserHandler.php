@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Application\User\V1\CommandHandler;
 
 use App\Application\User\V1\Command\UpdateUserCommand;
+use App\Domain\Model\User\UserId;
+use App\Domain\Model\User\UserType;
 use App\Domain\Repository\UserRepository;
 use DateTime;
 use Exception;
@@ -42,11 +44,39 @@ class UpdateUserHandler
      */
     public function handle(UpdateUserCommand $command): bool
     {
-        $user = $this->userRepository->getByEmail($command->getEmail());
+        $isById = false;
+
+        if (!empty($command->getUserType())) {
+            $isById = true;
+            $userId = UserId::fromString($command->getUserId());
+            $userTypeWhoUpdate = UserType::byName($command->getUserType());
+
+            if (
+                $userTypeWhoUpdate->sameValueAs(UserType::TYPE_OWNER()) ||
+                $userTypeWhoUpdate->sameValueAs(UserType::TYPE_ADMIN())
+            ) {
+                $user = $this->userRepository->get($userId);
+            } else {
+                $this->logger->critical(
+                    'User who is making the change is neither owner nor admin',
+                    [
+                        'user_type' => $userTypeWhoUpdate->getValue(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'User who is making the change is neither owner nor admin: ' . $userTypeWhoUpdate->getValue(),
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+        } else {
+            $user = $this->userRepository->getByEmail($command->getUsername());
+        }
 
         if (empty($user)) {
             $this->logger->critical(
-                'User could not be found by email',
+                'User could not be found',
                 [
                     'email' => $command->getEmail(),
                     'method' => __METHOD__,
@@ -54,7 +84,22 @@ class UpdateUserHandler
             );
 
             throw new Exception(
-                'User could not be found by email: ' . $command->getEmail(),
+                'User could not be found',
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        if ($isById && (!$user->getUserType()->sameValueAs(UserType::TYPE_OPERATOR()))) {
+            $this->logger->critical(
+                'User to be updated is not an operator',
+                [
+                    'email' => $command->getEmail(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'User to be updated is not an operator: '. $user->getUserType()->getValue(),
                 Response::HTTP_NOT_FOUND
             );
         }

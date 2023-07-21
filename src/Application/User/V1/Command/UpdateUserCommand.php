@@ -10,6 +10,15 @@ namespace App\Application\User\V1\Command;
  */
 class UpdateUserCommand
 {
+    /** @var string */
+    private string $username;
+
+    /** @var string|null */
+    private ?string $userId;
+
+    /** @var string|null */
+    private ?string $userTypeWhoUpdate;
+
     /** @var string|null */
     private ?string $firstName;
 
@@ -21,6 +30,54 @@ class UpdateUserCommand
 
     /** @var string|null */
     private ?string $mobileNumber;
+
+    /**
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     */
+    public function setUsername(string $username): void
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUserId(): ?string
+    {
+        return empty($this->userId) ? null : $this->userId;
+    }
+
+    /**
+     * @param string|null $userId
+     */
+    public function setUserId(?string $userId): void
+    {
+        $this->userId = $userId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUserType(): ?string
+    {
+        return empty($this->userTypeWhoUpdate) ? null : $this->userTypeWhoUpdate;
+    }
+
+    /**
+     * @param string|null $userTypeWhoUpdate
+     */
+    public function setUserType(?string $userTypeWhoUpdate): void
+    {
+        $this->userTypeWhoUpdate = $userTypeWhoUpdate;
+    }
 
     /**
      * @return string|null

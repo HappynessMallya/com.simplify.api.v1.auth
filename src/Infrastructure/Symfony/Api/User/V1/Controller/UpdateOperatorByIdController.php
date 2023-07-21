@@ -17,13 +17,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class UpdateUserController
+ * Class UpdateOperatorByIdController
  * @package App\Infrastructure\Symfony\Api\User\V1\Controller
  */
-class UpdateUserController extends BaseController
+class UpdateOperatorByIdController extends BaseController
 {
     /**
-     * @Route(path="/", methods={"PUT"})
+     * @Route(path="/{operatorId}", methods={"PUT"})
      *
      * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
@@ -37,7 +37,8 @@ class UpdateUserController extends BaseController
         TokenStorageInterface $jwtStorage
     ): JsonResponse {
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
-        $email = $tokenData['email'];
+        $operatorId = $request->get('operatorId');
+        $userType = $tokenData['userType'];
 
         $command = new UpdateUserCommand();
         $form = $this->createForm(UpdateUserType::class, $command);
@@ -62,7 +63,8 @@ class UpdateUserController extends BaseController
             );
         }
 
-        $command->setUsername($email);
+        $command->setUserId($operatorId);
+        $command->setUserType($userType);
 
         try {
             $isUpdated = $this->commandBus->handle($command);
