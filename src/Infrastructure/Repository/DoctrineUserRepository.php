@@ -159,14 +159,14 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
     }
 
     /**
-     * @param string $username
+     * @param string $email
      * @return User|null
      */
-    public function getByUsername(string $username): ?User
+    public function getByEmail(string $email): ?User
     {
         $users = $this->findBy(
             [
-                'email' => $username,
+                'email' => $email,
             ]
         );
 

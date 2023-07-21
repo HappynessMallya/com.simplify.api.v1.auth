@@ -10,9 +10,6 @@ namespace App\Application\User\V1\Command;
  */
 class UpdateUserCommand
 {
-    /** @var string */
-    private string $username;
-
     /** @var string|null */
     private ?string $firstName;
 
@@ -24,22 +21,6 @@ class UpdateUserCommand
 
     /** @var string|null */
     private ?string $mobileNumber;
-
-    /**
-     * @return string
-     */
-    public function getUsername(): string
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername(string $username): void
-    {
-        $this->username = $username;
-    }
 
     /**
      * @return string|null
