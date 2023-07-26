@@ -191,7 +191,9 @@ class UserEntity extends User implements UserInterface
         $this->status = $status;
     }
 
-    public function eraseCredentials() {}
+    public function eraseCredentials(): void
+    {
+    }
 
     /**
      * @return string

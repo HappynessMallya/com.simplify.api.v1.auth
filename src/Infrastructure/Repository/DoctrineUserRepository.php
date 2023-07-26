@@ -233,8 +233,8 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
                 SELECT u
                 FROM \App\Domain\Model\User\User u
                 WHERE (u.email = :uname OR u.username = :uname)
-                    AND (u.status = 'ACTIVE' OR u.status = 'CHANGE_PASSWORD') AND u.enabled = 1"
-            )
+                    AND (u.status = 'ACTIVE' OR u.status = 'CHANGE_PASSWORD') AND u.enabled = 1
+            ")
             ->setParameter('uname', $username)
             ->getOneOrNullResult();
         } catch (

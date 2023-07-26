@@ -133,10 +133,14 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
      * @param UserId $userId
      * @param CompanyId $companyId
      */
-    public function changeStatusUserOverCompany(UserId $userId, CompanyId $companyId): void {}
+    public function changeStatusUserOverCompany(UserId $userId, CompanyId $companyId): void
+    {
+    }
 
     /**
      * @param UserId $userId
      */
-    public function removeCompanyByUserId(UserId $userId): void {}
+    public function removeCompanyByUserId(UserId $userId): void
+    {
+    }
 }

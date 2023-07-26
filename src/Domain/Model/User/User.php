@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domain\Model\User;
 
 use App\Domain\Model\Company\CompanyId;
-use App\Entity\Values\Date;
 use DateTime;
 
 /**

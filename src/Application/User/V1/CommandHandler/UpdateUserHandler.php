@@ -139,7 +139,7 @@ class UpdateUserHandler
             );
 
             throw new Exception(
-                'User to be updated is not an operator: '. $user->getUserType()->getValue(),
+                'User to be updated is not an operator: ' . $user->getUserType()->getValue(),
                 Response::HTTP_NOT_FOUND
             );
         }
