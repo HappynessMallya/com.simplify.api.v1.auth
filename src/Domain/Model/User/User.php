@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Model\User;
 
 use App\Domain\Model\Company\CompanyId;
+use App\Entity\Values\Date;
 use DateTime;
 
 /**
@@ -428,5 +429,15 @@ class User
     public function __toString(): string
     {
         return $this->email();
+    }
+
+    public function setEnable(bool $option): void
+    {
+        $this->enabled = $option;
+    }
+
+    public function setUpdatedAt(DateTime $dateTime): void
+    {
+        $this->updatedAt = $dateTime;
     }
 }
