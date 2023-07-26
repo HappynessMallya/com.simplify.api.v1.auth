@@ -3,7 +3,6 @@
 namespace App\Domain\Repository;
 
 use App\Domain\Model\Company\CompanyId;
-use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserId;
 
 /**
@@ -29,6 +28,11 @@ interface CompanyByUserRepository
      * @param array $companies
      */
     public function saveCompaniesToUser(UserId $userId, array $companies): void;
+
+    /**
+     * @param UserId $userId
+     */
+    public function removeCompaniesFromUser(UserId $userId): void;
 
     /**
      * @param UserId $userId

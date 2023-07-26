@@ -6,6 +6,7 @@ namespace App\Infrastructure\Symfony\Api\User\V1\FormType;
 
 use App\Application\User\V1\Command\UpdateUserCommand;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -24,6 +25,35 @@ class UpdateUserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add(
+                'companies',
+                CollectionType::class,
+                [
+                    'entry_type' => TextType::class,
+                    'constraints' => [
+                        new Assert\Count(
+                            [
+                                'min' => 1,
+                                'max' => 5,
+                            ]
+                        ),
+                    ],
+                    'entry_options' => [
+                        'constraints' => [
+                            new Assert\NotBlank(),
+                            new Assert\Length(
+                                [
+                                    'min' => 36,
+                                    'max' => 36,
+                                    'maxMessage' => 'Cannot be longer than {{ limit }} characters.',
+                                ]
+                            ),
+                        ],
+                    ],
+                    'allow_add' => true,
+                    'delete_empty' => true,
+                ]
+            )
             ->add(
                 'firstName',
                 TextType::class,

@@ -19,6 +19,9 @@ class UpdateUserCommand
     /** @var string|null */
     private ?string $userTypeWhoUpdate;
 
+    /** @var array */
+    private array $companies;
+
     /** @var string|null */
     private ?string $firstName;
 
@@ -77,6 +80,22 @@ class UpdateUserCommand
     public function setUserType(?string $userTypeWhoUpdate): void
     {
         $this->userTypeWhoUpdate = $userTypeWhoUpdate;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCompanies(): array
+    {
+        return $this->companies;
+    }
+
+    /**
+     * @param array $companies
+     */
+    public function setCompanies(array $companies): void
+    {
+        $this->companies = $companies;
     }
 
     /**

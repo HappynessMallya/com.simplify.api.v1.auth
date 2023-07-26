@@ -56,6 +56,7 @@ class RegisterUserController extends BaseController
                 'Invalid data',
                 [
                     'errors' => $this->getValidationErrors($form),
+                    'method' => __METHOD__,
                 ]
             );
 
@@ -75,10 +76,10 @@ class RegisterUserController extends BaseController
             $response = $this->commandBus->handle($command);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to register new user',
+                'An internal server error has been occurred',
                 [
-                    'error_message' => $exception->getMessage(),
-                    'error_code' => $exception->getCode(),
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
                     'method' => __METHOD__,
                 ]
             );
@@ -86,7 +87,7 @@ class RegisterUserController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Exception error trying to register new user. ' . $exception->getMessage(),
+                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
                 ],
                 $exception->getCode()
             );

@@ -30,6 +30,9 @@ class RegisterUserHandler
 {
     public const NEW_PASSWORD = 'tanzaniaSimplify123*';
 
+    /** @var LoggerInterface */
+    private LoggerInterface $logger;
+
     /** @var UserRepository */
     private UserRepository $userRepository;
 
@@ -42,28 +45,25 @@ class RegisterUserHandler
     /** @var SendCredentialsService */
     private SendCredentialsService $sendCredentials;
 
-    /** @var LoggerInterface */
-    private LoggerInterface $logger;
-
     /**
+     * @param LoggerInterface $logger
      * @param UserRepository $userRepository
      * @param DoctrineCompanyRepository $companyRepository
      * @param PasswordEncoder $passwordEncoder
      * @param SendCredentialsService $sendCredentials
-     * @param LoggerInterface $logger
      */
     public function __construct(
+        LoggerInterface $logger,
         UserRepository $userRepository,
         DoctrineCompanyRepository $companyRepository,
         PasswordEncoder $passwordEncoder,
-        SendCredentialsService $sendCredentials,
-        LoggerInterface $logger
+        SendCredentialsService $sendCredentials
     ) {
+        $this->logger = $logger;
         $this->userRepository = $userRepository;
         $this->companyRepository = $companyRepository;
         $this->passwordEncoder = $passwordEncoder;
         $this->sendCredentials = $sendCredentials;
-        $this->logger = $logger;
     }
 
     /**
@@ -96,8 +96,29 @@ class RegisterUserHandler
                 );
             }
 
+            $user = $this->userRepository->findOneBy(
+                [
+                    'username' => $command->getUsername(),
+                ]
+            );
+
+            if (!empty($user)) {
+                $this->logger->critical(
+                    'Username has pre-registered',
+                    [
+                        'username' => $user->username(),
+                        'email' => $user->email(),
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'Username has pre-registered',
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
+
             $user = User::create(
-                $userRole,
                 $userId,
                 $companyId,
                 $command->getEmail(),
@@ -105,7 +126,7 @@ class RegisterUserHandler
                 $password,
                 null,
                 UserStatus::CHANGE_PASSWORD(),
-                UserRole::USER(),
+                $userRole,
                 UserType::TYPE_OPERATOR(),
                 $command->getFirstName(),
                 $command->getLastName(),
@@ -118,7 +139,7 @@ class RegisterUserHandler
 
             if (!$isSaved) {
                 $this->logger->critical(
-                    'The user could not be registered',
+                    'User could not be registered',
                     [
                         'company_id' => $user->companyId(),
                         'user_id' => $user->userId(),
@@ -129,7 +150,7 @@ class RegisterUserHandler
                 );
 
                 throw new Exception(
-                    'The user could not be registered',
+                    'User could not be registered',
                     Response::HTTP_INTERNAL_SERVER_ERROR
                 );
             }

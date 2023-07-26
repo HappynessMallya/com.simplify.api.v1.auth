@@ -23,6 +23,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserEntity extends User implements UserInterface
 {
+    /**
+     * @param UserId $userId
+     * @param CompanyId $companyId
+     * @param string $email
+     * @param string|null $username
+     * @param string $password
+     * @param string|null $salt
+     * @param UserStatus $userStatus
+     * @param array $roles
+     * @param UserType $userType
+     */
     public function __construct(
         UserId $userId,
         CompanyId $companyId,
@@ -37,13 +48,13 @@ class UserEntity extends User implements UserInterface
         $this->userId = $userId;
         $this->companyId = $companyId;
         $this->email = $email;
-        $this->enabled = true;
         $this->username = $username;
         $this->password = $password;
         $this->salt = $salt;
-        $this->roles = $roles;
         $this->status = $userStatus ?? UserStatus::ACTIVE();
+        $this->roles = $roles;
         $this->userType = $userType;
+        $this->enabled = true;
     }
 
     /**
@@ -180,17 +191,14 @@ class UserEntity extends User implements UserInterface
         $this->status = $status;
     }
 
-    public function eraseCredentials()
-    {
-        //
-    }
+    public function eraseCredentials() {}
 
     /**
      * @return string
      */
     public function __toString(): string
     {
-        return (string) $this->getEmail();
+        return $this->getEmail();
     }
 
     /**
@@ -270,7 +278,7 @@ class UserEntity extends User implements UserInterface
      */
     public function setCompanyId(string $companyId): void
     {
-        $this->companyId = $companyId;
+        $this->companyId = CompanyId::fromString($companyId);
     }
 
     /**

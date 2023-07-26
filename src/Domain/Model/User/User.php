@@ -67,17 +67,28 @@ class User
     /** @var DateTime|null */
     private ?DateTime $updatedAt;
 
-    /**
-     * User constructor
-     */
     public function __construct()
     {
         $this->enabled = false;
         $this->roles = [];
     }
 
+    /**
+     * @param UserId $userId
+     * @param CompanyId $companyId
+     * @param string $email
+     * @param string|null $username
+     * @param string|null $password
+     * @param string|null $salt
+     * @param UserStatus $userStatus
+     * @param UserRole $userRole
+     * @param UserType $userType
+     * @param string $firstName
+     * @param string $lastName
+     * @param string|null $mobileNumber
+     * @return self
+     */
     public static function create(
-        UserRole $userRole,
         UserId $userId,
         CompanyId $companyId,
         string $email,
@@ -85,7 +96,7 @@ class User
         ?string $password,
         ?string $salt,
         UserStatus $userStatus,
-        UserRole $rol,
+        UserRole $userRole,
         UserType $userType,
         string $firstName,
         string $lastName,
@@ -94,20 +105,20 @@ class User
         $self = new self();
         $self->userId = $userId;
         $self->companyId = $companyId;
+        $self->email = $email;
+        $self->username = $username;
+        $self->password = $password;
+        $self->salt = $salt;
+        $self->status = $userStatus;
+        $self->roles[] = $userRole->getName();
+        $self->userType = $userType;
         $self->firstName = $firstName;
         $self->lastName = $lastName;
-        $self->username = $username;
-        $self->email = $email;
         $self->mobileNumber = $mobileNumber;
         $self->enabled = true;
-        $self->salt = $salt;
-        $self->password = $password;
         $self->lastLogin = null;
         $self->confirmationToken = null;
         $self->passwordRequestedAt = null;
-        $self->roles[] = $userRole->getName();
-        $self->userType = $userType;
-        $self->status = $userStatus;
         $self->createdAt = new Datetime();
 
         return $self;

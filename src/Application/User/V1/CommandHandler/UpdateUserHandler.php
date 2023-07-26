@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Application\User\V1\CommandHandler;
 
 use App\Application\User\V1\Command\UpdateUserCommand;
+use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserType;
+use App\Domain\Repository\CompanyByUserRepository;
 use App\Domain\Repository\UserRepository;
+use App\Infrastructure\Repository\DoctrineCompanyRepository;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -25,16 +28,28 @@ class UpdateUserHandler
     /** @var UserRepository */
     private UserRepository $userRepository;
 
+    /** @var DoctrineCompanyRepository */
+    private DoctrineCompanyRepository $companyRepository;
+
+    /** @var CompanyByUserRepository */
+    private CompanyByUserRepository $companyByUserRepository;
+
     /**
      * @param LoggerInterface $logger
      * @param UserRepository $userRepository
+     * @param DoctrineCompanyRepository $companyRepository
+     * @param CompanyByUserRepository $companyByUserRepository
      */
     public function __construct(
         LoggerInterface $logger,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        DoctrineCompanyRepository $companyRepository,
+        CompanyByUserRepository $companyByUserRepository
     ) {
         $this->logger = $logger;
         $this->userRepository = $userRepository;
+        $this->companyRepository = $companyRepository;
+        $this->companyByUserRepository = $companyByUserRepository;
     }
 
     /**
@@ -74,6 +89,28 @@ class UpdateUserHandler
             $user = $this->userRepository->getByEmail($command->getUsername());
         }
 
+        $companies = $command->getCompanies();
+
+        foreach ($companies as $providedCompanyId) {
+            $companyId = CompanyId::fromString($providedCompanyId);
+            $company = $this->companyRepository->get($companyId);
+
+            if (empty($company)) {
+                $this->logger->critical(
+                    'Company could not be found',
+                    [
+                        'company_id' => $providedCompanyId,
+                        'method' => __METHOD__,
+                    ]
+                );
+
+                throw new Exception(
+                    'At least one company could not be found',
+                    Response::HTTP_NOT_FOUND
+                );
+            }
+        }
+
         if (empty($user)) {
             $this->logger->critical(
                 'User could not be found',
@@ -88,6 +125,9 @@ class UpdateUserHandler
                 Response::HTTP_NOT_FOUND
             );
         }
+
+        $this->companyByUserRepository->removeCompaniesFromUser($user->userId());
+        $this->companyByUserRepository->saveCompaniesToUser($user->userId(), $companies);
 
         if ($isById && (!$user->getUserType()->sameValueAs(UserType::TYPE_OPERATOR()))) {
             $this->logger->critical(
@@ -138,15 +178,17 @@ class UpdateUserHandler
             );
         }
 
-        $isPreRegistered = $this->userRepository->findOneBy(
-            [
-                'email' => $command->getEmail(),
-            ]
-        );
+        if ($user->email() !== $command->getEmail()) {
+            $isPreRegistered = $this->userRepository->findOneBy(
+                [
+                    'email' => $command->getEmail(),
+                ]
+            );
+        }
 
         if (!empty($isPreRegistered)) {
             $this->logger->critical(
-                'User has pre-registered with the email provided',
+                'Another user has pre-registered with the email provided',
                 [
                     'email' => $command->getEmail(),
                     'method' => __METHOD__,
@@ -154,7 +196,7 @@ class UpdateUserHandler
             );
 
             throw new Exception(
-                'User has pre-registered with the email provided',
+                'Another user has pre-registered with the email provided',
                 Response::HTTP_BAD_REQUEST
             );
         }
