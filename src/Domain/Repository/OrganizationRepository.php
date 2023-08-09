@@ -26,12 +26,15 @@ interface OrganizationRepository
     public function save(Organization $organization): bool;
 
     /**
-     * @param int $page
-     * @param int $pageSize
-     * @param string|null $orderBy
      * @return array
      */
-    public function getAll(int $page, int $pageSize, ?string $orderBy): array;
+    public function getAll(): array;
+
+    /**
+     * @param OrganizationId $organizationId
+     * @return array
+     */
+    public function getCompaniesByOrganization(OrganizationId $organizationId): array;
 
     /**
      * @param array $criteria

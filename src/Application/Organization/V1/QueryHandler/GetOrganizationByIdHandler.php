@@ -44,6 +44,7 @@ class GetOrganizationByIdHandler
     {
         $organizationId = OrganizationId::fromString($query->getOrganizationId());
         $organization = $this->organizationRepository->get($organizationId);
+        $companiesByOrganization = $this->organizationRepository->getCompaniesByOrganization($organizationId);
 
         if (empty($organization)) {
             $this->logger->critical(
@@ -66,6 +67,7 @@ class GetOrganizationByIdHandler
             'ownerName' => $organization->getOwnerName(),
             'ownerEmail' => $organization->getOwnerEmail(),
             'ownerPhoneNumber' => $organization->getOwnerPhoneNumber() ?? '',
+            'companies' => $companiesByOrganization['companiesQuantity'],
             'status' => $organization->getStatus()->getValue(),
             'createdAt' => $organization->getCreatedAt()->format('Y-m-d H:i:s'),
         ];

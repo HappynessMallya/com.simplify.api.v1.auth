@@ -89,6 +89,7 @@ class GetCompaniesByOrganizationHandler
                 'name' => $company->name(),
                 'tin' => $company->tin(),
                 'email' => $company->email(),
+                'phone' => $company->phone() ?? '',
                 'address' => $company->address(),
                 'traRegistration' => $company->traRegistration(),
                 'status' => $company->companyStatus(),
