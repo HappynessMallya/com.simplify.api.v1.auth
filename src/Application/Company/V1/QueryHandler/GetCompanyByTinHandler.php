@@ -6,6 +6,7 @@ namespace App\Application\Company\V1\QueryHandler;
 
 use App\Application\Company\V1\Query\GetCompanyByTinQuery;
 use App\Domain\Repository\CompanyRepository;
+use App\Domain\Repository\OrganizationRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,16 +23,22 @@ class GetCompanyByTinHandler
     /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
+    /** @var OrganizationRepository  */
+    private OrganizationRepository $organizationRepository;
+
     /**
      * @param LoggerInterface $logger
      * @param CompanyRepository $companyRepository
+     * @param OrganizationRepository $organizationRepository
      */
     public function __construct(
         LoggerInterface $logger,
-        CompanyRepository $companyRepository
+        CompanyRepository $companyRepository,
+        OrganizationRepository $organizationRepository
     ) {
         $this->logger = $logger;
         $this->companyRepository = $companyRepository;
+        $this->organizationRepository = $organizationRepository;
     }
 
     /**
@@ -77,8 +84,17 @@ class GetCompanyByTinHandler
             );
         }
 
+        $organizationName = '';
+        $organizationId = '';
+        if (!empty($company->organizationId())) {
+            $organization = $this->organizationRepository->get($company->organizationId());
+            $organizationName = $organization->getName();
+            $organizationId = $company->organizationId()->toString();
+        }
+
         return [
-            'organizationId' => $company->organizationId()->toString(),
+            'organizationId' => $organizationId,
+            'organization' => $organizationName,
             'companyId' => $company->companyId()->toString(),
             'name' => $company->name(),
             'tin' => $company->tin(),

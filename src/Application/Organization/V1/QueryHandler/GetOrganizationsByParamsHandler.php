@@ -86,6 +86,10 @@ class GetOrganizationsByParamsHandler
 
         /** @var Organization $organization */
         foreach ($organizationsByCriteria as $organization) {
+            $companiesByOrganization = $this->organizationRepository->getCompaniesByOrganization(
+                $organization->getOrganizationId()
+            );
+
             $organizations[] = [
                 'organizationId' => $organization->getOrganizationId()->toString(),
                 'name' => $organization->getName(),
@@ -93,6 +97,7 @@ class GetOrganizationsByParamsHandler
                 'ownerEmail' => $organization->getOwnerEmail(),
                 'ownerPhoneNumber' => $organization->getOwnerPhoneNumber() ?? '',
                 'status' => $organization->getStatus()->getValue(),
+                'companies' => $companiesByOrganization['companiesQuantity'],
                 'createdAt' => $organization->getCreatedAt()->format('Y-m-d H:i:s'),
             ];
         }

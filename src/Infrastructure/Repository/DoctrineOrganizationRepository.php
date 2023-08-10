@@ -150,8 +150,7 @@ class DoctrineOrganizationRepository implements OrganizationRepository
                     $organizationId->toString(),
                 ]
             )->fetchAssociative();
-        } catch (Exception
-            | \Doctrine\DBAL\Driver\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->critical(
                 'Exception error trying to get companies by organization',
                 [

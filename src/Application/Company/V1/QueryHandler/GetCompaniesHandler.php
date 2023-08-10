@@ -7,6 +7,7 @@ namespace App\Application\Company\V1\QueryHandler;
 use App\Application\Company\V1\Query\GetCompaniesQuery;
 use App\Domain\Model\Company\Company;
 use App\Domain\Repository\CompanyRepository;
+use App\Domain\Repository\OrganizationRepository;
 
 /**
  * Class CreateCompanyHandler
@@ -17,13 +18,19 @@ class GetCompaniesHandler
     /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
+    /** @var OrganizationRepository  */
+    private OrganizationRepository $organizationRepository;
+
     /**
      * @param CompanyRepository $companyRepository
+     * @param OrganizationRepository $organizationRepository
      */
     public function __construct(
-        CompanyRepository $companyRepository
+        CompanyRepository $companyRepository,
+        OrganizationRepository $organizationRepository
     ) {
         $this->companyRepository = $companyRepository;
+        $this->organizationRepository = $organizationRepository;
     }
 
     /**
@@ -47,9 +54,18 @@ class GetCompaniesHandler
             unset($traRegistration['USERNAME']);
             unset($traRegistration['PASSWORD']);
 
+            $organizationName = '';
+            $organizationId = '';
+            if (!empty($company['organizationId'])) {
+                $organization = $this->organizationRepository->get($company['organizationId']);
+                $organizationName = $organization->getName();
+                $organizationId = $company['organizationId']->toString();
+            }
+
             $companiesData[] = [
                 'companyId' => $company['companyId']->toString(),
-                'organizationId' => $company['organizationId']->toString(),
+                'organizationId' => $organizationId,
+                'organization' => $organizationName,
                 'name' => $company['name'],
                 'tin' => $company['tin'],
                 'address' => $company['address'],
