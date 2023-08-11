@@ -88,7 +88,7 @@ class GetCompanyByTinHandler
         $organizationId = '';
         if (!empty($company->organizationId())) {
             $organization = $this->organizationRepository->get($company->organizationId());
-            $organizationName = $organization->getName();
+            $organizationName = (!empty($organization)) ? $organization->getName() : '';
             $organizationId = $company->organizationId()->toString();
         }
 
