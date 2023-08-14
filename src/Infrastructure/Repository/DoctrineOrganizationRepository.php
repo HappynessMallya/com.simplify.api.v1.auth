@@ -34,6 +34,7 @@ class DoctrineOrganizationRepository implements OrganizationRepository
     private EntityRepository $repository;
 
     public const TABLE_ORGANIZATION = 'organization';
+    public const TABLE_COMPANY = 'company';
 
     /**
      * @param LoggerInterface $logger
@@ -134,13 +135,13 @@ class DoctrineOrganizationRepository implements OrganizationRepository
     public function getCompaniesByOrganization(OrganizationId $organizationId): array {
         $query = sprintf(/** @lang sql */"
             SELECT
-                COUNT(c.id) AS companiesQuantity
-            FROM %s AS o
-                LEFT JOIN company AS c
-                    ON o.organization_id = c.organization_id
-            WHERE o.organization_id = ?
-            GROUP BY o.name",
-            self::TABLE_ORGANIZATION
+                c.name AS name,
+                c.id AS id,
+                c.tin AS tin,
+                c.serial AS serial
+            FROM %s AS c
+            WHERE c.organization_id = ?",
+            self::TABLE_COMPANY
         );
 
         try {
@@ -149,7 +150,7 @@ class DoctrineOrganizationRepository implements OrganizationRepository
                 [
                     $organizationId->toString(),
                 ]
-            )->fetchAssociative();
+            )->fetchAllAssociative();
         } catch (Exception
             | \Doctrine\DBAL\Driver\Exception $exception) {
             $this->logger->critical(

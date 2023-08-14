@@ -67,7 +67,8 @@ class GetOrganizationByIdHandler
             'ownerName' => $organization->getOwnerName(),
             'ownerEmail' => $organization->getOwnerEmail(),
             'ownerPhoneNumber' => $organization->getOwnerPhoneNumber() ?? '',
-            'companies' => $companiesByOrganization['companiesQuantity'],
+            'companiesQuantity' => count($companiesByOrganization),
+            'companies' => $companiesByOrganization,
             'status' => $organization->getStatus()->getValue(),
             'createdAt' => $organization->getCreatedAt()->format('Y-m-d H:i:s'),
         ];
