@@ -145,6 +145,29 @@ class RegisterUserHandler
                 }
             }
 
+            foreach ($companies as $company) {
+                $companyId = CompanyId::fromString($company);
+                $usersBelongsToCompany = $this->companyByUserRepository->getOperatorsByCompany($companyId);
+
+                if (count($usersBelongsToCompany) >= 2) {
+                    $company = $this->companyRepository->get($companyId);
+
+                    $this->logger->critical(
+                        'This company has reached the limit of operators',
+                        [
+                            'company_id' => $companyId->toString(),
+                            'users' => count($usersBelongsToCompany),
+                            'method' => __METHOD__,
+                        ]
+                    );
+
+                    throw new Exception(
+                        'This company `' . $company->name() . '` has reached the limit of operators',
+                        400
+                    );
+                }
+            }
+
             $companyId = CompanyId::fromString($companies[0]);
             $company = $this->companyRepository->get($companyId);
 
@@ -244,7 +267,7 @@ class RegisterUserHandler
 
             throw new Exception(
                 $exception->getMessage(),
-                Response::HTTP_INTERNAL_SERVER_ERROR
+                $exception->getCode()
             );
         }
 

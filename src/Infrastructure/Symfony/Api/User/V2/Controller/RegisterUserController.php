@@ -87,7 +87,7 @@ class RegisterUserController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'An internal server error has been occurred. ' . $exception->getMessage(),
+                    'error' => $exception->getMessage(),
                 ],
                 $exception->getCode()
             );
