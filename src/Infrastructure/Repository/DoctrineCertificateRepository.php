@@ -6,6 +6,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Company\Certificate;
 use App\Domain\Model\Company\CertificateId;
+use App\Domain\Model\Company\Serial;
 use App\Domain\Model\Company\TaxIdentificationNumber;
 use App\Domain\Repository\CertificateRepository;
 use Doctrine\DBAL\Connection;
@@ -42,12 +43,13 @@ class DoctrineCertificateRepository implements CertificateRepository
                 (
                     certificate_id,
                     tin,
+                    serial,
                     filepath,
                     created_at,
                     updated_at
                 )
             VALUES
-                (?, ?, ?, now(), now())',
+                (?, ?, ?, ?, now(), now())',
                 self::ENTITY_TABLE_NAME
             );
 
@@ -56,6 +58,7 @@ class DoctrineCertificateRepository implements CertificateRepository
                 [
                     $file->getCertificateId()->toString(),
                     $file->getTin()->value(),
+                    $file->getSerial()->value(),
                     $file->getFilepath(),
                 ]
             );
@@ -88,7 +91,8 @@ class DoctrineCertificateRepository implements CertificateRepository
         return new Certificate(
             CertificateId::fromString($result['certificate_id']),
             new TaxIdentificationNumber($result['tin']),
-            $result['filepath']
+            $result['filepath'],
+            new Serial($result['serial'])
         );
     }
 
@@ -118,7 +122,8 @@ class DoctrineCertificateRepository implements CertificateRepository
         return new Certificate(
             CertificateId::fromString($result['certificate_id']),
             new TaxIdentificationNumber($result['tin']),
-            $result['filepath']
+            $result['filepath'],
+            new Serial($result['serial'])
         );
     }
 

@@ -189,7 +189,8 @@ class TraIntegrationClient implements TraIntegrationService
             'certificateFiles' => [
                 DataPart::fromPath($request->getCertificateFiles()[0]),
                 DataPart::fromPath($request->getCertificateFiles()[1]),
-            ]
+            ],
+            'serial' => $request->getSerial(),
         ];
         $formData = new FormDataPart($formFields);
 

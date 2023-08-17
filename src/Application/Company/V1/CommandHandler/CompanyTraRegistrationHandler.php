@@ -55,20 +55,22 @@ class CompanyTraRegistrationHandler
         $company = $this->companyRepository->findOneBy(
             [
                 'tin' => $command->getTin(),
+                'serial' => $command->getSerial(),
             ]
         );
 
         if (empty($company)) {
             $this->logger->critical(
-                'Company could not be found by TIN',
+                'Company could not be found',
                 [
                     'tin' => $command->getTin(),
+                    'serial' => $command->getSerial(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'Company could not be found by TIN: ' . $command->getTin(),
+                'Company could not be found',
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -90,6 +92,7 @@ class CompanyTraRegistrationHandler
                 $exception->getMessage(),
                 [
                     'tin' => $command->getTin(),
+                    'serial' => $command->getSerial(),
                     'method' => __METHOD__,
                 ]
             );
@@ -102,6 +105,7 @@ class CompanyTraRegistrationHandler
                     'company_id' => $company->companyId()->toString(),
                     'name' => $company->name(),
                     'tin' => $company->tin(),
+                    'serial' => $company->serial(),
                 ]
             );
         }

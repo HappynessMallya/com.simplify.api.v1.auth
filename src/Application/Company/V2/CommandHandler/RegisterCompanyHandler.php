@@ -73,7 +73,7 @@ class RegisterCompanyHandler
 
         $companyRegistered = $this->companyRepository->findOneBy(
             [
-                'tin' => $command->getTin(),
+                'serial' => $command->getSerial(),
             ]
         );
 
@@ -82,12 +82,13 @@ class RegisterCompanyHandler
                 'Company has pre-registered with the TIN number provided',
                 [
                     'tin' => $command->getTin(),
+                    'serial' => $command->getSerial(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'Company has pre-registered with the TIN number provided',
+                'Company has pre-registered with the Serial number provided',
                 Response::HTTP_BAD_REQUEST
             );
         }
@@ -102,7 +103,9 @@ class RegisterCompanyHandler
             $this->logger->critical(
                 'Company has pre-registered with the name provided',
                 [
-                    'tin' => $command->getName(),
+                    'name' => $command->getName(),
+                    'tin' => $command->getTin(),
+                    'serial' => $command->getSerial(),
                     'method' => __METHOD__,
                 ]
             );
@@ -153,6 +156,7 @@ class RegisterCompanyHandler
                     'company_id' => $companyId->toString(),
                     'name' => $company->name(),
                     'tin' => $company->tin(),
+                    'serial' => $company->serial(),
                     'email' => $company->email(),
                 ]
             );
