@@ -21,6 +21,10 @@ final class Version20230815185844 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(/** @lang sql */
+            'alter table company drop key UNIQ_4FBF094FB28C852F'
+        );
+
+        $this->addSql(/** @lang sql */
             'alter table company add constraint UNIQ_serial_key unique (serial);'
         );
 
