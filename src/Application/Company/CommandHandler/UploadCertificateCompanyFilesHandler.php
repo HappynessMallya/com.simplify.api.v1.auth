@@ -10,6 +10,7 @@ use App\Domain\Model\Company\Certificate;
 use App\Domain\Model\Company\CertificateId;
 use App\Domain\Model\Company\TaxIdentificationNumber;
 use App\Domain\Repository\CompanyRepository;
+use App\Domain\Services\CertificateDataService;
 use App\Domain\Services\FileUploaderService;
 use App\Domain\Services\TraIntegrationService;
 use App\Domain\Repository\CertificateRepository;
@@ -50,6 +51,9 @@ class UploadCertificateCompanyFilesHandler
      */
     private MessageBusInterface $messageBus;
 
+    /** @var CertificateDataService  */
+    private CertificateDataService $certificateDataService;
+
     /**
      * @param LoggerInterface $logger
      * @param FileUploaderService $fileUploaderService
@@ -64,7 +68,8 @@ class UploadCertificateCompanyFilesHandler
         CompanyRepository $companyRepository,
         CertificateRepository $certificateRepository,
         TraIntegrationService $traIntegrationService,
-        MessageBusInterface $messageBus
+        MessageBusInterface $messageBus,
+        CertificateDataService $certificateDataService
     ) {
         $this->logger = $logger;
         $this->fileUploaderService = $fileUploaderService;
@@ -72,6 +77,7 @@ class UploadCertificateCompanyFilesHandler
         $this->certificateRepository = $certificateRepository;
         $this->traIntegrationService = $traIntegrationService;
         $this->messageBus = $messageBus;
+        $this->certificateDataService = $certificateDataService;
     }
 
     /**
@@ -104,14 +110,23 @@ class UploadCertificateCompanyFilesHandler
             $certificateId = CertificateId::generate();
             $filepath = $this->fileUploaderService->uploadFile($file, $tin);
 
-            if ($file->getClientMimeType() == 'application/octet-stream') {
-                $values = json_decode(file_get_contents($filepath), true);
+            $certificateDataPath = $this->certificateDataService->createCertificateData($filepath);
+            if (!empty($certificateDataPath)) {
+                $values = json_decode(file_get_contents($certificateDataPath), true);
                 $certificateValues = [
-                    'certificateKey' => $values['serial'],
+                    'certificateKey' => $company->serial(),
                     'certificatePassword' => $values['password'],
                     'tin' => $tin->value(),
-                    'certificateSerial' => $company->serial(),
+                    'certificateSerial' => $values['serial'],
                 ];
+
+                $filesPath[] = $certificateDataPath;
+                $fileCertificate = new Certificate(
+                    CertificateId::generate(),
+                    $tin,
+                    $certificateDataPath
+                );
+                $filesPack[] = $fileCertificate;
             }
 
             $file = new Certificate(

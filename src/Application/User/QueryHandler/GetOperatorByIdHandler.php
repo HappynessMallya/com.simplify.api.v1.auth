@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\User\QueryHandler;
 
+use App\Application\User\Query\GetOperatorByIdQuery;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserType;

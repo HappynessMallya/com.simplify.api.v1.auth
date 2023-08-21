@@ -2,53 +2,51 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Symfony\Api\User\Controller\V2;
+namespace App\Infrastructure\Symfony\Api\Organization\Controller;
 
-use App\Application\User\V2\QueryHandler\GetOperatorByIdHandler;
-use App\Application\User\V2\QueryHandler\GetOperatorByIdQuery;
+use App\Application\Organization\QueryHandler\GetCompaniesByOrganizationHandler;
+use App\Application\Organization\QueryHandler\GetCompaniesByOrganizationQuery;
 use App\Infrastructure\Symfony\Api\BaseController;
 use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
- * Class GetOperatorByIdController
+ * Class GetCompaniesByOrganizationController
  * @package App\Infrastructure\Symfony\Api\ApiUser\Controller\V2
  */
-class GetOperatorByIdController extends BaseController
+class GetCompaniesByOrganizationController extends BaseController
 {
     /**
-     * @Route(path="/operator/{operatorId}", methods={"GET"})
+     * @Route(path="/companies", methods={"GET"})
      *
-     * @param Request $request
      * @param JWTTokenManagerInterface $jwtManager
      * @param TokenStorageInterface $jwtStorage
-     * @param GetOperatorByIdHandler $handler
+     * @param GetCompaniesByOrganizationHandler $handler
      * @return JsonResponse
      * @throws JWTDecodeFailureException
      */
-    public function getOperatorByIdAction(
-        Request $request,
+    public function getCompaniesByOrganizationAction(
         JWTTokenManagerInterface $jwtManager,
         TokenStorageInterface $jwtStorage,
-        GetOperatorByIdHandler $handler
+        GetCompaniesByOrganizationHandler $handler
     ): JsonResponse {
-        $operatorId = $request->get('operatorId');
         $tokenData = $jwtManager->decode($jwtStorage->getToken());
+        $organizationId = $tokenData['organizationId'];
+        $userId = $tokenData['userId'];
         $userType = $tokenData['userType'];
 
-        $query = new GetOperatorByIdQuery($operatorId, $userType);
+        $query = new GetCompaniesByOrganizationQuery($organizationId, $userId, $userType);
 
         try {
-            $operator = $handler->__invoke($query);
+            $companies = $handler->__invoke($query);
         } catch (Exception $exception) {
             $this->logger->critical(
-                'Exception error trying to get operator details',
+                'Exception error trying to get companies',
                 [
                     'error_message' => $exception->getMessage(),
                     'code' => $exception->getCode(),
@@ -59,17 +57,17 @@ class GetOperatorByIdController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Exception error trying to get operator details. ' . $exception->getMessage(),
+                    'error' => 'Exception error trying to get companies. ' . $exception->getMessage(),
                 ],
                 Response::HTTP_BAD_REQUEST
             );
         }
 
-        if (empty($operator)) {
+        if (empty($companies)) {
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Internal server error trying to get operator details',
+                    'error' => 'Internal server error trying to get companies',
                 ],
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -77,7 +75,10 @@ class GetOperatorByIdController extends BaseController
 
         return $this->createApiResponse(
             [
-                'operator' => $operator,
+                'userId' => $userId,
+                'userType' => $userType,
+                'organizationId' => $organizationId,
+                'companies' => $companies,
             ],
             Response::HTTP_OK
         );

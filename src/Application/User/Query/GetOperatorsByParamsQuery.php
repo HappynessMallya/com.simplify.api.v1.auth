@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\User\Query;
 
 /**
  * Class GetOperatorsByParamsQuery
@@ -10,6 +10,9 @@ namespace App\Application\User\V2\QueryHandler;
  */
 class GetOperatorsByParamsQuery
 {
+    /** @var string  */
+    private string $organizationId;
+
     /** @var string */
     private string $userId;
 
@@ -32,6 +35,7 @@ class GetOperatorsByParamsQuery
     private string $status;
 
     /**
+     * @param string $organizationId
      * @param string $userId
      * @param string $userType
      * @param string $firstName
@@ -41,6 +45,7 @@ class GetOperatorsByParamsQuery
      * @param string $status
      */
     public function __construct(
+        string $organizationId,
         string $userId,
         string $userType,
         string $firstName,
@@ -56,6 +61,7 @@ class GetOperatorsByParamsQuery
         $this->email = $email;
         $this->mobileNumber = $mobileNumber;
         $this->status = $status;
+        $this->organizationId = $organizationId;
     }
 
     /**
@@ -112,5 +118,13 @@ class GetOperatorsByParamsQuery
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrganizationId(): string
+    {
+        return $this->organizationId;
     }
 }

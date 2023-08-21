@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\Organization\QueryHandler;
 
 /**
  * Class GetCompaniesByParamsQuery
@@ -10,6 +10,9 @@ namespace App\Application\User\V2\QueryHandler;
  */
 class GetCompaniesByParamsQuery
 {
+    /** @var string  */
+    private string $organizationId;
+
     /** @var string */
     private string $userId;
 
@@ -38,6 +41,7 @@ class GetCompaniesByParamsQuery
     private string $status;
 
     /**
+     * @param string $organizationId
      * @param string $userId
      * @param string $userType
      * @param string $companyName
@@ -49,6 +53,7 @@ class GetCompaniesByParamsQuery
      * @param string $status
      */
     public function __construct(
+        string $organizationId,
         string $userId,
         string $userType,
         string $companyName,
@@ -68,6 +73,7 @@ class GetCompaniesByParamsQuery
         $this->mobileNumber = $mobileNumber;
         $this->serial = $serial;
         $this->status = $status;
+        $this->organizationId = $organizationId;
     }
 
     /**
@@ -140,5 +146,13 @@ class GetCompaniesByParamsQuery
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOrganizationId(): string
+    {
+        return $this->organizationId;
     }
 }

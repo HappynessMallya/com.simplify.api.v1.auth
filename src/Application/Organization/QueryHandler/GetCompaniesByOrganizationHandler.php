@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\Organization\QueryHandler;
 
 use App\Domain\Model\Company\CompanyId;
+use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserType;
 use App\Domain\Repository\CompanyByUserRepository;
@@ -15,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class GetCompaniesByOrganizationHandler
- * @package App\Application\User\V2\QueryHandler
+ * @package App\Application\Organization\QueryHandler
  */
 class GetCompaniesByOrganizationHandler
 {
@@ -50,15 +51,17 @@ class GetCompaniesByOrganizationHandler
      */
     public function __invoke(GetCompaniesByOrganizationQuery $query): array
     {
+        $organizationId = OrganizationId::fromString($query->getOrganizationId());
         $userId = UserId::fromString($query->getUserId());
         $userType = UserType::byName($query->getUserType());
 
         if ($userType->sameValueAs(UserType::TYPE_OWNER())) {
-            $companiesByUser = $this->companyByUserRepository->getCompaniesByUser($userId);
+            $companies = $this->companyRepository->getCompaniesByOrganizationId($organizationId);
         } else {
             $this->logger->critical(
                 'User is not an owner',
                 [
+                    'user_id' => $query->getUserId(),
                     'user_type' => $userType->getValue(),
                     'method' => __METHOD__,
                 ]
@@ -70,27 +73,25 @@ class GetCompaniesByOrganizationHandler
             );
         }
 
-        if (empty($companiesByUser)) {
+        if (empty($companies)) {
             $this->logger->critical(
                 'Companies not found by user',
                 [
                     'user_id' => $userId->toString(),
+                    'organization_id' => $organizationId->toString(),
                     'method' => __METHOD__,
                 ]
             );
 
             throw new Exception(
-                'Companies not found by user: ' . $userId->toString(),
+                'Companies not found by organization: ' . $organizationId->toString(),
                 Response::HTTP_NOT_FOUND
             );
         }
 
-        $companies = [];
-
-        foreach ($companiesByUser as $company) {
-            $company = $this->companyRepository->get(CompanyId::fromString($company['company_id']));
-
-            $companies[] = [
+        $companiesResult = [];
+        foreach ($companies as $company) {
+            $companiesResult[] = [
                 'companyId' => $company->companyId()->toString(),
                 'name' => $company->name(),
                 'tin' => $company->tin(),
@@ -102,6 +103,6 @@ class GetCompaniesByOrganizationHandler
             ];
         }
 
-        return $companies;
+        return $companiesResult;
     }
 }

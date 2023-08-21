@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\User\QueryHandler;
 
+use App\Application\User\Query\GetOperatorsByOrganizationQuery;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserId;
@@ -62,7 +63,7 @@ class GetOperatorsByOrganizationHandler
         $userType = UserType::byName($query->getUserType());
 
         if ($userType->sameValueAs(UserType::TYPE_OWNER())) {
-            $operatorsByOrganization = $this->companyByUserRepository->getOperatorsByOrganization($organizationId);
+            $companies = $this->companyRepository->getCompaniesByOrganizationId($organizationId);
         } else {
             $this->logger->critical(
                 'User is not an owner',
@@ -78,7 +79,7 @@ class GetOperatorsByOrganizationHandler
             );
         }
 
-        if (empty($operatorsByOrganization)) {
+        if (empty($companies)) {
             $this->logger->critical(
                 'Operators not found by organization',
                 [
@@ -93,35 +94,56 @@ class GetOperatorsByOrganizationHandler
             );
         }
 
-        $operators = [];
+        $users = [];
+        foreach ($companies as $company) {
+            $users[] = $this->companyByUserRepository->getOperatorsByCompany($company->companyId());
+        }
 
-        foreach ($operatorsByOrganization as $operator) {
-            $operatorFound = $this->userRepository->get(UserId::fromString($operator['user_id']));
-            $companiesByOperator = $this->companyByUserRepository->getCompaniesByUser($operatorFound->userId());
-
-            $operatorsCompanies = [];
-
-            foreach ($companiesByOperator as $company) {
-                $companyId = CompanyId::fromString($company['company_id']);
-                $companyFound = $this->companyRepository->get($companyId);
-
-                $operatorsCompanies[] = [
-                    'companyId' => $companyId->toString(),
-                    'companyName' => $companyFound->name(),
-                    'status' => $companyFound->companyStatus(),
+        $usersBelongToOrganization = [];
+        foreach ($users as $user) {
+            foreach ($user as $item) {
+                $usersBelongToOrganization[$item['user_id']][] = [
+                    'company_id' => $item['company_id'],
+                    'status' => $item['status'],
                 ];
             }
+        }
 
-            $operators[] = [
-                'userId' => $operatorFound->userId()->toString(),
-                'firstName' => $operatorFound->firstName(),
-                'lastName' => $operatorFound->lastName(),
-                'email' => $operatorFound->email(),
-                'mobileNumber' => $operatorFound->mobileNumber(),
-                'companies' => $operatorsCompanies,
-                'status' => $operatorFound->status()->getValue(),
-                'createdAt' => $operatorFound->createdAt()->format(DATE_ATOM),
+        $operators = [];
+        foreach ($usersBelongToOrganization as $index => $user) {
+            $criteria = [
+                'userId' => UserId::fromString($index),
+                'userType' => UserType::TYPE_OPERATOR(),
             ];
+            $userEntity = $this->userRepository->findOneBy($criteria);
+            if (!empty($userEntity)) {
+                $operator = $this->userRepository->get($userEntity->userId());
+
+                $companies = [];
+                foreach ($user as $item) {
+                    $company = $this->companyRepository->get(CompanyId::fromString($item['company_id']));
+
+                    $companies[] = [
+                        'company_id' => $company->companyId()->toString(),
+                        'name' => $company->name(),
+                        'tin' => $company->tin(),
+                        'email' => $company->email(),
+                        'serial' => $company->serial(),
+                        'status' => $company->companyStatus(),
+                    ];
+                }
+
+                $operators[] = [
+                    'userId' => $operator->userId()->toString(),
+                    'firstName' => $operator->firstName(),
+                    'lastName' => $operator->lastName(),
+                    'email' => $operator->email(),
+                    'mobileNumber' => $operator->mobileNumber(),
+                    'userType' => $operator->getUserType()->getValue(),
+                    'companies' => $companies,
+                    'createdAt' => $operator->createdAt()->format('Y-m-d H:i:s'),
+                ];
+            }
         }
 
         return $operators;

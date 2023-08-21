@@ -3,8 +3,10 @@
 namespace App\Infrastructure\Symfony\Security;
 
 use App\Domain\Model\Company\CompanyId;
+use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\CompanyByUserRepository;
 use App\Domain\Repository\CompanyRepository;
+use App\Domain\Repository\OrganizationRepository;
 use App\Domain\Repository\UserRepository;
 use DateTime;
 use DateTimeZone;
@@ -43,6 +45,9 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
     /** @var RefreshTokenManagerInterface */
     private RefreshTokenManagerInterface $refreshTokenManager;
 
+    /** @var OrganizationRepository  */
+    private OrganizationRepository $organizationRepository;
+
     /**
      * @param LoggerInterface $logger
      * @param JWTTokenManagerInterface $JWTTokenManager
@@ -50,6 +55,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
      * @param CompanyRepository $companyRepository
      * @param UserRepository $userRepository
      * @param RefreshTokenManagerInterface $refreshTokenManager
+     * @param OrganizationRepository $organizationRepository
      */
     public function __construct(
         LoggerInterface $logger,
@@ -57,7 +63,8 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         CompanyByUserRepository $companyByUserRepository,
         CompanyRepository $companyRepository,
         UserRepository $userRepository,
-        RefreshTokenManagerInterface $refreshTokenManager
+        RefreshTokenManagerInterface $refreshTokenManager,
+        OrganizationRepository $organizationRepository
     ) {
         $this->logger = $logger;
         $this->JWTTokenManager = $JWTTokenManager;
@@ -65,6 +72,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $this->companyRepository = $companyRepository;
         $this->userRepository = $userRepository;
         $this->refreshTokenManager = $refreshTokenManager;
+        $this->organizationRepository = $organizationRepository;
     }
 
     /**
@@ -80,9 +88,13 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
 
         $user = $this->userRepository->get($userId);
 
+        $userCompany = $this->companyRepository->get($user->companyId());
+
         $companies = $this->companyByUserRepository->getCompaniesByUser($userId);
 
-        $organizationId = null;
+        $organization = !empty($userCompany)
+            ? $this->organizationRepository->get($userCompany->organizationId())
+            : null;
         $companiesUser = [];
 
         foreach ($companies as $companyUser) {
@@ -112,16 +124,13 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
                 'name' => $company->name(),
                 'vrn' => !(($company->traRegistration()['VRN'] == 'NOT REGISTERED')),
             ];
-
-            $organizationId = $company->organizationId()->toString();
         }
 
         $payload = [
             'userId' => $userId->toString(),
             'username' => $user->username(),
             'firstName' => $user->firstName(),
-            'lastName' => $user->lastName(),
-            'organizationId' => $organizationId,
+            'fullName' =>  $user->firstName() . ' ' . $user->lastName(),
             'companies' => $companiesUser,
             'userType' => $user->getUserType()->toString(),
             'lastLogin' => (!empty($user->lastLogin()))
@@ -130,6 +139,11 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
                 : null,
             'status' => $user->status()->toString(),
         ];
+
+        if (!empty($organization)) {
+            $payload['organizationId'] = $organization->getOrganizationId()->toString();
+            $payload['organizationName'] = $organization->getName();
+        }
 
         $token = $this->JWTTokenManager->createFromPayload($userEntity, $payload);
 
@@ -145,11 +159,17 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $refreshToken->setValid($datetime);
         $this->refreshTokenManager->save($refreshToken);
 
+        $response = [
+            'token' => $token,
+            'refresh_token' => $refreshToken->getRefreshToken(),
+        ];
+
+        if ($user->status()->sameValueAs(UserStatus::CHANGE_PASSWORD())) {
+            $response['data']['change_password'] = 1;
+        }
+
         return new JsonResponse(
-            [
-                'token' => $token,
-                'refresh_token' => $refreshToken->getRefreshToken(),
-            ],
+            $response,
             Response::HTTP_OK
         );
     }

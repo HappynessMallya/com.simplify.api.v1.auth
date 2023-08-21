@@ -79,7 +79,7 @@ class JWTCreatedListener
             }
         }
 
-        $payload['username'] = $user->getUsername();
+        $payload['username'] = $user->getEmail();
         $payload['email'] = $user->getEmail();
         $payload['companyId'] = $user->getCompanyId();
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\User\V2\QueryHandler;
+namespace App\Application\User\Query;
 
 /**
  * Class GetOperatorByIdQuery

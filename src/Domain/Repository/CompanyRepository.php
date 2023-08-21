@@ -6,6 +6,7 @@ namespace App\Domain\Repository;
 
 use App\Domain\Model\Company\Company;
 use App\Domain\Model\Company\CompanyId;
+use App\Domain\Model\Organization\OrganizationId;
 
 /**
  * Interface CompanyRepository
@@ -38,4 +39,17 @@ interface CompanyRepository
      * @return Company|null
      */
     public function findOneBy(array $criteria): ?Company;
+
+    /**
+     * @param OrganizationId $organizationId
+     * @return array
+     */
+    public function getCompaniesByOrganizationId(OrganizationId $organizationId): array;
+
+    /**
+     * @param OrganizationId $organizationId
+     * @param array $criteria
+     * @return array
+     */
+    public function getByOrganizationIdAndParams(OrganizationId $organizationId, array $criteria): array;
 }
