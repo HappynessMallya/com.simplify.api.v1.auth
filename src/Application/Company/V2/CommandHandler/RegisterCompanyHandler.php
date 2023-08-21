@@ -79,7 +79,7 @@ class RegisterCompanyHandler
 
         if (!empty($companyRegistered)) {
             $this->logger->critical(
-                'Company has pre-registered with the TIN number provided',
+                'Company has pre-registered with the Serial number provided',
                 [
                     'tin' => $command->getTin(),
                     'serial' => $command->getSerial(),
