@@ -10,9 +10,9 @@ nelmio_api_doc:
             description: This is the security auth service for Simplify
             version: 2.0.0
         servers:
-            - url: /service/auth
+            - url: /partner/v1/auth
               description: (Integration server)
-            - url: /service/auth/v2
+            - url: /partner/v2/auth
               description: (Integration server v2)
             - url: /api/v1
               description: (Developer server)
