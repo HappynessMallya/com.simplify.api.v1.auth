@@ -430,11 +430,19 @@ class User
         return $this->email();
     }
 
+    /**
+     * @param bool $option
+     * @return void
+     */
     public function setEnable(bool $option): void
     {
         $this->enabled = $option;
     }
 
+    /**
+     * @param DateTime $dateTime
+     * @return void
+     */
     public function setUpdatedAt(DateTime $dateTime): void
     {
         $this->updatedAt = $dateTime;
