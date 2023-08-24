@@ -65,10 +65,10 @@ class TraIntegrationClient implements TraIntegrationService
     public function requestCompanyStatusOnTra(
         CompanyStatusOnTraRequest $request
     ): CompanyStatusOnTraResponse {
-        $startTimeRequestCompanyStatus = microtime(true);
         $payload = [
             'companyId' => $request->getCompanyId(),
             'tin' => $request->getTin(),
+            'serial' => $request->getSerial(),
             'username' => $request->getUsername(),
             'password' => $request->getPassword(),
         ];
@@ -86,7 +86,6 @@ class TraIntegrationClient implements TraIntegrationService
         );
 
         try {
-            $start = microtime(true);
             $response = $this->httpClient->request(
                 'POST',
                 $this->urlClient . self::REQUEST_TOKEN_ENDPOINT,
@@ -95,15 +94,6 @@ class TraIntegrationClient implements TraIntegrationService
                         'Content-Type' => 'application/json'
                     ],
                     'body' => json_encode($payload),
-                ]
-            );
-            $end = microtime(true);
-            $this->logger->debug(
-                'Time duration request token to TRA',
-                [
-                    'time' => $end - $start,
-                    'tin' => $request->getTin(),
-                    'method' => __METHOD__
                 ]
             );
 
@@ -118,15 +108,6 @@ class TraIntegrationClient implements TraIntegrationService
                 );
             }
 
-            $endTimeRequestCompanyStatus = microtime(true);
-            $this->logger->debug(
-                'Time duration request token to TRA',
-                [
-                    'time' => $endTimeRequestCompanyStatus - $startTimeRequestCompanyStatus,
-                    'tin' => $request->getTin(),
-                    'method' => __METHOD__,
-                ]
-            );
             $response->getContent();
 
             return new CompanyStatusOnTraResponse(
@@ -143,6 +124,7 @@ class TraIntegrationClient implements TraIntegrationService
                 [
                     'company_id' => $request->getCompanyId(),
                     'tin' => $request->getTin(),
+                    'serial' => $request->getSerial(),
                     'http_status' => $exception->getResponse()->getStatusCode(),
                     'http_body' => $exception->getResponse()->getContent(false),
                     'code' => $exception->getCode(),
@@ -160,6 +142,7 @@ class TraIntegrationClient implements TraIntegrationService
                 [
                     'company_id' => $request->getCompanyId(),
                     'tin' => $request->getTin(),
+                    'serial' => $request->getSerial(),
                     'code' => $exception->getCode(),
                     'error_message' => $exception->getMessage(),
                     'method' => __METHOD__,
@@ -308,6 +291,7 @@ class TraIntegrationClient implements TraIntegrationService
                     'Registration of Company successfully',
                     [
                         'tin' => $request->getTin(),
+                        'serial' => $request->getCertificateKey(),
                     ]
                 );
             }
@@ -327,6 +311,7 @@ class TraIntegrationClient implements TraIntegrationService
                 'An error has been occurred in client side attempt registration company to TRA',
                 [
                     'tin' => $request->getTin(),
+                    'serial' => $request->getCertificateKey(),
                     'http_status' => $e->getResponse()->getStatusCode(),
                     'http_body' => $e->getResponse()->getContent(false),
                     'code' => $e->getCode(),
@@ -344,6 +329,7 @@ class TraIntegrationClient implements TraIntegrationService
                 'An error has been occurred with communication with TRA Integration API',
                 [
                     'tin' => $request->getTin(),
+                    'serial' => $request->getCertificateKey(),
                     'errorMessage' => $e->getMessage(),
                     'errorCode' => $e->getCode(),
                     'method' => __METHOD__,
