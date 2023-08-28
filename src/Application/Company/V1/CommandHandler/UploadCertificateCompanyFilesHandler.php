@@ -8,6 +8,7 @@ use App\Application\Company\V1\Command\RegisterCompanyToTraCommand;
 use App\Application\Company\V1\Command\UploadCertificateCompanyFilesCommand;
 use App\Domain\Model\Company\Certificate;
 use App\Domain\Model\Company\CertificateId;
+use App\Domain\Model\Company\Serial;
 use App\Domain\Model\Company\TaxIdentificationNumber;
 use App\Domain\Repository\CertificateRepository;
 use App\Domain\Repository\CompanyRepository;
@@ -82,11 +83,14 @@ class UploadCertificateCompanyFilesHandler
     public function __invoke(UploadCertificateCompanyFilesCommand $command): array
     {
         $tin = new TaxIdentificationNumber($command->getTin());
+        $serial = new Serial($command->getSerial());
+
         $files = $command->getCompanyFiles();
 
         $company = $this->companyRepository->findOneBy(
             [
                 'tin' => $tin->value(),
+                'serial' => $serial->value()
             ]
         );
 
@@ -95,6 +99,7 @@ class UploadCertificateCompanyFilesHandler
                 'Company could not be found',
                 [
                     'tin' => $tin->value(),
+                    'serial' => $serial->value(),
                     'method' => __METHOD__
                 ]
             );
@@ -111,7 +116,7 @@ class UploadCertificateCompanyFilesHandler
         $certificateValues = [];
         foreach ($files as $file) {
             $certificateId = CertificateId::generate();
-            $filepath = $this->fileUploaderService->uploadFile($file, $tin);
+            $filepath = $this->fileUploaderService->uploadFile($file, $tin, $serial);
 
             $certificateDataPath = $this->certificateDataService->createCertificateData($filepath);
             if (!empty($certificateDataPath)) {
@@ -127,7 +132,8 @@ class UploadCertificateCompanyFilesHandler
                 $fileCertificate = new Certificate(
                     CertificateId::generate(),
                     $tin,
-                    $certificateDataPath
+                    $certificateDataPath,
+                    $serial
                 );
                 $filesPack[] = $fileCertificate;
             }
@@ -135,7 +141,8 @@ class UploadCertificateCompanyFilesHandler
             $file = new Certificate(
                 $certificateId,
                 $tin,
-                $filepath
+                $filepath,
+                $serial
             );
 
             $fileFound = $this->certificateRepository->findByFilePath($filepath);
@@ -165,7 +172,8 @@ class UploadCertificateCompanyFilesHandler
 
         $uploadCertificateRequest = new UploadCertificateToTraRegistrationRequest(
             $tin->value(),
-            $filesPath
+            $filesPath,
+            $serial->value()
         );
 
         $uploadCertificateResponse = $this->traIntegrationService->uploadCertificateToTraRegistration(
@@ -187,7 +195,6 @@ class UploadCertificateCompanyFilesHandler
                 Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
-
 
         try {
             $dto = new RegisterCompanyToTraCommand(
@@ -217,6 +224,7 @@ class UploadCertificateCompanyFilesHandler
 
         return [
             'tin' => $tin->value(),
+            'serial' => $serial->value(),
             'filesPath' => $filesPath,
         ];
     }

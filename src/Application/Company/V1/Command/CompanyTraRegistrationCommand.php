@@ -13,6 +13,9 @@ class CompanyTraRegistrationCommand
     /** @var string */
     protected string $tin;
 
+    /** @var string  */
+    protected string $serial;
+
     /** @var string */
     protected string $traRegistration;
 
@@ -46,5 +49,21 @@ class CompanyTraRegistrationCommand
     public function setTraRegistration(string $traRegistration): void
     {
         $this->traRegistration = $traRegistration;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSerial(): string
+    {
+        return $this->serial;
+    }
+
+    /**
+     * @param string $serial
+     */
+    public function setSerial(string $serial): void
+    {
+        $this->serial = $serial;
     }
 }

@@ -31,6 +31,13 @@ class TraRegistrationCompanyType extends AbstractType
                     'constraints' => new NotBlank(),
                 ]
             )
+            ->add(
+                'serial',
+                TextType::class,
+                [
+                    'constraints' => new NotBlank(),
+                ]
+            )
         ;
     }
 

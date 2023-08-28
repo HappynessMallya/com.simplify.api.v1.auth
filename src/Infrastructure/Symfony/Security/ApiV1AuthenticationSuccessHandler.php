@@ -94,6 +94,7 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $command = new RequestAuthenticationTraCommand(
             $company->companyId()->toString(),
             (string) $company->tin(),
+            $company->serial(),
             $company->traRegistration()['USERNAME'],
             $company->traRegistration()['PASSWORD']
         );

@@ -43,8 +43,8 @@ class Company
     /** @var string */
     private string $companyStatus;
 
-    /** @var string|null */
-    private ?string $serial;
+    /** @var string */
+    private string $serial;
 
     /** @var OrganizationId|null  */
     private ?OrganizationId $organizationId;
@@ -61,7 +61,7 @@ class Company
      * @param string|null $phone
      * @param DateTime $createdAt
      * @param CompanyStatus $companyStatus
-     * @param string|null $serial
+     * @param string $serial
      * @param OrganizationId|null $organizationId
      * @param DateTime|null $updatedAt
      * @return Company
@@ -75,7 +75,7 @@ class Company
         ?string $phone,
         DateTime $createdAt,
         CompanyStatus $companyStatus,
-        ?string $serial,
+        string $serial,
         ?OrganizationId $organizationId,
         ?DateTime $updatedAt = null
     ): Company {
@@ -221,9 +221,9 @@ class Company
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function serial(): ?string
+    public function serial(): string
     {
         return $this->serial;
     }

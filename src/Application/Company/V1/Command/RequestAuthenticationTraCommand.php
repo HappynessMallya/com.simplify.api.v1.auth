@@ -22,20 +22,26 @@ class RequestAuthenticationTraCommand
     /** @var string */
     private string $password;
 
+    /** @var string  */
+    private string $serial;
+
     /**
      * @param string $companyId
      * @param string $tin
+     * @param string $serial
      * @param string $username
      * @param string $password
      */
     public function __construct(
         string $companyId,
         string $tin,
+        string $serial,
         string $username,
         string $password
     ) {
         $this->companyId = $companyId;
         $this->tin = $tin;
+        $this->serial = $serial;
         $this->username = $username;
         $this->password = $password;
     }
@@ -70,5 +76,13 @@ class RequestAuthenticationTraCommand
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSerial(): string
+    {
+        return $this->serial;
     }
 }

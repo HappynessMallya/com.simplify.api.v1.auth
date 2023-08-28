@@ -31,12 +31,14 @@ class UploadCertificateCompanyFilesController extends BaseController
         UploadCertificateCompanyFilesHandler $handler
     ): JsonResponse {
         $tin = $request->get('tin');
+        $serial = $request->get('serial');
 
-        if (empty($tin)) {
+        if (empty($tin) | empty($serial)) {
             $this->logger->critical(
-                'Invalid TIN',
+                'TIN or Serial missing',
                 [
                     'tin' => $tin,
+                    'serial' => $serial,
                     'method' => __METHOD__,
                 ]
             );
@@ -44,7 +46,7 @@ class UploadCertificateCompanyFilesController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'Invalid TIN',
+                    'error' => 'TIN or Serial missing',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -80,6 +82,7 @@ class UploadCertificateCompanyFilesController extends BaseController
                     'Company files with invalid extension',
                     [
                         'tin' => $tin,
+                        'serial' => $serial,
                         'mime_type' => $fileMimeType,
                         'method' => __METHOD__,
                     ]
@@ -97,7 +100,8 @@ class UploadCertificateCompanyFilesController extends BaseController
 
         $dto = new UploadCertificateCompanyFilesCommand(
             $tin,
-            $uploadedFile
+            $uploadedFile,
+            $serial
         );
 
         try {
@@ -107,6 +111,7 @@ class UploadCertificateCompanyFilesController extends BaseController
                 'An error has been occurred when upload certificates of company',
                 [
                     'tin' => $tin,
+                    'serial' => $serial,
                     'code' => $exception->getCode(),
                     'message' => $exception->getMessage()
                 ]
