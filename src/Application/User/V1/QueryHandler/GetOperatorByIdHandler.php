@@ -10,6 +10,7 @@ use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserType;
 use App\Domain\Repository\CompanyByUserRepository;
 use App\Domain\Repository\CompanyRepository;
+use App\Domain\Repository\OrganizationRepository;
 use App\Domain\Repository\UserRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -33,22 +34,28 @@ class GetOperatorByIdHandler
     /** @var CompanyByUserRepository */
     private CompanyByUserRepository $companyByUserRepository;
 
+    /** @var OrganizationRepository  */
+    private OrganizationRepository $organizationRepository;
+
     /**
      * @param LoggerInterface $logger
      * @param UserRepository $userRepository
      * @param CompanyRepository $companyRepository
      * @param CompanyByUserRepository $companyByUserRepository
+     * @param OrganizationRepository $organizationRepository
      */
     public function __construct(
         LoggerInterface $logger,
         UserRepository $userRepository,
         CompanyRepository $companyRepository,
-        CompanyByUserRepository $companyByUserRepository
+        CompanyByUserRepository $companyByUserRepository,
+        OrganizationRepository $organizationRepository
     ) {
         $this->logger = $logger;
         $this->userRepository = $userRepository;
         $this->companyRepository = $companyRepository;
         $this->companyByUserRepository = $companyByUserRepository;
+        $this->organizationRepository = $organizationRepository;
     }
 
     /**
@@ -110,10 +117,13 @@ class GetOperatorByIdHandler
         }
 
         $companies = [];
-
+        $organization = null;
         foreach ($companiesByOperator as $company) {
             $company = $this->companyRepository->get(CompanyId::fromString($company['company_id']));
 
+            if (!empty($company->organizationId())) {
+                $organization = $company->organizationId();
+            }
             $companies[] = [
                 'companyId' => $company->companyId()->toString(),
                 'name' => $company->name(),
@@ -122,8 +132,19 @@ class GetOperatorByIdHandler
                 'address' => $company->address(),
                 'traRegistration' => $company->traRegistration(),
                 'status' => $company->companyStatus(),
+                'organizationId' => $company->organizationId()->toString() ?? '',
                 'createdAt' => $company->createdAt()->format('Y-m-d H:i:s'),
             ];
+        }
+
+        $organizationId = null;
+        $organizationName = null;
+        if (!empty($organization)) {
+            $organization = $this->organizationRepository->get($organization);
+            if (!empty($organization)) {
+                $organizationId = $organization->getOrganizationId()->toString();
+                $organizationName = $organization->getName();
+            }
         }
 
         return [
@@ -133,6 +154,8 @@ class GetOperatorByIdHandler
             'email' => $operator->email(),
             'mobileNumber' => $operator->mobileNumber(),
             'companies' => $companies,
+            'organizationId' => $organizationId,
+            'organizationName' => $organizationName,
             'status' => $operator->status()->getValue(),
             'createdAt' => $operator->createdAt()->format('Y-m-d H:i:s'),
         ];
