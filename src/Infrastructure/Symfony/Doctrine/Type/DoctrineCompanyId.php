@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\Doctrine\Type;
 
+use App\Domain\Model\Company\CompanyId;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\GuidType;
-use App\Domain\Model\Company\CompanyId;
 
 /**
- * Class DoctrineUserId
- * @package App\Infrastructure\Persistence\Doctrine\Type
+ * Class DoctrineCompanyId
+ * @package App\Infrastructure\Symfony\Doctrine\Type
  */
 class DoctrineCompanyId extends GuidType
 {

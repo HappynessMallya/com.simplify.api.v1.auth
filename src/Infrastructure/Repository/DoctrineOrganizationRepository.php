@@ -6,14 +6,14 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Organization\Organization;
 use App\Domain\Model\Organization\OrganizationId;
+use App\Domain\Model\Organization\OrganizationStatus;
 use App\Domain\Repository\OrganizationRepository;
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DoctrineOrganizationRepository
@@ -24,21 +24,30 @@ class DoctrineOrganizationRepository implements OrganizationRepository
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
-    /** @var EntityManager */
-    private EntityManager $em;
+    /** @var Connection */
+    private Connection $connection;
+
+    /** @var EntityManagerInterface */
+    private EntityManagerInterface $em;
 
     /** @var EntityRepository */
     private EntityRepository $repository;
 
+    public const TABLE_ORGANIZATION = 'organization';
+    public const TABLE_COMPANY = 'company';
+
     /**
      * @param LoggerInterface $logger
-     * @param EntityManager $em
+     * @param Connection $connection
+     * @param EntityManagerInterface $em
      */
     public function __construct(
         LoggerInterface $logger,
+        Connection $connection,
         EntityManagerInterface $em
     ) {
         $this->logger = $logger;
+        $this->connection = $connection;
         $this->em = $em;
         $this->repository = $this->em->getRepository(Organization::class);
     }
@@ -71,42 +80,99 @@ class DoctrineOrganizationRepository implements OrganizationRepository
                 ]
             );
 
-            throw new Exception('Exception error trying to save organization: ' . $exception->getMessage());
+            throw new Exception(
+                'Exception error trying to save organization: ' . $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return true;
     }
 
     /**
-     * @param int $page
-     * @param int $pageSize
-     * @param string|null $orderBy
      * @return array
+     * @throws Exception
      */
-    public function getAll(
-        int $page = 0,
-        int $pageSize = 10,
-        ?string $orderBy = 'createdAt'
-    ): array {
-        $pageSize = empty($pageSize) ? 10 : $pageSize;
-        $orderBy = empty($orderBy) ? 'createdAt' : $orderBy;
-        $query = $this->repository->createQueryBuilder('o')
-            ->orderBy('o.' . $orderBy, 'DESC')
-            ->setFirstResult($pageSize * $page)
-            ->setMaxResults($pageSize)
-            ->where('o.enable = true')
-            ->getQuery();
+    public function getAll(): array {
+        $query = sprintf(/** @lang sql */"
+            SELECT
+                COUNT(*) AS totalOrganizations
+            FROM %s AS o",
+            self::TABLE_ORGANIZATION
+        );
 
-        $paginator = new Paginator($query);
-        $totalItems = count($paginator);
-        $pagesCount = ceil($totalItems / $pageSize);
-        $companies = $query->getResult(Query::HYDRATE_ARRAY);
+        try {
+            $organizations = $this->connection->executeQuery($query)->fetchAssociative();
+        } catch (Exception
+            | \Doctrine\DBAL\Driver\Exception $exception) {
+            $this->logger->critical(
+                'Exception error trying to get organizations',
+                [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
 
-        return [
-            'total' => $totalItems,
-            'pages' => $pagesCount,
-            'result' => $companies,
-        ];
+            throw new Exception(
+                'Exception error trying to get organizations. ' . $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        if (empty($organizations)) {
+            return [];
+        }
+
+        return $organizations;
+    }
+
+    /**
+     * @param OrganizationId $organizationId
+     * @return array
+     * @throws Exception
+     */
+    public function getCompaniesByOrganization(OrganizationId $organizationId): array {
+        $query = sprintf(/** @lang sql */"
+            SELECT
+                c.name AS name,
+                c.id AS id,
+                c.tin AS tin,
+                c.serial AS serial
+            FROM %s AS c
+            WHERE c.organization_id = ?",
+            self::TABLE_COMPANY
+        );
+
+        try {
+            $companiesByOrganization = $this->connection->executeQuery(
+                $query,
+                [
+                    $organizationId->toString(),
+                ]
+            )->fetchAllAssociative();
+        } catch (Exception
+            | \Doctrine\DBAL\Driver\Exception $exception) {
+            $this->logger->critical(
+                'Exception error trying to get companies by organization',
+                [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            throw new Exception(
+                'Exception error trying to get companies by organization. ' . $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
+        }
+
+        if (empty($companiesByOrganization)) {
+            return [];
+        }
+
+        return $companiesByOrganization;
     }
 
     /**
@@ -120,5 +186,21 @@ class DoctrineOrganizationRepository implements OrganizationRepository
         }
 
         return $this->repository->findOneBy($criteria);
+    }
+
+    /**
+     * @param array $criteria
+     * @return array|null
+     */
+    public function findByCriteria(array $criteria): ?array
+    {
+        if (empty($criteria['status'])) {
+            $criteria['status'] = [
+                OrganizationStatus::ACTIVE(),
+                OrganizationStatus::INACTIVE(),
+            ];
+        }
+
+        return $this->repository->findBy($criteria);
     }
 }

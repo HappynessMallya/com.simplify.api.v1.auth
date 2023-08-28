@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\Company\CompanyId;
-use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Model\User\UserId;
 use App\Domain\Repository\CompanyByUserRepository;
 use Doctrine\DBAL\Connection;
@@ -48,7 +49,9 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
             ]
         )->fetchAllAssociative();
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result;
     }
@@ -68,7 +71,6 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
             self::COMPANY_BY_USER_TABLE
         );
 
-
         $result = $this->connection->executeQuery(
             $query,
             [
@@ -76,7 +78,9 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
             ]
         )->fetchAllAssociative();
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result;
     }
@@ -84,7 +88,6 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
     /**
      * @param UserId $userId
      * @param array $companies
-     * @return void
      * @throws Exception
      */
     public function saveCompaniesToUser(UserId $userId, array $companies): void
@@ -107,11 +110,31 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
 
     /**
      * @param UserId $userId
+     * @throws Exception
+     */
+    public function removeCompaniesFromUser(UserId $userId): void
+    {
+        $query = sprintf(/** @lang sql */
+            'DELETE
+            FROM %s
+            WHERE user_id = ?',
+            self::COMPANY_BY_USER_TABLE
+        );
+
+        $this->connection->executeStatement(
+            $query,
+            [
+                $userId->toString(),
+            ]
+        );
+    }
+
+    /**
+     * @param UserId $userId
      * @param CompanyId $companyId
      */
     public function changeStatusUserOverCompany(UserId $userId, CompanyId $companyId): void
     {
-        // TODO: Implement changeStatusUserOverCompany() method.
     }
 
     /**
@@ -119,6 +142,5 @@ class DoctrineCompanyByUserRepository implements CompanyByUserRepository
      */
     public function removeCompanyByUserId(UserId $userId): void
     {
-        // TODO: Implement removeCompanyByUserId() method.
     }
 }

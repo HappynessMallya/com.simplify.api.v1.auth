@@ -17,5 +17,5 @@ gesdinet_jwt_refresh_token:
 
 gesdinet_jwt_refresh_token_v2:
     path: /api/v2/user/token/refresh
-    controller: App\Infrastructure\Symfony\Api\User\Controller\V2\RefreshTokenController::refresh
+    controller: App\Infrastructure\Symfony\Api\User\V2\Controller\RefreshTokenController::refresh
     methods: ['POST']

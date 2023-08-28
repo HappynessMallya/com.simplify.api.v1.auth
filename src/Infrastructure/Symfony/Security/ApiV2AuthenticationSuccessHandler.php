@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Symfony\Security;
 
+use App\Application\Company\V1\Command\RequestAuthenticationTraCommand;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\CompanyByUserRepository;
@@ -18,6 +19,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
@@ -48,6 +50,9 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
     /** @var OrganizationRepository  */
     private OrganizationRepository $organizationRepository;
 
+    /** @var MessageBusInterface  */
+    private MessageBusInterface $messageBus;
+
     /**
      * @param LoggerInterface $logger
      * @param JWTTokenManagerInterface $JWTTokenManager
@@ -56,6 +61,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
      * @param UserRepository $userRepository
      * @param RefreshTokenManagerInterface $refreshTokenManager
      * @param OrganizationRepository $organizationRepository
+     * @param MessageBusInterface $messageBus
      */
     public function __construct(
         LoggerInterface $logger,
@@ -64,7 +70,8 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         CompanyRepository $companyRepository,
         UserRepository $userRepository,
         RefreshTokenManagerInterface $refreshTokenManager,
-        OrganizationRepository $organizationRepository
+        OrganizationRepository $organizationRepository,
+        MessageBusInterface $messageBus
     ) {
         $this->logger = $logger;
         $this->JWTTokenManager = $JWTTokenManager;
@@ -73,6 +80,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $this->userRepository = $userRepository;
         $this->refreshTokenManager = $refreshTokenManager;
         $this->organizationRepository = $organizationRepository;
+        $this->messageBus = $messageBus;
     }
 
     /**
@@ -123,7 +131,32 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
                 'company_id' => $company->companyId()->toString(),
                 'name' => $company->name(),
                 'vrn' => !(($company->traRegistration()['VRN'] == 'NOT REGISTERED')),
+                'serial' => $company->serial(),
             ];
+
+            $command = new RequestAuthenticationTraCommand(
+                $company->companyId()->toString(),
+                (string) $company->tin(),
+                $company->serial(),
+                $company->traRegistration()['USERNAME'],
+                $company->traRegistration()['PASSWORD']
+            );
+
+            try {
+                $this->messageBus->dispatch($command);
+            } catch (Exception $exception) {
+                $this->logger->critical(
+                    'An error has been occurred when trying request authentication in TRA',
+                    [
+                        'companyId' => $company->companyId()->toString(),
+                        'tin' => $company->tin(),
+                        'serial' => $company->serial(),
+                        'error' => $exception->getMessage(),
+                        'code' => $exception->getCode(),
+                        'method' => __METHOD__,
+                    ]
+                );
+            }
         }
 
         $payload = [

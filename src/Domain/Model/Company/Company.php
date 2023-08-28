@@ -43,8 +43,8 @@ class Company
     /** @var string */
     private string $companyStatus;
 
-    /** @var string|null */
-    private ?string $serial;
+    /** @var string */
+    private string $serial;
 
     /** @var OrganizationId|null  */
     private ?OrganizationId $organizationId;
@@ -61,8 +61,9 @@ class Company
      * @param string|null $phone
      * @param DateTime $createdAt
      * @param CompanyStatus $companyStatus
-     * @param string|null $serial
+     * @param string $serial
      * @param OrganizationId|null $organizationId
+     * @param DateTime|null $updatedAt
      * @return Company
      */
     public static function create(
@@ -74,9 +75,9 @@ class Company
         ?string $phone,
         DateTime $createdAt,
         CompanyStatus $companyStatus,
-        ?string $serial,
+        string $serial,
         ?OrganizationId $organizationId,
-        ?DateTime $updatedAt
+        ?DateTime $updatedAt = null
     ): Company {
         $self = new self();
         $self->companyId = $companyId;
@@ -220,9 +221,9 @@ class Company
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function serial(): ?string
+    public function serial(): string
     {
         return $this->serial;
     }
@@ -235,16 +236,25 @@ class Company
         return $this->organizationId;
     }
 
+    /**
+     * @return DateTime|null
+     */
     public function updatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
+    /**
+     * @param DateTime $updatedAt
+     */
     public function setUpdatedAt(DateTime $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
     }
 
+    /**
+     * @param OrganizationId|null $organizationId
+     */
     public function setOrganizationId(?OrganizationId $organizationId): void
     {
         $this->organizationId = $organizationId;

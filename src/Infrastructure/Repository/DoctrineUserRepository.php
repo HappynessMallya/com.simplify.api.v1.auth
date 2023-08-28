@@ -6,6 +6,7 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserId;
+use App\Domain\Model\User\UserRole;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\UserRepository;
 use App\Infrastructure\Symfony\Security\UserEntity;
@@ -13,12 +14,12 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Exception\NotSupported;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ObjectRepository;
 use Exception;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DoctrineUserRepository
@@ -34,9 +35,11 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
 
     /**
      * @param EntityManagerInterface $em
+     * @throws NotSupported
      */
-    public function __construct(EntityManagerInterface $em)
-    {
+    public function __construct(
+        EntityManagerInterface $em
+    ) {
         $this->em = $em;
         $this->repository = $this->em->getRepository(User::class);
     }
@@ -112,25 +115,30 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
     public function findByCriteria(array $criteria): ?array
     {
         $sql = sprintf(/** @lang sql */
-            'SELECT u FROM \App\Domain\Model\User\User u
-            WHERE u.status in (\'%s\', \'%s\', \'%s\')',
-            UserStatus::ACTIVE, UserStatus::CHANGE_PASSWORD, UserStatus::SUSPENDED
+            'SELECT u
+            FROM \App\Domain\Model\User\User u
+            WHERE u.status IN (\'%s\', \'%s\', \'%s\')',
+            UserStatus::ACTIVE,
+            UserStatus::CHANGE_PASSWORD,
+            UserStatus::SUSPENDED
         );
 
         if (!empty($criteria)) {
             foreach ($criteria as $column => $filter) {
                 if ($column === 'userType') {
-                    $sql .= " and u.userType = '" . $filter ->getValue() . "'";
+                    $sql .= " AND u.userType = '" . $filter->getValue() . "'";
                     continue;
                 }
 
-                $sql .= " and u.$column LIKE '%$filter%'";
+                $sql .= " AND u.$column LIKE '%$filter%'";
             }
         }
 
         $result = $this->em->createQuery($sql);
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }
@@ -153,26 +161,39 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
     }
 
     /**
-     * @param string $username
+     * @param string $email
      * @return User|null
      */
-    public function getByUsername(string $username): ?User
+    public function getByEmail(string $email): ?User
     {
-        $users = $this->findBy(['email' => $username]);
-        return empty($users) ? null : $users[0];
+        $users = $this->findBy(
+            [
+                'email' => $email,
+            ]
+        );
+
+        if (empty($user)) {
+            return null;
+        }
+
+        return $users[0];
     }
 
     /**
      * @param User $user
      * @return bool
+     * @throws Exception
      */
     public function save(User $user): bool
     {
         try {
             $this->em->persist($user);
             $this->em->flush();
-        } catch (ORMException $exception) {
-            return false;
+        } catch (Exception $exception) {
+            throw new Exception(
+                'Exception error trying to save user: ' . $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return true;
@@ -181,6 +202,7 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
     /**
      * @param User $user
      * @return bool
+     * @throws Exception
      */
     public function remove(User $user): bool
     {
@@ -189,8 +211,11 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
         try {
             $this->em->persist($user);
             $this->em->flush();
-        } catch (ORMException $e) {
-            return false;
+        } catch (Exception $exception) {
+            throw new Exception(
+                'Exception error trying to suspend user: ' . $exception->getMessage(),
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
 
         return true;
@@ -200,42 +225,48 @@ class DoctrineUserRepository implements UserRepository, UserLoaderInterface, Obj
      * @param string $username
      * @return User|null
      */
-    public function loadUserByUsername(string $username): ?UserEntity
+    public function loadUserByUsername(string $username): ?User
     {
         try {
             /** @var User $user */
             $user = $this->em->createQuery("
-                    SELECT u FROM App\Model\User\User u
-                    WHERE (u.email = :uname OR u.username = :uname)
+                SELECT u
+                FROM \App\Domain\Model\User\User u
+                WHERE (u.email = :uname OR u.username = :uname)
                     AND (u.status = 'ACTIVE' OR u.status = 'CHANGE_PASSWORD') AND u.enabled = 1
-                ")
-                ->setParameter('uname', $username)
-                ->getOneOrNullResult();
-
-            if (empty($user)) {
-                return null;
-            }
-
-            return UserEntity::create(
-                $user->userId(),
-                $user->companyId(),
-                $user->email(),
-                $user->username(),
-                $user->password(),
-                $user->salt(),
-                $user->status(),
-                $user->roles(),
-                $user->userType()
-            );
-        } catch (NonUniqueResultException $exception) {
-            return null;
-        } catch (Exception $exception) {
+            ")
+            ->setParameter('uname', $username)
+            ->getOneOrNullResult();
+        } catch (
+            NonUniqueResultException
+            | Exception $exception
+        ) {
             return null;
         }
+
+        if (empty($user)) {
+            return null;
+        }
+
+        return UserEntity::create(
+            $user->userId(),
+            $user->companyId(),
+            $user->email(),
+            $user->username(),
+            $user->password(),
+            $user->salt(),
+            $user->status(),
+            UserRole::byName($user->roles()[0]),
+            $user->getUserType(),
+            $user->firstName(),
+            $user->lastName(),
+            $user->mobileNumber()
+        );
     }
 
     /**
      * @param UserId $userId
+     * @throws Exception
      */
     public function login(UserId $userId): void
     {

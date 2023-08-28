@@ -25,6 +25,6 @@ framework:
         routing:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
-            'App\Application\Company\Command\RegisterCompanyToTraCommand': async
-            'App\Application\Company\Command\RequestAuthenticationTraCommand': async
-            'App\Application\Company\Command\VerifyReceiptCodeCommand': async
+            'App\Application\Company\V1\Command\RegisterCompanyToTraCommand': async
+            'App\Application\Company\V1\Command\RequestAuthenticationTraCommand': async
+            'App\Application\Company\V1\Command\VerifyReceiptCodeCommand': async

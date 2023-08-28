@@ -13,7 +13,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\NotSupported;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -34,7 +33,6 @@ class DoctrineCompanyRepository implements CompanyRepository
     private EntityRepository $repository;
 
     /**
-     * DoctrineCompanyRepository constructor
      * @param LoggerInterface $logger
      * @param EntityManager $em
      * @throws NotSupported
@@ -127,6 +125,10 @@ class DoctrineCompanyRepository implements CompanyRepository
         return $this->repository->findOneBy($criteria);
     }
 
+    /**
+     * @param OrganizationId $organizationId
+     * @return array
+     */
     public function getCompaniesByOrganizationId(OrganizationId $organizationId): array
     {
         $result = $this->em->createQuery(
@@ -134,7 +136,9 @@ class DoctrineCompanyRepository implements CompanyRepository
             WHERE c.organizationId = '$organizationId'",
         );
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }
@@ -165,7 +169,9 @@ class DoctrineCompanyRepository implements CompanyRepository
 
         $result = $this->em->createQuery($sql);
 
-        if (empty($result)) return [];
+        if (empty($result)) {
+            return [];
+        }
 
         return $result->getResult(AbstractQuery::HYDRATE_OBJECT);
     }

@@ -37,14 +37,6 @@ security:
                 check_path: /api/v2/user/login
                 success_handler: App\Infrastructure\Symfony\Security\ApiV2AuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-        register:
-            pattern:  ^/api/v1/user/register
-            stateless: true
-            anonymous: true
-        register_v2:
-            pattern: ^/api/v2/user/register
-            stateless: true
-            anonymous: true
         changepassword:
             pattern: ^/api/v1/user/change-password
             stateless: true
@@ -78,6 +70,10 @@ security:
             stateless: true
             anonymous: true
             methods: ['POST']
+        organization_companies:
+            pattern: ^/api/v1/organization/\d+
+            stateless: true
+            anonymous: true
         api_v1:
             pattern:   ^/api/v1
             stateless: true
@@ -108,10 +104,6 @@ security:
         - { path: ^/api/v2/user/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/user/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v2/user/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/user/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v2/user/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/user/verify, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        #- { path: ^/api/v1/company/, roles: IS_ANONYMOUS, allow_if: "'127.0.0.1' == request.getClientIp()" }
-        #- { path: ^/api/v1/company, roles: ROLE_USER }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/v1/organization/\d+/companies, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        

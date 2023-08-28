@@ -15,8 +15,6 @@ services:
             - mysql
     mysql:
         image: mariadb:10.3.31
-        ports:
-            - 3306:3306
         environment:
             MYSQL_DATABASE: com.simplify.api.v1.auth
             MYSQL_ROOT_PASSWORD: password

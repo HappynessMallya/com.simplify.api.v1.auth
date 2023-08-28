@@ -9,6 +9,7 @@ use App\Domain\Model\Enum;
 /**
  * Class UserRole
  * @package App\Domain\Model\User
+ *
  * @method static UserRole USER()
  * @method static UserRole COMPANY()
  * @method static UserRole ADMIN()

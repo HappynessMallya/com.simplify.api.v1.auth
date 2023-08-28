@@ -16,6 +16,9 @@ class Certificate
     /** @var TaxIdentificationNumber */
     private TaxIdentificationNumber $tin;
 
+    /** @var Serial  */
+    private Serial $serial;
+
     /** @var string */
     private string $filepath;
 
@@ -23,12 +26,18 @@ class Certificate
      * @param CertificateId $certificateId
      * @param TaxIdentificationNumber $tin
      * @param string $filepath
+     * @param Serial $serial
      */
-    public function __construct(CertificateId $certificateId, TaxIdentificationNumber $tin, string $filepath)
-    {
+    public function __construct(
+        CertificateId $certificateId,
+        TaxIdentificationNumber $tin,
+        string $filepath,
+        Serial $serial
+    ) {
         $this->certificateId = $certificateId;
         $this->tin = $tin;
         $this->filepath = $filepath;
+        $this->serial = $serial;
     }
 
     /**
@@ -53,5 +62,13 @@ class Certificate
     public function getFilepath(): string
     {
         return $this->filepath;
+    }
+
+    /**
+     * @return Serial
+     */
+    public function getSerial(): Serial
+    {
+        return $this->serial;
     }
 }

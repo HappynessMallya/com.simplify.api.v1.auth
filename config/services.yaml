@@ -66,11 +66,11 @@ services:
         arguments:
             $folderPath: '%brochures_directory%'
 
-    App\Application\Company\CommandHandler\RegisterCompanyToTraHandler:
+    App\Application\Company\V1\CommandHandler\RegisterCompanyToTraHandler:
         tags: [ messenger.message_handler ]
 
-    App\Application\Company\CommandHandler\RequestAuthenticationTraHandler:
+    App\Application\Company\V1\CommandHandler\RequestAuthenticationTraHandler:
         tags: [ messenger.message_handler ]
 
-    App\Application\Company\CommandHandler\VerifyReceiptCodeHandler:
+    App\Application\Company\V1\CommandHandler\VerifyReceiptCodeHandler:
         tags: [ messenger.message_handler ]

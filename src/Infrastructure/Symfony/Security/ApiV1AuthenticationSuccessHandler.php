@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Symfony\Security;
 
-use App\Application\Company\Command\RequestAuthenticationTraCommand;
+use App\Application\Company\V1\Command\RequestAuthenticationTraCommand;
 use App\Domain\Model\User\UserStatus;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
@@ -94,6 +94,7 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
         $command = new RequestAuthenticationTraCommand(
             $company->companyId()->toString(),
             (string) $company->tin(),
+            $company->serial(),
             $company->traRegistration()['USERNAME'],
             $company->traRegistration()['PASSWORD']
         );
