@@ -27,12 +27,16 @@ security:
             anonymous: true
             json_login:
                 check_path: /api/v1/user/login
-                success_handler: lexik_jwt_authentication.handler.authentication_success
+                success_handler: App\Infrastructure\Symfony\Security\ApiV1AuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-        register:
-            pattern:  ^/api/v1/user/register
+        login_v2:
+            pattern: ^/api/v2/user/login
             stateless: true
             anonymous: true
+            json_login:
+                check_path: /api/v2/user/login
+                success_handler: App\Infrastructure\Symfony\Security\ApiV2AuthenticationSuccessHandler
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
         changepassword:
             pattern: ^/api/v1/user/change-password
             stateless: true
@@ -40,6 +44,10 @@ security:
             methods: [PUT, POST]
         refresh:
             pattern:  ^/api/v1/user/token/refresh
+            stateless: true
+            anonymous: true
+        refresh_v2:
+            pattern: ^/api/v2/user/token/refresh
             stateless: true
             anonymous: true
         company_registration:
@@ -62,8 +70,19 @@ security:
             stateless: true
             anonymous: true
             methods: ['POST']
-        api:
+        organization_companies:
+            pattern: ^/api/v1/organization/\d+
+            stateless: true
+            anonymous: true
+        api_v1:
             pattern:   ^/api/v1
+            stateless: true
+            provider: app_user_provider
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+        api_v2:
+            pattern: ^/api/v2
             stateless: true
             provider: app_user_provider
             guard:
@@ -82,10 +101,9 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/v1/user/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v2/user/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/user/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/user/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v2/user/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/user/verify, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        #- { path: ^/api/v1/company/, roles: IS_ANONYMOUS, allow_if: "'127.0.0.1' == request.getClientIp()" }
-        #- { path: ^/api/v1/company, roles: ROLE_USER }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/api/v1/organization/\d+/companies, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        

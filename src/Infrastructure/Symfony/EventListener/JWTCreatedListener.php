@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Symfony\EventListener;
 
-use App\Application\Company\Command\RequestAuthenticationTraCommand;
 use App\Domain\Model\User\User;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use App\Infrastructure\Symfony\Security\UserEntity;
-use Exception;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTCreatedEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -56,16 +54,12 @@ class JWTCreatedListener
      */
     public function onJWTCreated(JWTCreatedEvent $event): void
     {
-        $startTimeJwtListener = microtime(true);
-
         $user = $event->getUser();
         $payload = $event->getData();
 
         if (!$user instanceof UserInterface) {
             return;
         }
-
-        $start = microtime(true);
 
         if (!$user instanceof UserEntity && !$user instanceof User) {
             $jwtUser = $user;
@@ -75,87 +69,20 @@ class JWTCreatedListener
             ];
 
             $user = $this->userRepository->findOneBy($criteria);
+
+            if (empty($user)) {
+                $criteria = [
+                    'username' => $jwtUser->getUsername(),
+                ];
+
+                $user = $this->userRepository->findOneBy($criteria);
+            }
         }
 
-        $end = microtime(true);
-
-        $this->logger->debug(
-            'Time duration of find user for JWT process',
-            [
-                'time' => $end - $start,
-                'user_id' => $user->getUserId(),
-            ]
-        );
-
-        $payload['username'] = $user->getUsername();
+        $payload['username'] = $user->getEmail();
         $payload['email'] = $user->getEmail();
         $payload['companyId'] = $user->getCompanyId();
 
-        $start = microtime(true);
-        $company = $this->companyRepository->get($user->companyId());
-        $end = microtime(true);
-
-        $this->logger->debug(
-            'Time duration of get company data',
-            [
-                'time' =>  $end - $start,
-                'company_id' => $company->companyId()->toString(),
-                'method' => __METHOD__,
-            ]
-        );
-
-        if (!empty($company->traRegistration())) {
-            $command = new RequestAuthenticationTraCommand(
-                $company->companyId()->toString(),
-                (string) $company->tin(),
-                $company->traRegistration()['USERNAME'],
-                $company->traRegistration()['PASSWORD']
-            );
-
-            $start = microtime(true);
-
-            try {
-                $this->messageBus->dispatch($command);
-            } catch (Exception $exception) {
-                $this->logger->critical(
-                    'An error has been occurred when trying request authentication in TRA',
-                    [
-                        'companyId' => $company->companyId()->toString(),
-                        'tin' => $company->tin(),
-                        'error' => $exception->getMessage(),
-                        'code' => $exception->getCode(),
-                        'method' => __METHOD__,
-                    ]
-                );
-            }
-
-            $end = microtime(true);
-
-            $this->logger->debug(
-                'Time duration of execution of async command',
-                [
-                    'time' => $end - $start,
-                    'user_id' => $user->userId()->toString(),
-                    'method' => __METHOD__,
-                ]
-            );
-        }
-
-        if (!empty($company) && !empty($company->traRegistration())) {
-            $payload['companyName'] = $company->name();
-            $payload['vrn'] = $company->traRegistration()['VRN'] !== 'NOT REGISTERED';
-        }
-
         $event->setData($payload);
-
-        $endTimeJwtListener = microtime(true);
-
-        $this->logger->debug(
-            'Time duration of JWT Created Listener',
-            [
-                'time' => $endTimeJwtListener - $startTimeJwtListener,
-                'method' => __METHOD__,
-            ]
-        );
     }
 }

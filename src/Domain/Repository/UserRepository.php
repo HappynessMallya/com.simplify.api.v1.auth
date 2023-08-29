@@ -21,12 +21,6 @@ interface UserRepository
     public function get(UserId $userId): ?User;
 
     /**
-     * @param string $username
-     * @return User|null
-     */
-    public function getByUsername(string $username): ?User;
-
-    /**
      * @param User $user
      * @return bool
      */
@@ -48,4 +42,10 @@ interface UserRepository
      * @return UserEntity|null
      */
     public function findOneBy(array $criteria): ?UserEntity;
+
+    /**
+     * @param array $criteria
+     * @return User|null
+     */
+    public function findByCriteria(array $criteria): ?array;
 }

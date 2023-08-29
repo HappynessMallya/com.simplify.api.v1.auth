@@ -9,6 +9,7 @@ use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserId;
 use App\Domain\Model\User\UserRole;
 use App\Domain\Model\User\UserStatus;
+use App\Domain\Model\User\UserType;
 use App\Infrastructure\Repository\DoctrineUserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -22,6 +23,17 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserEntity extends User implements UserInterface
 {
+    /**
+     * @param UserId $userId
+     * @param CompanyId $companyId
+     * @param string $email
+     * @param string|null $username
+     * @param string $password
+     * @param string|null $salt
+     * @param UserStatus $userStatus
+     * @param array $roles
+     * @param UserType $userType
+     */
     public function __construct(
         UserId $userId,
         CompanyId $companyId,
@@ -30,17 +42,19 @@ class UserEntity extends User implements UserInterface
         string $password,
         ?string $salt,
         UserStatus $userStatus,
-        array $roles
+        array $roles,
+        UserType $userType
     ) {
         $this->userId = $userId;
         $this->companyId = $companyId;
         $this->email = $email;
-        $this->enabled = true;
         $this->username = $username;
         $this->password = $password;
         $this->salt = $salt;
-        $this->roles = $roles;
         $this->status = $userStatus ?? UserStatus::ACTIVE();
+        $this->roles = $roles;
+        $this->userType = $userType;
+        $this->enabled = true;
     }
 
     /**
@@ -177,9 +191,8 @@ class UserEntity extends User implements UserInterface
         $this->status = $status;
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
-        //
     }
 
     /**
@@ -187,7 +200,7 @@ class UserEntity extends User implements UserInterface
      */
     public function __toString(): string
     {
-        return (string) $this->getEmail();
+        return $this->getEmail();
     }
 
     /**
@@ -267,6 +280,22 @@ class UserEntity extends User implements UserInterface
      */
     public function setCompanyId(string $companyId): void
     {
-        $this->companyId = $companyId;
+        $this->companyId = CompanyId::fromString($companyId);
+    }
+
+    /**
+     * @return UserType
+     */
+    public function getUserType(): UserType
+    {
+        return $this->userType;
+    }
+
+    /**
+     * @param UserType $userType
+     */
+    public function setUserType(UserType $userType): void
+    {
+        $this->userType = $userType;
     }
 }

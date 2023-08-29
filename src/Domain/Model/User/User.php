@@ -19,11 +19,20 @@ class User
     /** @var CompanyId */
     protected CompanyId $companyId;
 
+    /** @var string */
+    protected string $firstName;
+
+    /** @var string */
+    protected string $lastName;
+
     /** @var string|null */
     protected ?string $username;
 
     /** @var string */
     protected string $email;
+
+    /** @var string|null */
+    protected ?string $mobileNumber;
 
     /** @var bool */
     protected bool $enabled;
@@ -37,10 +46,7 @@ class User
     /** @var DateTime|null */
     protected ?DateTime $lastLogin;
 
-    /**
-     * Random string sent to the user email address in order to verify it
-     * @var string|null
-     */
+    /** @var string|null Random string sent to the user email address in order to verify it */
     protected ?string $confirmationToken;
 
     /** @var DateTime|null */
@@ -49,32 +55,40 @@ class User
     /** @var array */
     protected array $roles;
 
+    /** @var UserType  */
+    protected UserType $userType;
+
     /** @var UserStatus */
     protected UserStatus $status;
 
     /** @var DateTime */
     protected DateTime $createdAt;
 
-    /** @var string */
-    protected string $firstName;
+    /** @var DateTime|null */
+    private ?DateTime $updatedAt;
 
-    /** @var string */
-    protected string $lastName;
-
-    /** @var string|null */
-    protected ?string $mobileNumber;
-
-    /**
-     * User constructor
-     */
     public function __construct()
     {
         $this->enabled = false;
         $this->roles = [];
     }
 
+    /**
+     * @param UserId $userId
+     * @param CompanyId $companyId
+     * @param string $email
+     * @param string|null $username
+     * @param string|null $password
+     * @param string|null $salt
+     * @param UserStatus $userStatus
+     * @param UserRole $userRole
+     * @param UserType $userType
+     * @param string $firstName
+     * @param string $lastName
+     * @param string|null $mobileNumber
+     * @return self
+     */
     public static function create(
-        UserRole $userRole,
         UserId $userId,
         CompanyId $companyId,
         string $email,
@@ -82,13 +96,13 @@ class User
         ?string $password,
         ?string $salt,
         UserStatus $userStatus,
+        UserRole $userRole,
+        UserType $userType,
         string $firstName,
         string $lastName,
         ?string $mobileNumber
     ): self {
         $self = new self();
-        $self->enabled = true;
-        $self->roles[] = $userRole->getName();
         $self->userId = $userId;
         $self->companyId = $companyId;
         $self->email = $email;
@@ -96,23 +110,98 @@ class User
         $self->password = $password;
         $self->salt = $salt;
         $self->status = $userStatus;
+        $self->roles[] = $userRole->getName();
+        $self->userType = $userType;
         $self->firstName = $firstName;
         $self->lastName = $lastName;
         $self->mobileNumber = $mobileNumber;
-        $self->createdAt = new Datetime();
+        $self->enabled = true;
         $self->lastLogin = null;
         $self->confirmationToken = null;
         $self->passwordRequestedAt = null;
+        $self->createdAt = new Datetime();
 
         return $self;
     }
 
     /**
-     * @return void
+     * @return UserId
      */
-    public function login(): void
+    public function userId(): UserId
     {
-        $this->lastLogin = new DateTime();
+        return $this->userId;
+    }
+
+    /**
+     * @return CompanyId
+     */
+    public function companyId(): CompanyId
+    {
+        return $this->companyId;
+    }
+
+    /**
+     * @return string
+     */
+    public function firstName(): string
+    {
+        return $this->firstName;
+    }
+
+    /**
+     * @return string
+     */
+    public function lastName(): string
+    {
+        return $this->lastName;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function username(): ?string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @return string
+     */
+    public function email(): string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function mobileNumber(): ?string
+    {
+        return empty($this->mobileNumber) ? null : $this->mobileNumber;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function salt(): ?string
+    {
+        return $this->salt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function password(): ?string
+    {
+        return $this->password;
     }
 
     /**
@@ -121,6 +210,19 @@ class User
     public function setPassword(string $password): void
     {
         $this->password = $password;
+    }
+
+    /**
+     * @param string $password
+     * @param string|null $salt
+     */
+    public function changePassword(string $password, ?string $salt): void
+    {
+        $this->password = $password;
+        $this->salt = $salt;
+        $this->passwordRequestedAt = null;
+        $this->confirmationToken = null;
+        $this->enabled = true;
     }
 
     /**
@@ -146,140 +248,6 @@ class User
     }
 
     /**
-     * @param string $password
-     * @param string|null $salt
-     */
-    public function changePassword(string $password, ?string $salt): void
-    {
-        $this->password = $password;
-        $this->salt = $salt;
-        $this->passwordRequestedAt = null;
-        $this->confirmationToken = null;
-        $this->enabled = true;
-    }
-
-    /**
-     * @param UserStatus $newStatus
-     */
-    public function changeStatus(UserStatus $newStatus): void
-    {
-        if ($newStatus->sameValueAs(UserStatus::ACTIVE())) {
-            $this->enabled = true;
-        }
-
-        $this->status = $newStatus;
-    }
-
-    /**
-     * @return void
-     */
-    public function suspend(): void
-    {
-        $this->enabled = false;
-        $this->status = UserStatus::SUSPENDED();
-    }
-
-    /**
-     * @return UserId
-     */
-    public function userId(): UserId
-    {
-        return $this->userId;
-    }
-
-    /**
-     * @return UserStatus
-     */
-    public function status(): UserStatus
-    {
-        if ($this->status instanceof UserStatus) {
-            return $this->status;
-        }
-
-        return UserStatus::byValue($this->status);
-    }
-
-    /**
-     * @param UserRole $role
-     */
-    public function addRole(UserRole $role): void
-    {
-        if (!in_array($role->toString(), $this->roles, true)) {
-            $this->roles[] = $role->toString();
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function roles(): array
-    {
-        $roles = [];
-
-        foreach (array_unique($this->roles) as $rol) {
-                $roles[] = UserRole::byName($rol)->getName();
-        }
-
-        return $roles;
-    }
-
-    /**
-     * @return DateTime
-     */
-    public function createdAt(): DateTime
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return (string) $this->email();
-    }
-
-    /**
-     * @return CompanyId
-     */
-    public function companyId(): CompanyId
-    {
-        return $this->companyId;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function username(): ?string
-    {
-        return $this->username;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function salt(): ?string
-    {
-        return $this->salt;
-    }
-
-    /**
-     * @return string
-     */
-    public function email(): string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function password(): ?string
-    {
-        return $this->password;
-    }
-
-    /**
      * @return DateTime|null
      */
     public function lastLogin(): ?DateTime
@@ -296,6 +264,49 @@ class User
     }
 
     /**
+     * @return DateTime
+     */
+    public function passwordRequestedAt(): DateTime
+    {
+        return $this->passwordRequestedAt;
+    }
+
+    /**
+     * @return array
+     */
+    public function roles(): array
+    {
+        $roles = [];
+
+        foreach (array_unique($this->roles) as $rol) {
+            $roles[] = UserRole::byName($rol)->getName();
+        }
+
+        return $roles;
+    }
+
+    /**
+     * @param UserRole $role
+     */
+    public function addRole(UserRole $role): void
+    {
+        if (!in_array($role->toString(), $this->roles, true)) {
+            $this->roles[] = $role->toString();
+        }
+    }
+
+    /**
+     * @param UserRole $role
+     */
+    public function removeRole(UserRole $role): void
+    {
+        if (false !== $key = array_search($role->toString(), $this->roles, true)) {
+            unset($this->roles[$key]);
+            $this->roles = array_values($this->roles);
+        }
+    }
+
+    /**
      * @param UserRole $role
      * @return bool
      */
@@ -309,11 +320,11 @@ class User
     }
 
     /**
-     * @return bool
+     * @return UserType
      */
-    public function isEnabled(): bool
+    public function getUserType(): UserType
     {
-        return $this->enabled;
+        return $this->userType;
     }
 
     /**
@@ -333,46 +344,51 @@ class User
     }
 
     /**
-     * @param UserRole $role
+     * @return UserStatus
      */
-    public function removeRole(UserRole $role): void
+    public function status(): UserStatus
     {
-        if (false !== $key = array_search($role->toString(), $this->roles, true)) {
-            unset($this->roles[$key]);
-            $this->roles = array_values($this->roles);
+        if ($this->status instanceof UserStatus) {
+            return $this->status;
         }
+
+        return UserStatus::byValue($this->status);
+    }
+
+    /**
+     * @param UserStatus $newStatus
+     */
+    public function changeStatus(UserStatus $newStatus): void
+    {
+        if ($newStatus->sameValueAs(UserStatus::ACTIVE())) {
+            $this->enabled = true;
+        }
+
+        $this->status = $newStatus;
     }
 
     /**
      * @return DateTime
      */
-    public function passwordRequestedAt(): DateTime
+    public function createdAt(): DateTime
     {
-        return $this->passwordRequestedAt;
+        return $this->createdAt;
     }
 
     /**
-     * @return string
+     * @return DateTime|null
      */
-    public function firstName(): string
+    public function updatedAt(): ?DateTime
     {
-        return $this->firstName;
+        return empty($this->updatedAt) ? null : $this->updatedAt;
     }
 
     /**
-     * @return string
+     * @return void
      */
-    public function lastName(): string
+    public function login(): void
     {
-        return $this->lastName;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function mobileNumber(): ?string
-    {
-        return empty($this->mobileNumber) ? null : $this->mobileNumber;
+        $this->lastLogin = new DateTime();
     }
 
     /**
@@ -395,5 +411,40 @@ class User
                 }
             }
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function suspend(): void
+    {
+        $this->enabled = false;
+        $this->status = UserStatus::SUSPENDED();
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->email();
+    }
+
+    /**
+     * @param bool $option
+     * @return void
+     */
+    public function setEnable(bool $option): void
+    {
+        $this->enabled = $option;
+    }
+
+    /**
+     * @param DateTime $dateTime
+     * @return void
+     */
+    public function setUpdatedAt(DateTime $dateTime): void
+    {
+        $this->updatedAt = $dateTime;
     }
 }

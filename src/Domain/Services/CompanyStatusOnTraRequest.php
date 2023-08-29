@@ -6,38 +6,35 @@ namespace App\Domain\Services;
 
 class CompanyStatusOnTraRequest
 {
-    /**
-     * @var string
-     */
+    /** @var string  */
     private string $companyId;
 
-    /**
-     * @var string
-     */
+    /** @var string  */
     private string $tin;
 
-    /**
-     * @var string
-     */
+    /** @var string  */
     private string $username;
 
-    /**
-     * @var string
-     */
+    /** @var string  */
     private string $password;
+
+    /** @var string  */
+    private string $serial;
 
     /**
      * @param string $companyId
      * @param string $tin
+     * @param string $serial
      * @param string $username
      * @param string $password
      */
-    public function __construct(string $companyId, string $tin, string $username, string $password)
+    public function __construct(string $companyId, string $tin, string $serial, string $username, string $password)
     {
         $this->companyId = $companyId;
         $this->tin = $tin;
         $this->username = $username;
         $this->password = $password;
+        $this->serial = $serial;
     }
 
     /**
@@ -70,5 +67,13 @@ class CompanyStatusOnTraRequest
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSerial(): string
+    {
+        return $this->serial;
     }
 }

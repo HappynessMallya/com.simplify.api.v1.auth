@@ -6,6 +6,7 @@
 /.env.*.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
+/public/certificates/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
@@ -13,6 +14,7 @@
 .idea/*
 
 ###> symfony/phpunit-bridge ###
+.phpunit
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
@@ -32,13 +34,3 @@ supervisord.log
 /.phpcs-cache
 /phpcs.xml
 ###< squizlabs/php_codesniffer ###
-
-###> symfony/phpunit-bridge ###
-.phpunit
-.phpunit.result.cache
-/phpunit.xml
-###< symfony/phpunit-bridge ###
-###> phpunit/phpunit ###
-/phpunit.xml
-.phpunit.result.cache
-###< phpunit/phpunit ###
