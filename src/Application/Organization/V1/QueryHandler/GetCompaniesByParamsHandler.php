@@ -119,11 +119,13 @@ class GetCompaniesByParamsHandler
                     'companyId' => $company->companyId()->toString(),
                     'name' => $company->name(),
                     'tin' => $company->tin(),
+                    'serial' => $company->serial(),
                     'email' => $company->email(),
                     'phone' => $company->phone() ?? '',
                     'address' => $company->address(),
                     'traRegistration' => $company->traRegistration(),
                     'status' => $company->companyStatus(),
+                    'enable' => $company->isEnable(),
                     'createdAt' => $company->createdAt()->format('Y-m-d H:i:s'),
                 ];
             }

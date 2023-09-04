@@ -201,6 +201,6 @@ class DoctrineOrganizationRepository implements OrganizationRepository
             ];
         }
 
-        return $this->repository->findBy($criteria);
+        return $this->repository->findBy($criteria, ['name' => 'asc']);
     }
 }

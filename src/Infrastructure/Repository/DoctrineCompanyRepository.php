@@ -88,10 +88,10 @@ class DoctrineCompanyRepository implements CompanyRepository
      */
     public function getAll(
         int $page = 0,
-        int $pageSize = 10,
+        int $pageSize = 1000,
         ?string $orderBy = 'createdAt'
     ): array {
-        $pageSize = empty($pageSize) ? 10 : $pageSize;
+        $pageSize = empty($pageSize) ? 1000 : $pageSize;
         $orderBy = empty($orderBy) ? 'createdAt' : $orderBy;
         $query = $this->repository->createQueryBuilder('c')
             ->orderBy('c.' . $orderBy, 'DESC')
