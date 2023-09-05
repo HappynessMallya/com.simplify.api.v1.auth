@@ -97,7 +97,6 @@ class DoctrineCompanyRepository implements CompanyRepository
             ->orderBy('c.' . $orderBy, 'DESC')
             ->setFirstResult($pageSize * $page)
             ->setMaxResults($pageSize)
-            ->where('c.enable = true')
             ->getQuery();
 
         $paginator = new Paginator($query);
