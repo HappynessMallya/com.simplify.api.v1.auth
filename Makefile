@@ -6,7 +6,7 @@ deploy: ## Execute command for deploy in production mode
 	-$(SHELL) deploy.sh
 
 service-bus: ## Consuming Messages (Running the Worker)
-	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console messenger:consume async -vv
+	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php bin/console messenger:consume async -vvv
 
 lint: ## Run the php linter over the code
 	-@docker-compose --file docker-compose.$(env).yaml exec php-fpm php ./vendor/bin/phpcs
