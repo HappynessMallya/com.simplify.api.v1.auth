@@ -129,8 +129,6 @@ class ApiV1AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
             $payload['vrn'] = $company->traRegistration()['VRN'] !== 'NOT REGISTERED';
         }
 
-
-
         $this->userRepository->login($user->userId());
 
         $token = $this->JWTTokenManager->createFromPayload($jwtUser, $payload);

@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Symfony\Security;
 
+use App\Application\Company\V1\Command\BatchRequestAuthenticationTraCommand;
 use App\Application\Company\V1\Command\RequestAuthenticationTraCommand;
 use App\Domain\Model\Company\CompanyId;
 use App\Domain\Model\User\UserStatus;
@@ -104,6 +105,7 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
             ? $this->organizationRepository->get($userCompany->organizationId())
             : null;
         $companiesUser = [];
+        $companiesRequestTokenVfd = [];
 
         foreach ($companies as $companyUser) {
             $company = $this->companyRepository->get(CompanyId::fromString($companyUser['company_id']));
@@ -134,29 +136,32 @@ class ApiV2AuthenticationSuccessHandler implements AuthenticationSuccessHandlerI
                 'serial' => $company->serial(),
             ];
 
-            $command = new RequestAuthenticationTraCommand(
-                $company->companyId()->toString(),
-                (string) $company->tin(),
-                $company->serial(),
-                $company->traRegistration()['USERNAME'],
-                $company->traRegistration()['PASSWORD']
-            );
+            $companiesRequestTokenVfd[] = [
+                'companyId' => $company->companyId()->toString(),
+                'tin' => $company->tin(),
+                'serial' => $company->serial(),
+                'username' => $company->traRegistration()['USERNAME'],
+                'password' => $company->traRegistration()['PASSWORD']
+            ];
+        }
 
-            try {
-                $this->messageBus->dispatch($command);
-            } catch (Exception $exception) {
-                $this->logger->critical(
-                    'An error has been occurred when trying request authentication in TRA',
-                    [
-                        'companyId' => $company->companyId()->toString(),
-                        'tin' => $company->tin(),
-                        'serial' => $company->serial(),
-                        'error' => $exception->getMessage(),
-                        'code' => $exception->getCode(),
-                        'method' => __METHOD__,
-                    ]
-                );
-            }
+        $command = new BatchRequestAuthenticationTraCommand(
+            $companiesRequestTokenVfd
+        );
+
+        try {
+            $this->messageBus->dispatch($command);
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                'An error has been occurred when trying request authentication in TRA',
+                [
+                    'organizationId' => $organization->getOrganizationId()->toString(),
+                    'userId' => $user->userId()->toString(),
+                    'error' => $exception->getMessage(),
+                    'code' => $exception->getCode(),
+                    'method' => __METHOD__,
+                ]
+            );
         }
 
         $payload = [

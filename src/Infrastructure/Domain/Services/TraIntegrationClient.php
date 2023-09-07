@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Domain\Services;
 
+use App\Domain\Services\BatchRequestTokenByCompanyToTra;
+use App\Domain\Services\BatchRequestTokenByCompanyToTraResponse;
 use App\Domain\Services\CompanyStatusOnTraRequest;
 use App\Domain\Services\CompanyStatusOnTraResponse;
 use App\Domain\Services\RegistrationCompanyToTraRequest;
@@ -30,6 +32,8 @@ class TraIntegrationClient implements TraIntegrationService
     public const REQUEST_TOKEN_ENDPOINT = 'requestToken';
     public const UPLOAD_CERTIFICATE_ENDPOINT = 'upload';
     public const REGISTRATION_COMPANY_ENDPOINT = 'register';
+
+    public const BATCH_REQUEST_TOKEN_ENDPOINT = 'batch-request-token';
 
     /** @var LoggerInterface */
     private LoggerInterface $logger;
@@ -339,6 +343,91 @@ class TraIntegrationClient implements TraIntegrationService
             return new RegistrationCompanyToTraResponse(
                 true,
                 $e->getMessage()
+            );
+        }
+    }
+
+    public function batchRequestTokenByCompanyToTra(
+        BatchRequestTokenByCompanyToTra $request
+    ): BatchRequestTokenByCompanyToTraResponse {
+        $payload = [
+            'companies' => $request->getCompanies(),
+        ];
+
+        $this->logger->debug(
+            'CompanyAuthenticationTraClient::requestTokenAuthenticationTra()',
+            [
+                'url' => $this->urlClient . self::BATCH_REQUEST_TOKEN_ENDPOINT,
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'body' => $payload,
+                'method' => __METHOD__,
+            ]
+        );
+
+        try {
+            $response = $this->httpClient->request(
+                'POST',
+                $this->urlClient . self::BATCH_REQUEST_TOKEN_ENDPOINT,
+                [
+                    'headers' => [
+                        'Content-Type' => 'application/json'
+                    ],
+                    'body' => json_encode($payload),
+                ]
+            );
+
+            if ($response->getStatusCode() === Response::HTTP_NO_CONTENT) {
+                $this->logger->debug(
+                    'Authentication to TRA was successful',
+                    [
+                        'companies' => $request->getCompanies(),
+                        'method' => __METHOD__,
+                    ]
+                );
+            }
+
+            $response->getContent();
+
+            return new BatchRequestTokenByCompanyToTraResponse(
+                true,
+                ''
+            );
+        } catch (
+        ClientExceptionInterface
+        | RedirectionExceptionInterface
+        | ServerExceptionInterface  $exception
+        ) {
+            $this->logger->critical(
+                'An exception has been occurred when request token to TRA',
+                [
+                    'companies' => $request->getCompanies(),
+                    'http_status' => $exception->getResponse()->getStatusCode(),
+                    'http_body' => $exception->getResponse()->getContent(false),
+                    'code' => $exception->getCode(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return new BatchRequestTokenByCompanyToTraResponse(
+                false,
+                $exception->getResponse()->getContent(false)
+            );
+        } catch (TransportExceptionInterface $exception) {
+            $this->logger->critical(
+                'An exception has been occurred when request token to TRA',
+                [
+                    'companies' => $request->getCompanies(),
+                    'code' => $exception->getCode(),
+                    'error_message' => $exception->getMessage(),
+                    'method' => __METHOD__,
+                ]
+            );
+
+            return new BatchRequestTokenByCompanyToTraResponse(
+                false,
+                $exception->getMessage()
             );
         }
     }

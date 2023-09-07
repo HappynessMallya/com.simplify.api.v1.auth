@@ -68,10 +68,12 @@ class GetCompaniesHandler
                 'organization' => $organizationName,
                 'name' => $company['name'],
                 'tin' => $company['tin'],
+                'serial' => $company['serial'],
                 'address' => $company['address'],
                 'phone' => $company['phone'],
                 'email' => $company['email'],
                 'traRegistration' => $traRegistration,
+                'enable' => $company['enable'],
             ];
         }
 

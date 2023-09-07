@@ -33,4 +33,12 @@ interface TraIntegrationService
     public function registrationCompanyToTra(
         RegistrationCompanyToTraRequest $request
     ): RegistrationCompanyToTraResponse;
+
+    /**
+     * @param BatchRequestTokenByCompanyToTra $request
+     * @return BatchRequestTokenByCompanyToTraResponse
+     */
+    public function batchRequestTokenByCompanyToTra(
+        BatchRequestTokenByCompanyToTra $request
+    ): BatchRequestTokenByCompanyToTraResponse;
 }
