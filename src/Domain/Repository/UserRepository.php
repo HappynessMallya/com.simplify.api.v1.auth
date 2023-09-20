@@ -48,4 +48,10 @@ interface UserRepository
      * @return User|null
      */
     public function findByCriteria(array $criteria): ?array;
+
+    /**
+     * @param string $email
+     * @return User|null
+     */
+    public function getByEmail(string $email): ?User;
 }

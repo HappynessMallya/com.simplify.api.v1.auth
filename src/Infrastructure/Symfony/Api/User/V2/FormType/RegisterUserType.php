@@ -85,7 +85,7 @@ class RegisterUserType extends AbstractType
                         new Assert\Count(
                             [
                                 'min' => 1,
-                                'max' => 5,
+                                'max' => 50,
                             ]
                         ),
                     ],
