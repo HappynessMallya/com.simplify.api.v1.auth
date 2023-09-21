@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserChangePasswordByAdminController extends BaseController
 {
     /**
-     * @Route(path="/change-password", methods={"PUT"})
+     * @Route(path="/change-password/", methods={"PUT"})
      *
      * @param Request $request
      * @return JsonResponse
