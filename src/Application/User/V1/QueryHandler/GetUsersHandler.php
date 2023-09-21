@@ -90,6 +90,7 @@ class GetUsersHandler
                 'mobileNumber' => $user->mobileNumber() ?? '',
                 'userType' => $user->getUserType()->getValue(),
                 'status' => $user->status()->getValue(),
+                'enable' => $user->isEnabled(),
                 'createdAt' => $user->createdAt()->format('Y-m-d H:i:s'),
             ];
         }

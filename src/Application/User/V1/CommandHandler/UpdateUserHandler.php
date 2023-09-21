@@ -91,24 +91,29 @@ class UpdateUserHandler
 
         $companies = $command->getCompanies();
 
-        foreach ($companies as $providedCompanyId) {
-            $companyId = CompanyId::fromString($providedCompanyId);
-            $company = $this->companyRepository->get($companyId);
+        if (!empty($companies)) {
+            foreach ($companies as $providedCompanyId) {
+                $companyId = CompanyId::fromString($providedCompanyId);
+                $company = $this->companyRepository->get($companyId);
 
-            if (empty($company)) {
-                $this->logger->critical(
-                    'Company could not be found',
-                    [
-                        'company_id' => $providedCompanyId,
-                        'method' => __METHOD__,
-                    ]
-                );
+                if (empty($company)) {
+                    $this->logger->critical(
+                        'Company could not be found',
+                        [
+                            'company_id' => $providedCompanyId,
+                            'method' => __METHOD__,
+                        ]
+                    );
 
-                throw new Exception(
-                    'At least one company could not be found',
-                    Response::HTTP_NOT_FOUND
-                );
+                    throw new Exception(
+                        'At least one company could not be found',
+                        Response::HTTP_NOT_FOUND
+                    );
+                }
             }
+
+            $this->companyByUserRepository->removeCompaniesFromUser($user->userId());
+            $this->companyByUserRepository->saveCompaniesToUser($user->userId(), $companies);
         }
 
         if (empty($user)) {
@@ -125,9 +130,6 @@ class UpdateUserHandler
                 Response::HTTP_NOT_FOUND
             );
         }
-
-        $this->companyByUserRepository->removeCompaniesFromUser($user->userId());
-        $this->companyByUserRepository->saveCompaniesToUser($user->userId(), $companies);
 
         if ($isById && (!$user->getUserType()->sameValueAs(UserType::TYPE_OPERATOR()))) {
             $this->logger->critical(

@@ -33,14 +33,13 @@ class UpdateUserType extends AbstractType
                     'constraints' => [
                         new Assert\Count(
                             [
-                                'min' => 1,
-                                'max' => 5,
+                                'min' => 0,
+                                'max' => 50,
                             ]
                         ),
                     ],
                     'entry_options' => [
                         'constraints' => [
-                            new Assert\NotBlank(),
                             new Assert\Length(
                                 [
                                     'min' => 36,
