@@ -19,19 +19,24 @@ class UploadCertificateCompanyFilesCommand
     /** @var array */
     private array $companyFiles;
 
+    private string $certificatePassword;
+
     /**
      * @param string $tin
      * @param array $companyFiles
      * @param string $serial
+     * @param string $certificatePassword
      */
     public function __construct(
         string $tin,
         array $companyFiles,
-        string $serial
+        string $serial,
+        string $certificatePassword
     ) {
         $this->tin = $tin;
         $this->companyFiles = $companyFiles;
         $this->serial = $serial;
+        $this->certificatePassword = $certificatePassword;
     }
 
     /**
@@ -56,5 +61,10 @@ class UploadCertificateCompanyFilesCommand
     public function getSerial(): string
     {
         return $this->serial;
+    }
+
+    public function getCertificatePassword(): string
+    {
+        return $this->certificatePassword;
     }
 }

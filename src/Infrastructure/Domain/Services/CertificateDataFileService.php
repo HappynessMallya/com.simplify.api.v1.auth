@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Domain\Services;
 
+use App\Domain\Model\Company\CertificatePassword;
 use App\Domain\Services\CertificateDataService;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -32,9 +33,10 @@ class CertificateDataFileService implements CertificateDataService
 
     /**
      * @param string $filepath
+     * @param CertificatePassword $certificatePassword
      * @return string
      */
-    public function createCertificateData(string $filepath): string
+    public function createCertificateData(string $filepath, CertificatePassword $certificatePassword): string
     {
         $filesystem = new Filesystem();
         $serializer = $this->getSerializer();
@@ -47,14 +49,14 @@ class CertificateDataFileService implements CertificateDataService
         $dataFilePath = $filepathWithoutExtension[0] . '.data';
 
         // Step 1: Convert PFX to PEM
-        $pemFilePath = $this->convertPfxToPem($filesystem, $filepathWithoutExtension[0]);
+        $pemFilePath = $this->convertPfxToPem($filesystem, $filepathWithoutExtension[0], $certificatePassword->value());
 
         // Step 2: Extract Certificate Information
         $certificateInfo = $this->extractCertificateInfo($pemFilePath);
         // Prepare the data for JSON serialization
         $jsonData = [
             'serial' => $certificateInfo['serial'],
-            'password' => self::CERTIFICATE_PASSWORD
+            'password' => $certificatePassword->value()
         ];
 
         // Step 3: Convert to JSON
@@ -69,9 +71,10 @@ class CertificateDataFileService implements CertificateDataService
     /**
      * @param Filesystem $filesystem
      * @param string $pfxFilePath
+     * @param string $certificatePassword
      * @return string
      */
-    private function convertPfxToPem(Filesystem $filesystem, string $pfxFilePath): string
+    private function convertPfxToPem(Filesystem $filesystem, string $pfxFilePath, string $certificatePassword): string
     {
         $pemFilePath = $pfxFilePath . '.pem';
 
@@ -85,7 +88,7 @@ class CertificateDataFileService implements CertificateDataService
             $pemFilePath,
             '-nodes',
             '-password',
-            'pass:' . self::CERTIFICATE_PASSWORD
+            'pass:' . $certificatePassword
         ];
 
         $process = new Process($command);
