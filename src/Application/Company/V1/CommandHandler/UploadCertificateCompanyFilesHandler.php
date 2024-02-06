@@ -8,6 +8,7 @@ use App\Application\Company\V1\Command\RegisterCompanyToTraCommand;
 use App\Application\Company\V1\Command\UploadCertificateCompanyFilesCommand;
 use App\Domain\Model\Company\Certificate;
 use App\Domain\Model\Company\CertificateId;
+use App\Domain\Model\Company\CertificatePassword;
 use App\Domain\Model\Company\Serial;
 use App\Domain\Model\Company\TaxIdentificationNumber;
 use App\Domain\Repository\CertificateRepository;
@@ -84,6 +85,7 @@ class UploadCertificateCompanyFilesHandler
     {
         $tin = new TaxIdentificationNumber($command->getTin());
         $serial = new Serial($command->getSerial());
+        $certificatePassword = new CertificatePassword($command->getCertificatePassword());
 
         $files = $command->getCompanyFiles();
 
@@ -118,7 +120,7 @@ class UploadCertificateCompanyFilesHandler
             $certificateId = CertificateId::generate();
             $filepath = $this->fileUploaderService->uploadFile($file, $tin, $serial);
 
-            $certificateDataPath = $this->certificateDataService->createCertificateData($filepath);
+            $certificateDataPath = $this->certificateDataService->createCertificateData($filepath, $certificatePassword);
             if (!empty($certificateDataPath)) {
                 $values = json_decode(file_get_contents($certificateDataPath), true);
                 $certificateValues = [
@@ -133,7 +135,8 @@ class UploadCertificateCompanyFilesHandler
                     CertificateId::generate(),
                     $tin,
                     $certificateDataPath,
-                    $serial
+                    $serial,
+                    $certificatePassword
                 );
                 $filesPack[] = $fileCertificate;
             }
@@ -142,7 +145,8 @@ class UploadCertificateCompanyFilesHandler
                 $certificateId,
                 $tin,
                 $filepath,
-                $serial
+                $serial,
+                $certificatePassword
             );
 
             $fileFound = $this->certificateRepository->findByFilePath($filepath);

@@ -32,10 +32,11 @@ class UploadCertificateCompanyFilesController extends BaseController
     ): JsonResponse {
         $tin = $request->get('tin');
         $serial = $request->get('serial');
+        $certificatePassword = $request->get('certificatePassword');
 
-        if (empty($tin) | empty($serial)) {
+        if (empty($tin) | empty($serial) | empty($certificatePassword)) {
             $this->logger->critical(
-                'TIN or Serial missing',
+                'TIN or Serial or Certificate Password missing',
                 [
                     'tin' => $tin,
                     'serial' => $serial,
@@ -46,7 +47,7 @@ class UploadCertificateCompanyFilesController extends BaseController
             return $this->createApiResponse(
                 [
                     'success' => false,
-                    'error' => 'TIN or Serial missing',
+                    'error' => 'TIN or Serial or Certificate Password missing',
                 ],
                 Response::HTTP_BAD_REQUEST
             );
@@ -101,7 +102,8 @@ class UploadCertificateCompanyFilesController extends BaseController
         $dto = new UploadCertificateCompanyFilesCommand(
             $tin,
             $uploadedFile,
-            $serial
+            $serial,
+            $certificatePassword
         );
 
         try {

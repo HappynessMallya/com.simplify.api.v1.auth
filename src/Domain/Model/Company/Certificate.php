@@ -22,6 +22,9 @@ class Certificate
     /** @var string */
     private string $filepath;
 
+    /** @var CertificatePassword */
+    private CertificatePassword $certificatePassword;
+
     /**
      * @param CertificateId $certificateId
      * @param TaxIdentificationNumber $tin
@@ -32,12 +35,14 @@ class Certificate
         CertificateId $certificateId,
         TaxIdentificationNumber $tin,
         string $filepath,
-        Serial $serial
+        Serial $serial,
+        CertificatePassword $certPassword
     ) {
         $this->certificateId = $certificateId;
         $this->tin = $tin;
         $this->filepath = $filepath;
         $this->serial = $serial;
+        $this->certificatePassword = $certPassword;
     }
 
     /**
@@ -70,5 +75,10 @@ class Certificate
     public function getSerial(): Serial
     {
         return $this->serial;
+    }
+
+    public function getCertificatePassword(): CertificatePassword
+    {
+        return $this->certificatePassword;
     }
 }
