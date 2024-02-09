@@ -90,7 +90,7 @@ class GetUsersHandler
             $users[] = [
                 'id' => $user->userId()->toString(),
                 'companyId' => $user->companyId()->toString(),
-                'company' => $company->name(),
+                'company' => (!empty($company)) ? $company->name(): null,
                 'firstName' => $user->firstName(),
                 'lastName' => $user->lastName(),
                 'username' => $user->username() ?? '',
