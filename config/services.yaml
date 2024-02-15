@@ -77,3 +77,7 @@ services:
 
     App\Application\Company\V1\CommandHandler\BatchRequestAuthenticationTraHandler:
         tags: [ messenger.message_handler ]
+
+    App\Domain\Services\SubscriptionService:
+        alias: 'App\Infrastructure\Domain\Services\SubscriptionClient'
+        public: true
