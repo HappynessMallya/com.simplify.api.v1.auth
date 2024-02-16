@@ -7,6 +7,7 @@ namespace App\Application\User\V1\QueryHandler;
 use App\Application\User\V1\Query\GetUsersQuery;
 use App\Domain\Model\User\User;
 use App\Domain\Model\User\UserType;
+use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\UserRepository;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -24,16 +25,21 @@ class GetUsersHandler
     /** @var UserRepository */
     private UserRepository $userRepository;
 
+    private CompanyRepository $companyRepository;
+
     /**
      * @param LoggerInterface $logger
      * @param UserRepository $userRepository
+     * @param CompanyRepository $companyRepository
      */
     public function __construct(
         LoggerInterface $logger,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        CompanyRepository $companyRepository
     ) {
         $this->logger = $logger;
         $this->userRepository = $userRepository;
+        $this->companyRepository = $companyRepository;
     }
 
     /**
@@ -80,9 +86,11 @@ class GetUsersHandler
 
         /** @var User $user */
         foreach ($usersFound as $user) {
+            $company = $this->companyRepository->get($user->companyId());
             $users[] = [
                 'id' => $user->userId()->toString(),
                 'companyId' => $user->companyId()->toString(),
+                'company' => (!empty($company)) ? $company->name(): null,
                 'firstName' => $user->firstName(),
                 'lastName' => $user->lastName(),
                 'username' => $user->username() ?? '',

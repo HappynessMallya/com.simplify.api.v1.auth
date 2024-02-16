@@ -84,9 +84,10 @@ class CertificateDataFileService implements CertificateDataService
             'pkcs12',
             '-in',
             $pfxFilePath . '.pfx',
+            '-clcerts',
+            '-nokeys',
             '-out',
             $pemFilePath,
-            '-nodes',
             '-password',
             'pass:' . $certificatePassword
         ];
