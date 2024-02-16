@@ -159,21 +159,6 @@ class RegisterCompanyHandler
             );
         }
 
-        if ($isSaved) {
-            $this->logger->debug(
-                'Company registered successfully',
-                [
-                    'company_id' => $companyId->toString(),
-                    'name' => $company->name(),
-                    'tin' => $company->tin(),
-                    'serial' => $company->serial(),
-                    'email' => $company->email(),
-                ]
-            );
-
-            return $companyId->toString();
-        }
-
         $subscriptionRequest = new CreateSubscriptionRequest(
             $company->companyId()->toString(),
             $company->createdAt()->format('Y-m-d'),
@@ -191,13 +176,6 @@ class RegisterCompanyHandler
             );
         }
 
-        $this->logger->info(
-            'Company with subscription has been created successfully',
-            [
-                'company_id' => $company->companyId()->toString(),
-            ]
-        );
-
-        return '';
+        return $companyId->toString();
     }
 }
