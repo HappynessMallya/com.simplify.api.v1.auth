@@ -11,6 +11,8 @@ use App\Domain\Model\Company\CompanyStatus;
 use App\Domain\Model\Organization\OrganizationId;
 use App\Domain\Repository\CompanyRepository;
 use App\Domain\Repository\OrganizationRepository;
+use App\Domain\Services\CreateSubscriptionRequest;
+use App\Domain\Services\SubscriptionService;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -22,6 +24,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class RegisterCompanyHandler
 {
+    public const SUBSCRIPTION_TYPE = 'ESTABLISHED';
+
     /** @var LoggerInterface */
     private LoggerInterface $logger;
 
@@ -31,19 +35,25 @@ class RegisterCompanyHandler
     /** @var CompanyRepository */
     private CompanyRepository $companyRepository;
 
+    /** @var SubscriptionService  */
+    private SubscriptionService $subscriptionService;
+
     /**
      * @param LoggerInterface $logger
      * @param OrganizationRepository $organizationRepository
      * @param CompanyRepository $companyRepository
+     * @param SubscriptionService $subscriptionService
      */
     public function __construct(
         LoggerInterface $logger,
         OrganizationRepository $organizationRepository,
-        CompanyRepository $companyRepository
+        CompanyRepository $companyRepository,
+        SubscriptionService $subscriptionService
     ) {
         $this->logger = $logger;
         $this->organizationRepository = $organizationRepository;
         $this->companyRepository = $companyRepository;
+        $this->subscriptionService = $subscriptionService;
     }
 
     /**
@@ -149,21 +159,23 @@ class RegisterCompanyHandler
             );
         }
 
-        if ($isSaved) {
-            $this->logger->debug(
-                'Company registered successfully',
+        $subscriptionRequest = new CreateSubscriptionRequest(
+            $company->companyId()->toString(),
+            $company->createdAt()->format('Y-m-d'),
+            self::SUBSCRIPTION_TYPE
+        );
+
+        $subscription = $this->subscriptionService->createSubscription($subscriptionRequest);
+        if (!$subscription->isSuccess()) {
+            $this->logger->critical(
+                'The subscription could not be created successfully',
                 [
-                    'company_id' => $companyId->toString(),
-                    'name' => $company->name(),
-                    'tin' => $company->tin(),
-                    'serial' => $company->serial(),
-                    'email' => $company->email(),
+                    'company_id' => $company->companyId()->toString(),
+                    'error_message' => $subscription->getErrorMessage(),
                 ]
             );
-
-            return $companyId->toString();
         }
 
-        return '';
+        return $companyId->toString();
     }
 }
