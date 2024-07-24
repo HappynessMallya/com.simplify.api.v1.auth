@@ -95,6 +95,7 @@ class RefreshTokenController extends AbstractController
                 'company_id' => $company->companyId()->toString(),
                 'name' => $company->name(),
                 'vrn' => !(($company->traRegistration()['VRN'] == 'NOT REGISTERED')),
+                'serial' => $company->serial(),
             ];
         }
 
