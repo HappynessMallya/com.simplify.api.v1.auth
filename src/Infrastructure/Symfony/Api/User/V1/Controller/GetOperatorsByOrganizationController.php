@@ -62,16 +62,6 @@ class GetOperatorsByOrganizationController extends BaseController
             );
         }
 
-        if (empty($operators)) {
-            return $this->createApiResponse(
-                [
-                    'success' => false,
-                    'error' => 'Internal server error trying to get operators',
-                ],
-                Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
-
         return $this->createApiResponse(
             [
                 'organizationId' => $organizationId,
