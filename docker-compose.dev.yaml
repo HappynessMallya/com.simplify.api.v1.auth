@@ -18,3 +18,5 @@ services:
         environment:
             MYSQL_DATABASE: com.simplify.api.v1.auth
             MYSQL_ROOT_PASSWORD: password
+        ports:
+            - ${CONTAINER_DB_PORT}:3306

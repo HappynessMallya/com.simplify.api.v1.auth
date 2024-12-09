@@ -52,6 +52,8 @@ class Company
     /** @var DateTime|null  */
     private ?DateTime $updatedAt;
 
+    /** @var float|null  */
+    private ?float $subscriptionAmount;
     /**
      * @param CompanyId $companyId
      * @param string $name
@@ -63,6 +65,7 @@ class Company
      * @param CompanyStatus $companyStatus
      * @param string $serial
      * @param OrganizationId|null $organizationId
+     * @param float|null $subscriptionAmount
      * @param DateTime|null $updatedAt
      * @return Company
      */
@@ -77,7 +80,8 @@ class Company
         CompanyStatus $companyStatus,
         string $serial,
         ?OrganizationId $organizationId,
-        ?DateTime $updatedAt = null
+        ?DateTime $updatedAt = null,
+        ?float $subscriptionAmount = null
     ): Company {
         $self = new self();
         $self->companyId = $companyId;
@@ -92,6 +96,7 @@ class Company
         $self->serial = $serial;
         $self->organizationId = $organizationId;
         $self->updatedAt = $updatedAt;
+        $self->subscriptionAmount = $subscriptionAmount;
 
         return $self;
     }
@@ -103,6 +108,8 @@ class Company
     {
         return $this->companyId;
     }
+
+
 
     /**
      * @return string
@@ -150,6 +157,19 @@ class Company
     public function createdAt(): DateTime
     {
         return $this->createdAt;
+    }
+
+    /**
+     * @return float 
+     */
+    public function subscriptionAmount(): ?float
+    {
+        return $this->subscriptionAmount;
+    }
+
+    public function setSubscriptionAmount(?float $subscriptionAmount): void
+    {
+        $this->subscriptionAmount = $subscriptionAmount;
     }
 
     /**
