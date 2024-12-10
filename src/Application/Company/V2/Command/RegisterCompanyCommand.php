@@ -31,6 +31,11 @@ class RegisterCompanyCommand
     /** @var string|null */
     private ?string $organizationId;
 
+    /** @var float|null */
+    private ?float $subscriptionAmount;
+
+
+
     /**
      * @return string
      */
@@ -45,6 +50,20 @@ class RegisterCompanyCommand
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @param float $subscriptionAmount
+     */
+
+    public function getSubscriptionAmount(): ?float
+    {
+        return $this->subscriptionAmount;
+    }
+
+    public function setSubscriptionAmount(?float $subscriptionAmount): void
+    {
+        $this->subscriptionAmount = $subscriptionAmount;
     }
 
     /**

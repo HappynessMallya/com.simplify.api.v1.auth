@@ -3,19 +3,24 @@
 #    controller: App\Controller\DefaultController::index
 
 login:
-    path: /api/v1/user/login
-    methods: ['POST']
+  path: /api/v1/user/login
+  methods: ["POST"]
 
 login_v2:
-    path: /api/v2/user/login
-    methods: ['POST']
+  path: /api/v2/user/login
+  methods: ["POST"]
 
 gesdinet_jwt_refresh_token:
-    path: /api/v1/user/token/refresh
-    controller: gesdinet.jwtrefreshtoken::refresh
-    methods: ['POST']
+  path: /api/v1/user/token/refresh
+  controller: gesdinet.jwtrefreshtoken::refresh
+  methods: ["POST"]
 
 gesdinet_jwt_refresh_token_v2:
-    path: /api/v2/user/token/refresh
-    controller: App\Infrastructure\Symfony\Api\User\V2\Controller\RefreshTokenController::refresh
-    methods: ['POST']
+  path: /api/v2/user/token/refresh
+  controller: App\Infrastructure\Symfony\Api\User\V2\Controller\RefreshTokenController::refresh
+  methods: ["POST"]
+
+create_subscription:
+  path: /api/v2/subscription
+  controller: App\Infrastructure\Symfony\Api\Subscription\Controller\SubscriptionController::createSubscription
+  methods: ["POST"]

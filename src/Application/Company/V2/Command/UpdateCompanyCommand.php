@@ -28,6 +28,9 @@ class UpdateCompanyCommand
     /** @var string|null */
     private ?string $phone;
 
+    /** @var float|null */
+    private ?float $subscriptionAmount;
+
     /**
      * @return string|null
      */
@@ -75,7 +78,19 @@ class UpdateCompanyCommand
     {
         $this->name = $name;
     }
+    /**
+     * @param float $subscriptionAmount
+     */
 
+    public function getSubscriptionAmount(): ?float
+    {
+        return $this->subscriptionAmount;
+    }
+
+    public function setSubscriptionAmount(?float $subscriptionAmount): void
+    {
+        $this->subscriptionAmount = $subscriptionAmount;
+    }
     /**
      * @return string|null
      */

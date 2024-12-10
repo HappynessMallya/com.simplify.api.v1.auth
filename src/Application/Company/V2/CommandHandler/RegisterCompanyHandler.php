@@ -14,9 +14,10 @@ use App\Domain\Repository\OrganizationRepository;
 use App\Domain\Services\CreateSubscriptionRequest;
 use App\Domain\Services\SubscriptionService;
 use DateTime;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Exception;
 
 /**
  * Class RegisterCompanyHandler
@@ -38,22 +39,28 @@ class RegisterCompanyHandler
     /** @var SubscriptionService  */
     private SubscriptionService $subscriptionService;
 
+    /** @var HttpClientInterface  */
+    private HttpClientInterface $httpClientInterface;
+
     /**
      * @param LoggerInterface $logger
      * @param OrganizationRepository $organizationRepository
      * @param CompanyRepository $companyRepository
      * @param SubscriptionService $subscriptionService
+     * @param HttpClientInterface $httpClientInterface;
      */
     public function __construct(
         LoggerInterface $logger,
         OrganizationRepository $organizationRepository,
         CompanyRepository $companyRepository,
-        SubscriptionService $subscriptionService
+        SubscriptionService $subscriptionService,
+        HttpClientInterface $httpClientInterface
     ) {
         $this->logger = $logger;
         $this->organizationRepository = $organizationRepository;
         $this->companyRepository = $companyRepository;
         $this->subscriptionService = $subscriptionService;
+        $this->httpClientInterface = $httpClientInterface;
     }
 
     /**
@@ -140,7 +147,26 @@ class RegisterCompanyHandler
             $command->getSerial(),
             $organizationId
         );
+        $company->setSubscriptionAmount($command->getSubscriptionAmount());
+        $this->companyRepository->save($company);
 
+        $subscriptionData = [
+            'company_id' => $company->companyId()->toString(),
+            'date' => (new \DateTime())->format('Y-m-d'),
+            'type' => self::SUBSCRIPTION_TYPE,
+            'subscription_amount' => $company->getSubscriptionAmount(),
+        ];
+
+        try {
+            $this->httpClientInterface->request('POST', 'http://127.0.0.1:8000/api/v2/subscription', [
+                'json' => $subscriptionData,
+            ]);
+        } catch (Exception $e) {
+            $this->logger->critical('Failed to notify subscription service', [
+                'error' => $e->getMessage(),
+                'company_id' => $company->companyId()->toString(),
+            ]);
+        }
         try {
             $isSaved = $this->companyRepository->save($company);
         } catch (Exception $exception) {
@@ -162,7 +188,8 @@ class RegisterCompanyHandler
         $subscriptionRequest = new CreateSubscriptionRequest(
             $company->companyId()->toString(),
             $company->createdAt()->format('Y-m-d'),
-            self::SUBSCRIPTION_TYPE
+            self::SUBSCRIPTION_TYPE,
+            $company->subscriptionAmount()
         );
 
         $subscription = $this->subscriptionService->createSubscription($subscriptionRequest);

@@ -53,6 +53,8 @@ class RegisterCompanyController extends BaseController
                 Response::HTTP_BAD_REQUEST
             );
         }
+        $subscriptionAmount = $request->request->get('subscription_amount');
+        $command->setSubscriptionAmount($subscriptionAmount);
 
         try {
             $companyId = $this->commandBus->handle($command);
